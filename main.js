@@ -2,14 +2,14 @@ const Discord = require('discord.js');
 const rem = new Discord.Client();
 const private = require('./private.json');
 const fs = require('fs');
-// const commands = require('./commands.js');
-// const rpgCommands = require('./rpgCommands.js');
-// const genshinCommands = require('./genshinCommands');
-// const profile = require('./profile.js');
+const commands = require('./commands.js');
+const rpgCommands = require('./rpgCommands.js');
+const genshinCommands = require('./genshinCommands');
+const profile = require('./profile.js');
 // const mysql = require('mysql');
 
 const prefix = 'Rem';
-// let rpgProfiles = new Map();
+let rpgProfiles = new Map();
 
 // const con = mysql.createConnection({
 //   host: 'localhost',
@@ -31,14 +31,14 @@ rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
   // update rpg profiles
-  // fs.readFile('./rpgProfiles.json', (error, data) => {
-  //   if (error) throw error;
-  //   let rpgProfilesTable = JSON.parse(data);
-  //   rpgProfilesTable.table.forEach(hero => {
-  //     rpgProfiles.set(hero.userID, new profile(hero));
-  //   });
-  // });
-  // console.log('RPG profiles updated');
+  fs.readFile('./rpgProfiles.json', (error, data) => {
+    if (error) throw error;
+    let rpgProfilesTable = JSON.parse(data);
+    rpgProfilesTable.table.forEach(hero => {
+      rpgProfiles.set(hero.userID, new profile(hero));
+    });
+  });
+  console.log('RPG profiles updated');
   // prevent rem from sleeping by pinging
   setInterval(() => {
     console.log('Ping');
@@ -60,10 +60,10 @@ rem.on('message',(message) => {
     return;
   }
 
-  // let arg = message.content.split(/ +/);
-  // if(arg[0].toLowerCase() != 'rem,')
-  //   return;
-  // commands[arg[1]]?.(message, rpgProfiles, arg);
-  // rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
-  // genshinCommands[arg[1]]?.(message);
+  let arg = message.content.split(/ +/);
+  if(arg[0].toLowerCase() != 'rem,')
+    return;
+  commands[arg[1]]?.(message, rpgProfiles, arg);
+  rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
+  genshinCommands[arg[1]]?.(message);
 });
