@@ -1,0 +1,38 @@
+{
+	"table": [
+		{
+			"userID": "246034440340373504",
+			"color": "fc9003",
+			"imageURL": "https://elwiki.net/wiki/images/6/60/Portrait_-_Knight_Emperor_%28Master%29.png",
+			"name": "Zero",
+			"level": 1,
+			"exp": 20,
+			"gold": 100,
+			"health": 100,
+			"mana": 100,
+			"attack": 10,
+			"defense": 0,
+			"crit": 10,
+			"weapon": "None",
+			"armor": "None",
+			"task": false
+		},
+		{
+			"userID": "293219833288589312",
+			"color": 0,
+			"imageURL": "",
+			"name": "Unnamed",
+			"level": 1,
+			"exp": 20,
+			"gold": 100,
+			"health": 100,
+			"mana": 100,
+			"attack": 10,
+			"defense": 0,
+			"crit": 10,
+			"weapon": "None",
+			"armor": "None",
+			"task": false
+		}
+	]
+}
