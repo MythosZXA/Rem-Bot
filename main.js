@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const rem = new Discord.Client();
 const private = require('./private.json');
 const fs = require('fs');
 const commands = require('./commands.js');
@@ -10,24 +11,25 @@ const mysql = require('mysql');
 const prefix = 'Rem';
 let rpgProfiles = new Map();
 
-const con = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'Toant6394',
-  database: 'RPG'
-});
+// const con = mysql.createConnection({
+//   host: 'localhost',
+//   user: 'root',
+//   password: 'Toant6394',
+//   database: 'RPG'
+// });
 
-con.connect((err) => {
-  if(err) {
-    console.log('Error connecting to RPG DB');
-    return;
-  }
-  console.log('Connected to RPG DB');
-})
-
-let rem = new Discord.Client();
+// con.connect((err) => {
+//   if(err) {
+//     console.log('Error connecting to RPG DB');
+//     return;
+//   }
+//   console.log('Connected to RPG DB');
+// })
+rem.login(private.token);
+rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
+  // update rpg profiles
   fs.readFile('./rpgProfiles.json', (error, data) => {
     if (error) throw error;
     let rpgProfilesTable = JSON.parse(data);
@@ -36,10 +38,12 @@ let rem = new Discord.Client();
     });
   });
   console.log('RPG profiles updated');
+  // prevent rem from sleeping by pinging
   setInterval(() => {
     console.log('Ping');
   }, 1000*60*60);
-});
+})
+
 
 rem.on('message',(message) => {
   console.log(message.author.username + ': ' + message.content);
@@ -52,6 +56,10 @@ rem.on('message',(message) => {
   }
   if(message.content.includes('😦')) {
     message.channel.send('😦');
+    return;
+  }
+  if(message.content.toLowerCase().includes('doge')) {
+    message.channel.bulkDelete(1);
     return;
   }
 
