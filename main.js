@@ -6,7 +6,7 @@ const commands = require('./commands.js');
 const rpgCommands = require('./rpgCommands.js');
 const genshinCommands = require('./genshinCommands');
 const profile = require('./profile.js');
-const mysql = require('mysql');
+// const mysql = require('mysql');
 
 const prefix = 'Rem';
 let rpgProfiles = new Map();
