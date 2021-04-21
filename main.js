@@ -59,10 +59,6 @@ rem.on('message',(message) => {
     message.channel.send('😦');
     return;
   }
-  if(message.content.toLowerCase().includes('doge')) {
-    message.channel.bulkDelete(1);
-    return;
-  }
 
   let arg = message.content.split(/ +/);
   if(arg[0].toLowerCase() != 'rem,')

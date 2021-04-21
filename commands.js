@@ -22,14 +22,19 @@ function help(message) {
     .setDescription('To call for me, start a command off with \'Rem, \'')
     .addField('Normal Commands',
               `Remind [me/person] [message] in [hh:mm:ss]`)
+    .addField('Genshin Commands',
+              `Daily`)
+    .addField('Music',
+              `play,
+              skip,
+              stop`)
     .addField('RPG Commands',
               `Hero
               setName
               setColor
               setImage
-              Adventure`)
-    .addField('Genshin Commands',
-              `Daily`);
+              Adventure`);
+
   message.channel.send(info);
 }
 
@@ -106,8 +111,9 @@ function save(message, rpgProfiles) {
   });
 }
 
-function test(message, rpgProfiles) {
-
+function test(message) {
+  message.member.voice.channel.join();
+  message.member.voice.channel.leave();
 }
 
 module.exports = {
