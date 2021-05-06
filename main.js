@@ -60,7 +60,7 @@ rem.on('message',(message) => {
     return;
   }
 
-  let arg = message.content.split(/ +/);
+  let arg = message.content.toLowerCase().split(/ +/);
   if(arg[0].toLowerCase() != 'rem,')
     return;
   commands[arg[1]]?.(message, rpgProfiles, arg);
