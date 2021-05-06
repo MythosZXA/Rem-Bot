@@ -26,6 +26,7 @@ let rpgProfiles = new Map();
 //   }
 //   console.log('Connected to RPG DB');
 // })
+
 rem.login(private.token);
 rem.on('ready', () => {
   console.log('Rem is online.');
