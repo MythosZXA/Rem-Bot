@@ -3,8 +3,9 @@ const rem = new Discord.Client();
 const private = require('./private.json');
 const fs = require('fs');
 const commands = require('./commands.js');
+const genshinCommands = require('./genshinCommands.js');
+const musicCommands = require('./musicCommands.js');
 const rpgCommands = require('./rpgCommands.js');
-const genshinCommands = require('./genshinCommands');
 const profile = require('./profile.js');
 // const mysql = require('mysql');
 
@@ -63,6 +64,7 @@ rem.on('message',(message) => {
   if(arg[0].toLowerCase() != 'rem,')
     return;
   commands[arg[1]]?.(message, rpgProfiles, arg);
-  rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
   genshinCommands[arg[1]]?.(message);
+  musicCommands[arg[1]]?.(message, arg);
+  rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
 });

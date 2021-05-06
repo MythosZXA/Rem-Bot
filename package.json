@@ -10,7 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^12.5.1",
-    "node.js": "^0.0.1-security"
+    "discord.js": "^12.5.3",
+    "ffmpeg-static": "^4.3.0",
+    "mysql": "^2.18.1",
+    "node.js": "^0.0.1-security",
+    "opusscript": "^0.0.8",
+    "ytdl-core": "^4.5.0"
   }
 }
