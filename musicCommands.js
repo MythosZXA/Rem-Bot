@@ -16,6 +16,7 @@ async function play(message, arg) {
       } else {
         connection.disconnect();
         server.dispatcher.destroy();
+        message.channel.send('End of playlist. Goodbye!');
       }
     })
   }
@@ -43,6 +44,7 @@ async function play(message, arg) {
   let server = servers[message.guild.id];
 
   server.queue.push(arg[2]);
+  message.channel.bulkDelete(1);
 
   if(!message.guild.voice.channel) {
     const connection = await message.member.voice.channel.join();
@@ -65,7 +67,6 @@ async function stop(message) {
 
     server.dispatcher.destroy();
     message.channel.send('End of playlist. Goodbye!');
-    console.log('queue ended');
   }
 
   if(message.guild.voice) {
