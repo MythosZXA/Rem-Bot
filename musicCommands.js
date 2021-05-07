@@ -44,7 +44,7 @@ async function play(message, arg) {
   let server = servers[message.guild.id];
 
   server.queue.push(arg[2]);
-  message.channel.bulkDelete(1);
+  //message.channel.bulkDelete(1);
 
   if(!message.guild.voice.channel) {
     const connection = await message.member.voice.channel.join();
