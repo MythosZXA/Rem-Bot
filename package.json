@@ -15,6 +15,6 @@
     "mysql": "^2.18.1",
     "node.js": "^0.0.1-security",
     "opusscript": "^0.0.8",
-    "ytdl-core": "^4.5.0"
+    "ytdl-core": "^4.7.0"
   }
 }

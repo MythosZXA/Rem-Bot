@@ -62,7 +62,7 @@ rem.on('message',(message) => {
   }
 
   let arg = message.content.toLowerCase().split(/ +/);
-  if(arg[0].toLowerCase() != 'rem,')
+  if(arg[0] != 'rem,')
     return;
   commands[arg[1]]?.(message, rpgProfiles, arg);
   genshinCommands[arg[1]]?.(message);
