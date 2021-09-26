@@ -24,10 +24,10 @@ function help(message) {
               `Remind [me/person] [message] in [hh:mm:ss]`)
     .addField('Genshin Commands',
               `Daily`)
-    .addField('Music',
-              `play,
-              skip,
-              stop`)
+    // .addField('Music',
+    //           `play,
+    //           skip,
+    //           stop`)
     .addField('RPG Commands',
               `Hero
               setName
