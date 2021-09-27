@@ -112,8 +112,7 @@ function save(message, rpgProfiles) {
 }
 
 function test(message) {
-  let members = Array.from((await message.guild.members.fetch()).values());
-  members.forEach(member => message.channel.send(member.id));
+  message.guild.members.fetch().then(console.log);
 }
 
 module.exports = {
