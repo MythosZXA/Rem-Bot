@@ -112,8 +112,8 @@ function save(message, rpgProfiles) {
 }
 
 function test(message) {
-  message.member.voice.channel.join();
-  message.member.voice.channel.leave();
+  let members = Array.from((await message.guild.members.fetch()).values());
+  members.forEach(member => message.channel.send(member.id));
 }
 
 module.exports = {

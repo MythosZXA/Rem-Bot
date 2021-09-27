@@ -41,6 +41,7 @@ rem.on('ready', () => {
     });
   });
   console.log('RPG profiles updated');
+
   // prevent rem from sleeping by pinging
   setInterval(() => {
     console.log('Ping');
@@ -67,6 +68,6 @@ rem.on('message',(message) => {
     return;
   commands[arg[1]]?.(message, rpgProfiles, arg);
   genshinCommands[arg[1]]?.(message);
-  musicCommands[arg[1]]?.(message, arg);
+  //musicCommands[arg[1]]?.(message, arg);
   rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
 });
