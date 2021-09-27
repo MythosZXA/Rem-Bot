@@ -111,8 +111,8 @@ function save(message, rpgProfiles) {
   });
 }
 
-function test(message) {
-  message.guild.members.fetch().then(console.log);
+function test(message, rpgProfiles, arg, userProfile) {
+  message.channel.send(userProfile.get(message.author.id).name);
 }
 
 module.exports = {
