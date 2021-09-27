@@ -39,9 +39,7 @@ rem.on('ready', () => {
   fs.readFile('./userProfiles.json', (error, data) => {
     if (error) throw error;
     let userProfilesTable = JSON.parse(data);
-    userProfilesTable.table.forEach(userString => {
-      userProfiles.set(userString.userID, new userClass(userString));
-    });
+    userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
   });
   console.log('User profiles updated');
 
@@ -49,9 +47,7 @@ rem.on('ready', () => {
   fs.readFile('./rpgProfiles.json', (error, data) => {
     if (error) throw error;
     let rpgProfilesTable = JSON.parse(data);
-    rpgProfilesTable.table.forEach(hero =>  {
-      rpgProfiles.set(hero.userID, new profile(hero));
-    });
+    rpgProfilesTable.table.forEach(hero => rpgProfiles.set(hero.userID, new profile(hero)));
   });
   console.log('RPG profiles updated');
 
