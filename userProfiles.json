@@ -2,48 +2,48 @@
 	"table": [
 		{
 			"userID": "246034440340373504",
-			"name": "ZeroXA"
-			
+			"name": "ZeroXA",
+			"BD": "08/14/2000"
 		},
 		{
 			"userID": "87682544018931712",
-			"name": "Skarrec"
-			
+			"name": "Skarrec",
+			"BD": ""
 		},
 		{
 			"userID": "176147405417218048",
-			"name": "Minh"
-			
+			"name": "Minh",
+			"BD": ""
 		},
 		{
 			"userID": "188548021598945280",
-			"name": "Rafael"
-			
+			"name": "Rafael",
+			"BD": ""
 		},
 		{
 			"userID": "188797961843638279",
-			"name": "kenny"
-			
+			"name": "kenny",
+			"BD": ""
 		},
 		{
 			"userID": "293219833288589312",
-			"name": "Tuna"
-
+			"name": "Tuna",
+			"BD": ""
 		},
 		{
 			"userID": "557793240791908352",
-			"name": "twesian"
-
+			"name": "twesian",
+			"BD": ""
 		},
 		{
 			"userID": "682454850566750228",
-			"name": "hpfaff"
-
+			"name": "hpfaff",
+			"BD": "03/22/1999"
 		},
 		{
 			"userID": "765387177638887445",
-			"name": "brittany sam"
-
+			"name": "brittany sam",
+			"BD": ""
 		}
 	]
 }
