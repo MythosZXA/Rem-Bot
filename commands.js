@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageAttachment } = require('discord.js');
+const { MessageEmbed, MessageAttachment, BitField } = require('discord.js');
 const fs = require('fs');
 
 function clear(message, rpgProfiles, arg) {
@@ -99,7 +99,7 @@ function save(message, rpgProfiles) {
   const iteratorFlag = rpgProfiles.values();
   do {
     rpgProfilesTable.table.push(iterator.next().value);
-  } while(!iteratorFlag.next().done);
+  } while (!iteratorFlag.next().done);
 
   fs.writeFile('./rpgProfiles.json', JSON.stringify(rpgProfilesTable, null, '\t'), error => {
     if (error) {
@@ -108,6 +108,77 @@ function save(message, rpgProfiles) {
         console.log('Successfully wrote file')
         message.channel.send('Saved!');
     }
+  });
+}
+
+function setBirthday(message, rpgProfiles, arg, userProfiles) {
+  // validate input
+  let birthdayFormat = arg[2].split('/');
+  let month = parseInt(birthdayFormat[0]);
+  let day = parseInt(birthdayFormat[1]);
+  let year = parseInt(birthdayFormat[2]);
+  let remdisappointed = message.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
+  // years
+  let currentYear = new Date().getFullYear();
+  let currentMonth = new Date().getMonth();
+  let currentDate = new Date().getDate();
+  if ((year > currentYear) && (month > currentMonth) && (day > currentDate)) {
+    message.channel.send(`No time travellers allowed!${remdisappointed}`);
+    return;
+  } else if (year < (currentYear - 100)) {
+    message.channel.send(`No immortals allowed!${remdisappointed}`);
+    return;
+  }
+  // months
+  if (month < 1) {
+    message.channel.send(`Months can\'t be negative!${remdisappointed}`);
+    return;
+  } else if (month > 12) {
+    message.channel.send(`There aren\'t more than 12 months!${remdisappointed}`);
+    return;
+  }
+  // days
+  if (day < 1) {
+    message.channel.send(`Days cannot be negative!${remdisappointed}`);
+    return;
+  } else if (day > 31) {
+    message.channel.send(`There aren\'t more than 31 days!${remdisappointed}`);
+    return;
+  } else if (day == 31 && (month == 4 ||
+                           month == 6 ||
+                           month == 9 ||
+                           motnh == 11)) {
+    message.channel.send(`There aren\'t 31 days in that month!${remdisappointed}`);
+    return;
+  } else if (day > 29 && month == 2) {
+    message.channel.send(`There aren\'t that many days in February!${remdisappointed}`);
+    return;
+  } else if (day == 29 && month == 2) {
+    if ((year % 4) != 0) {
+      message.channel.send(`February doesn\'t have 29 days that year!${remdisappointed}`);
+      return;
+    }
+    message.channel.send('Ooo a special birthday');
+  }
+  
+  userProfiles.get(message.author.id).birthday = arg[2];
+
+  let userProfilesTable = {
+    table: []
+  };
+  const iterator = userProfiles.values();
+  const iteratorFlag = userProfiles.values();
+  do {
+    userProfilesTable.table.push(iterator.next().value);
+  } while (!iteratorFlag.next().done);
+
+  fs.writeFile('./userProfiles.json', JSON.stringify(userProfilesTable, null, '\t'), error => {
+    if (error) {
+      console.log('Error writing file', error)
+  } else {
+      console.log('Successfully wrote file')
+      message.channel.send('Set!');
+  }
   });
 }
 
@@ -120,5 +191,6 @@ module.exports = {
   help,
   remind,
   save,
+  'setbirthday' : setBirthday,
   test
 };
