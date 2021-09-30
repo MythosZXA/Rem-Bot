@@ -17,7 +17,7 @@ function clear(message, rpgProfiles, arg) {
 function help(message) {
   const info = new MessageEmbed()
     .setColor(0x19EFF5)
-    .attachFiles(new MessageAttachment('./Rem.jpg', 'Rem.jpg'))
+    .attachFiles(new MessageAttachment('./Picures/Rem.jpg', 'Rem.jpg'))
     .setThumbnail('attachment://Rem.jpg')
     .setDescription('To call for me, start a command off with \'Rem, \'')
     .addField('Normal Commands',

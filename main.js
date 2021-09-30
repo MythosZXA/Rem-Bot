@@ -36,7 +36,7 @@ rem.on('ready', () => {
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
 
   // update user profiles
-  fs.readFile('./userProfiles.json', (error, data) => {
+  fs.readFile('./JSON/userProfiles.json', (error, data) => {
     if (error) throw error;
     let userProfilesTable = JSON.parse(data);
     userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
@@ -44,7 +44,7 @@ rem.on('ready', () => {
   console.log('User profiles updated');
 
   // update rpg profiles
-  fs.readFile('./rpgProfiles.json', (error, data) => {
+  fs.readFile('./JSON/rpgProfiles.json', (error, data) => {
     if (error) throw error;
     let rpgProfilesTable = JSON.parse(data);
     rpgProfilesTable.table.forEach(hero => rpgProfiles.set(hero.userID, new profile(hero)));
