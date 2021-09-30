@@ -30,7 +30,7 @@ rem.on('ready', () => {
     if (err) 
       console.log(err, err.stack); // an error occurred
     else {
-      let userProfilesTable = JSON.parse(new Buffer(json_data.Body).toString("utf8"));
+      let userProfilesTable = JSON.parse(new Buffer.from(data.Body).toString("utf8"));
       userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
       console.log(userProfiles);
     }
