@@ -18,7 +18,7 @@ let rpgProfiles = new Map();
 
 // Create S3 service object
 s3 = new AWS.S3({apiVersion: '2006-03-01'});
-var params = {Bucket: 'rembot', Key: 'myKey.csv'}
+var params = {Bucket: 'rembot', Key: 'userProfiles.json'};
 s3.getObject(params, function(err, data) {
   if (err) console.log(err, err.stack); // an error occurred
   else     console.log(data);           // successful response
