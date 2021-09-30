@@ -134,49 +134,48 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
   let currentDate = new Date().getDate();
   if ((year > currentYear) || 
       ((year > currentYear) && (month > currentMonth)) ||
-      ((year > currentYear) && (day > currentDate)) ||
       ((year > currentYear) && (month > currentMonth) && (day > currentDate))) {
-    message.channel.send(`No time travellers allowed!${remdisappointed}`);
+    message.channel.send(`No time travellers allowed! ${remdisappointed}`);
     return;
   } else if (year < (currentYear - 100)) {
-    message.channel.send(`No immortals allowed!${remdisappointed}`);
+    message.channel.send(`No immortals allowed! ${remdisappointed}`);
     return;
   }
 
   // months
   if (month == 0) {
-    message.channel.send(`What is month 0?!${remdisappointed}`);
+    message.channel.send(`What is month 0?! ${remdisappointed}`);
     return;
   } else if (month < 0) {
-    message.channel.send(`Months can\'t be negative!${remdisappointed}`);
+    message.channel.send(`Months can\'t be negative! ${remdisappointed}`);
     return;
   } else if (month > 12) {
-    message.channel.send(`There aren\'t more than 12 months!${remdisappointed}`);
+    message.channel.send(`There aren\'t more than 12 months! ${remdisappointed}`);
     return;
   }
 
   // days
   if (day == 0) {
-    message.channel.send(`What is day 0?!${remdisappointed}`);
+    message.channel.send(`What is day 0?! ${remdisappointed}`);
     return;
   } else if(day < 0) {
-    message.channel.send(`Days cannot be negative!${remdisappointed}`);
+    message.channel.send(`Days cannot be negative! ${remdisappointed}`);
     return;
   } else if (day > 31) {
-    message.channel.send(`There aren\'t more than 31 days!${remdisappointed}`);
+    message.channel.send(`There aren\'t more than 31 days! ${remdisappointed}`);
     return;
   } else if (day == 31 && (month == 4 ||
                            month == 6 ||
                            month == 9 ||
-                           motnh == 11)) {
-    message.channel.send(`There aren\'t 31 days in that month!${remdisappointed}`);
+                           month == 11)) {
+    message.channel.send(`There aren\'t 31 days in that month! ${remdisappointed}`);
     return;
   } else if (day > 29 && month == 2) {
-    message.channel.send(`There aren\'t that many days in February!${remdisappointed}`);
+    message.channel.send(`There aren\'t that many days in February! ${remdisappointed}`);
     return;
   } else if (day == 29 && month == 2) {
     if ((year % 4) != 0) {
-      message.channel.send(`February doesn\'t have 29 days that year!${remdisappointed}`);
+      message.channel.send(`February doesn\'t have 29 days that year! ${remdisappointed}`);
       return;
     }
     message.channel.send('Ooo a special birthday');
