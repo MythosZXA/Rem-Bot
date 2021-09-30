@@ -130,18 +130,14 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
 
   // years
   let currentYear = new Date().getFullYear();
-  let currentMonth = new Date().getMonth();
+  let currentMonth = new Date().getMonth() + 1;
   let currentDate = new Date().getDate();
-  if (year > currentYear) {
+  if ((year > currentYear) || 
+      ((year == currentYear) && (month > currentMonth)) ||
+      ((year == currentYear) && (month > currentMonth) && (day > currentDate))) {
     message.channel.send(`No time travellers allowed! ${remdisappointed}`);
     return;
-  } else if (year == currentYear && month > currentMonth) {
-    message.channel.send(`No time travellers allowed! ${remdisappointed}`);
-    return;
-  } else if (year == currentYear && month == currentMonth && day > currentDate) {
-    message.channel.send(`No time travellers allowed! ${remdisappointed}`);
-    return;
-  }else if (year < (currentYear - 100)) {
+  } else if (year < (currentYear - 100)) {
     message.channel.send(`No immortals allowed! ${remdisappointed}`);
     return;
   }
