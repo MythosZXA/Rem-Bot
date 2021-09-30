@@ -102,7 +102,10 @@ function save(message, rpgProfiles) {
   const iterator = rpgProfiles.values();
   const iteratorFlag = rpgProfiles.values();
   do {
-    rpgProfilesTable.table.push(iterator.next().value);
+    let next = iterator.next().value;
+    if(next !== undefined) {
+      rpgProfilesTable.table.push(next);
+    }
   } while (!iteratorFlag.next().done);
 
   fs.writeFile('./JSON/rpgProfiles.json', JSON.stringify(rpgProfilesTable, null, '\t'), error => {
@@ -121,8 +124,9 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
     message.channel.send('Invalid format. Please try again');
     return;
   }
+  let regex = new RegExp('[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}');
   let birthdayFormat = arg[2].split('/');
-  if (birthdayFormat.length < 3) {
+  if (!regex.test(arg[2]) || birthdayFormat.length < 3) {
     message.channel.send('Invalid format. Please try again');
     return;
   }
@@ -194,7 +198,10 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
   const iterator = userProfiles.values();
   const iteratorFlag = userProfiles.values();
   do {
-    userProfilesTable.table.push(iterator.next().value);
+    let next = iterator.next().value;
+    if(next !== undefined) {
+      userProfilesTable.table.push(next);
+    }
   } while (!iteratorFlag.next().done);
 
   fs.writeFile('./JSON/userProfiles.json', JSON.stringify(userProfilesTable, null, '\t'), error => {

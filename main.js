@@ -32,7 +32,7 @@ rem.on('ready', () => {
       console.log(userProfiles);
     }
   });
-  // // update user profiles
+  // update user profiles
   // fs.readFile('./JSON/userProfiles.json', (error, data) => {
   //   if (error) throw error;
   //   let userProfilesTable = JSON.parse(data);
