@@ -51,7 +51,7 @@ rem.on('ready', () => {
   });
   console.log('RPG profiles updated');
 
-  
+
 
   // prevent rem from sleeping by pinging
   setInterval(() => {

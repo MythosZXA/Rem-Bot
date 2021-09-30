@@ -21,7 +21,8 @@ function help(message) {
     .setThumbnail('attachment://Rem.jpg')
     .setDescription('To call for me, start a command off with \'Rem, \'')
     .addField('Normal Commands',
-              `Remind [me/person] [message] in [hh:mm:ss]`)
+              `Remind [me/person] [message] in [hh:mm:ss]
+              setBirthday mm/dd/yyyy`)
     .addField('Genshin Commands',
               `Daily`)
     // .addField('Music',
@@ -122,7 +123,7 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
   let currentYear = new Date().getFullYear();
   let currentMonth = new Date().getMonth();
   let currentDate = new Date().getDate();
-  if ((year > currentYear) && (month > currentMonth) && (day > currentDate)) {
+  if ((year > currentYear) || ((year > currentYear) && (month > currentMonth) && (day > currentDate))) {
     message.channel.send(`No time travellers allowed!${remdisappointed}`);
     return;
   } else if (year < (currentYear - 100)) {
@@ -130,7 +131,10 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
     return;
   }
   // months
-  if (month < 1) {
+  if (month == 0) {
+    message.channel.send(`What is month 0?!${remdisappointed}`);
+    return;
+  } else if (month < 0) {
     message.channel.send(`Months can\'t be negative!${remdisappointed}`);
     return;
   } else if (month > 12) {
@@ -138,7 +142,10 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
     return;
   }
   // days
-  if (day < 1) {
+  if (day == 0) {
+    message.channel.send(`What is day 0?!${remdisappointed}`);
+    return;
+  } else if(day < 0) {
     message.channel.send(`Days cannot be negative!${remdisappointed}`);
     return;
   } else if (day > 31) {
