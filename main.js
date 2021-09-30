@@ -8,26 +8,37 @@ const musicCommands = require('./musicCommands.js');
 const rpgCommands = require('./rpgCommands.js');
 const userClass = require('./userClass.js');
 const profile = require('./profile.js');
-// const mysql = require('mysql');
+var AWS = require("aws-sdk");
+var uuid = require('uuid');
+AWS.config.loadFromPath('./JSON/config.json');
 
 const prefix = 'Rem';
 let userProfiles = new Map();
 let rpgProfiles = new Map();
 
-// const con = mysql.createConnection({
-//   host: 'localhost',
-//   user: 'root',
-//   password: 'Toant6394',
-//   database: 'RPG'
-// });
+// Create unique bucket name
+var bucketName = 'node-sdk-sample-' + uuid.v4();
+// Create name for uploaded object key
+var keyName = 'hello_world.txt';
 
-// con.connect((err) => {
-//   if(err) {
-//     console.log('Error connecting to RPG DB');
-//     return;
-//   }
-//   console.log('Connected to RPG DB');
-// })
+// Create a promise on S3 service object
+var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
+
+// Handle promise fulfilled/rejected states
+bucketPromise.then(
+  function(data) {
+    // Create params for putObject call
+    var objectParams = {Bucket: bucketName, Key: keyName, Body: 'Hello World!'};
+    // Create object upload promise
+    var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+    uploadPromise.then(
+      function(data) {
+        console.log("Successfully uploaded data to " + bucketName + "/" + keyName);
+      });
+}).catch(
+  function(err) {
+    console.error(err, err.stack);
+});
 
 
 rem.login(private.token);
@@ -36,7 +47,7 @@ rem.on('ready', () => {
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
 
   // update user profiles
-  fs.readFile('./userProfiles.json', (error, data) => {
+  fs.readFile('./JSON/userProfiles.json', (error, data) => {
     if (error) throw error;
     let userProfilesTable = JSON.parse(data);
     userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
@@ -44,7 +55,7 @@ rem.on('ready', () => {
   console.log('User profiles updated');
 
   // update rpg profiles
-  fs.readFile('./rpgProfiles.json', (error, data) => {
+  fs.readFile('./JSON/rpgProfiles.json', (error, data) => {
     if (error) throw error;
     let rpgProfilesTable = JSON.parse(data);
     rpgProfilesTable.table.forEach(hero => rpgProfiles.set(hero.userID, new profile(hero)));

@@ -102,7 +102,7 @@ function save(message, rpgProfiles) {
     rpgProfilesTable.table.push(iterator.next().value);
   } while (!iteratorFlag.next().done);
 
-  fs.writeFile('./rpgProfiles.json', JSON.stringify(rpgProfilesTable, null, '\t'), error => {
+  fs.writeFile('./JSON/rpgProfiles.json', JSON.stringify(rpgProfilesTable, null, '\t'), error => {
     if (error) {
         console.log('Error writing file', error);
     } else {
@@ -194,7 +194,7 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
     userProfilesTable.table.push(iterator.next().value);
   } while (!iteratorFlag.next().done);
 
-  fs.writeFile('./userProfiles.json', JSON.stringify(userProfilesTable, null, '\t'), error => {
+  fs.writeFile('./JSON/userProfiles.json', JSON.stringify(userProfilesTable, null, '\t'), error => {
     if (error) {
       console.log('Error writing file', error);
   } else {

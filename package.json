@@ -10,11 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.998.0",
     "discord.js": "^12.5.3",
     "ffmpeg-static": "^4.3.0",
     "mysql": "^2.18.1",
     "node.js": "^0.0.1-security",
     "opusscript": "^0.0.8",
+    "uuid": "^3.3.2",
     "ytdl-core": "^4.7.0"
   }
 }
