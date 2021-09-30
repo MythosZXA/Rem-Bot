@@ -16,30 +16,17 @@ const prefix = 'Rem';
 let userProfiles = new Map();
 let rpgProfiles = new Map();
 
-// Create unique bucket name
-var bucketName = 'node-sdk-sample-' + uuid.v4();
-// Create name for uploaded object key
-var keyName = 'hello_world.txt';
+// Create S3 service object
+s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
-// Create a promise on S3 service object
-var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
-
-// Handle promise fulfilled/rejected states
-bucketPromise.then(
-  function(data) {
-    // Create params for putObject call
-    var objectParams = {Bucket: bucketName, Key: keyName, Body: 'Hello World!'};
-    // Create object upload promise
-    var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
-    uploadPromise.then(
-      function(data) {
-        console.log("Successfully uploaded data to " + bucketName + "/" + keyName);
-      });
-}).catch(
-  function(err) {
-    console.error(err, err.stack);
+// Call S3 to list the buckets
+s3.listBuckets(function(err, data) {
+  if (err) {
+    console.log("Error", err);
+  } else {
+    console.log("Success", data.Buckets);
+  }
 });
-
 
 rem.login(private.token);
 rem.on('ready', () => {
