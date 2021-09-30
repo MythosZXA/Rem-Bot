@@ -18,14 +18,10 @@ let rpgProfiles = new Map();
 
 // Create S3 service object
 s3 = new AWS.S3({apiVersion: '2006-03-01'});
-
-// Call S3 to list the buckets
-s3.listBuckets(function(err, data) {
-  if (err) {
-    console.log("Error", err);
-  } else {
-    console.log("Success", data.Buckets);
-  }
+var params = {Bucket: 'rembot', Key: 'myKey.csv'}
+s3.getObject(params, function(err, data) {
+  if (err) console.log(err, err.stack); // an error occurred
+  else     console.log(data);           // successful response
 });
 
 rem.login(private.token);
