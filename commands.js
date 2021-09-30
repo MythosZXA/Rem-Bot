@@ -194,7 +194,7 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
     userProfilesTable.table.push(iterator.next().value);
   } while (!iteratorFlag.next().done);
 
-  fs.writeFile('./JSON/userProfiles.json', JSON.stringify(userProfilesTable, null, '\t'), error => {
+  fs.writeFile('./userProfiles.json', JSON.stringify(userProfilesTable, null, '\t'), error => {
     if (error) {
       console.log('Error writing file', error);
   } else {
