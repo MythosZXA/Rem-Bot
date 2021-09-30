@@ -127,17 +127,22 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
   let day = parseInt(birthdayFormat[1]);
   let year = parseInt(birthdayFormat[2]);
   let remdisappointed = message.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
+
   // years
   let currentYear = new Date().getFullYear();
   let currentMonth = new Date().getMonth();
   let currentDate = new Date().getDate();
-  if ((year > currentYear) || ((year > currentYear) && (month > currentMonth) && (day > currentDate))) {
+  if ((year > currentYear) || 
+      ((year > currentYear) && (month > currentMonth)) ||
+      ((year > currentYear) && (day > currentDate)) ||
+      ((year > currentYear) && (month > currentMonth) && (day > currentDate))) {
     message.channel.send(`No time travellers allowed!${remdisappointed}`);
     return;
   } else if (year < (currentYear - 100)) {
     message.channel.send(`No immortals allowed!${remdisappointed}`);
     return;
   }
+
   // months
   if (month == 0) {
     message.channel.send(`What is month 0?!${remdisappointed}`);
@@ -149,6 +154,7 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
     message.channel.send(`There aren\'t more than 12 months!${remdisappointed}`);
     return;
   }
+
   // days
   if (day == 0) {
     message.channel.send(`What is day 0?!${remdisappointed}`);
@@ -176,8 +182,10 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
     message.channel.send('Ooo a special birthday');
   }
   
+  // set birthday after passing validation checks
   userProfiles.get(message.author.id).birthday = arg[2];
 
+  // save to file
   let userProfilesTable = {
     table: []
   };
