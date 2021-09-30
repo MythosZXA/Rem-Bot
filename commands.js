@@ -22,7 +22,7 @@ function help(message) {
     .setDescription('To call for me, start a command off with \'Rem, \'')
     .addField('Normal Commands',
               `Remind [me/person] [message] in [hh:mm:ss]
-              setBirthday mm/dd/yyyy`)
+              setBirthday [mm/dd/yyyy]`)
     .addField('Genshin Commands',
               `Daily`)
     // .addField('Music',
@@ -114,7 +114,15 @@ function save(message, rpgProfiles) {
 
 function setBirthday(message, rpgProfiles, arg, userProfiles) {
   // validate input
+  if (!arg[2].includes('/')) {
+    message.channel.send('Invalid format. Please try again');
+    return;
+  }
   let birthdayFormat = arg[2].split('/');
+  if (birthdayFormat.length < 3) {
+    message.channel.send('Invalid format. Please try again');
+    return;
+  }
   let month = parseInt(birthdayFormat[0]);
   let day = parseInt(birthdayFormat[1]);
   let year = parseInt(birthdayFormat[2]);
