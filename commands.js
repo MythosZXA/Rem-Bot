@@ -1,5 +1,8 @@
 const { MessageEmbed, MessageAttachment, BitField } = require('discord.js');
 const fs = require('fs');
+const AWS = require('aws-sdk');
+AWS.config.loadFromPath('./JSON/config.json');
+const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 function clear(message, rpgProfiles, arg) {
   if(message.author.id != 246034440340373504) {
@@ -201,6 +204,21 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
       console.log('Successfully wrote file');
       message.channel.send('Set!');
   }
+  });
+
+  let uploadParams = {Bucket: 'rembot', Key: 'userProfiles.json', Body: ''};
+  let file = './JSON/userProfiles.json';
+  let fileStream = fs.createReadStream(file);
+  fileStream.on('error',function(error) {
+    console.log('File Error', error);
+  });
+  uploadParams.Body = fileStream;
+  s3.upload (uploadParams, function (error, data) {
+    if (error) {
+      console.log("Error", error);
+    } if (data) {
+      console.log("Upload Success", data.Location);
+    }
   });
 }
 

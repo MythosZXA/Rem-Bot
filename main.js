@@ -8,17 +8,14 @@ const musicCommands = require('./musicCommands.js');
 const rpgCommands = require('./rpgCommands.js');
 const userClass = require('./userClass.js');
 const profile = require('./profile.js');
-var AWS = require("aws-sdk");
-var uuid = require('uuid');
+const uuid = require('uuid');
+const AWS = require("aws-sdk");
 AWS.config.loadFromPath('./JSON/config.json');
+const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 const prefix = 'Rem';
 let userProfiles = new Map();
 let rpgProfiles = new Map();
-
-// Create S3 service object
-s3 = new AWS.S3({apiVersion: '2006-03-01'});
-
 
 rem.login(private.token);
 rem.on('ready', () => {
