@@ -178,7 +178,7 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
       message.channel.send(`February doesn\'t have 29 days that year! ${remdisappointed}`);
       return;
     }
-    message.channel.send('Ooo a special birthday');
+    message.channel.send('Ooo a special birthday!');
   }
   
   // set birthday after passing validation checks
