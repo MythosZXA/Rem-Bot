@@ -104,9 +104,9 @@ function save(message, rpgProfiles) {
 
   fs.writeFile('./rpgProfiles.json', JSON.stringify(rpgProfilesTable, null, '\t'), error => {
     if (error) {
-        console.log('Error writing file', error)
+        console.log('Error writing file', error);
     } else {
-        console.log('Successfully wrote file')
+        console.log('Successfully wrote file');
         message.channel.send('Saved!');
     }
   });
@@ -194,11 +194,11 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
     userProfilesTable.table.push(iterator.next().value);
   } while (!iteratorFlag.next().done);
 
-  fs.writeFile('./JSON/userProfiles.json', JSON.stringify(userProfilesTable, null, '\t'), error => {
+  fs.writeFile('./userProfiles.json', JSON.stringify(userProfilesTable, null, '\t'), error => {
     if (error) {
-      console.log('Error writing file', error)
+      console.log('Error writing file', error);
   } else {
-      console.log('Successfully wrote file')
+      console.log('Successfully wrote file');
       message.channel.send('Set!');
   }
   });
