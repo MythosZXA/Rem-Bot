@@ -18,23 +18,29 @@ let rpgProfiles = new Map();
 
 // Create S3 service object
 s3 = new AWS.S3({apiVersion: '2006-03-01'});
-var params = {Bucket: 'rembot', Key: 'userProfiles.json'};
-s3.getObject(params, function(err, data) {
-  if (err) console.log(err, err.stack); // an error occurred
-  else     console.log(data);           // successful response
-});
+
 
 rem.login(private.token);
 rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
 
-  // update user profiles
-  fs.readFile('./JSON/userProfiles.json', (error, data) => {
-    if (error) throw error;
-    let userProfilesTable = JSON.parse(data);
-    userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
+  var params = {Bucket: 'rembot', Key: 'userProfiles.json'};
+  s3.getObject(params, function(err, data) {
+    if (err) 
+      console.log(err, err.stack); // an error occurred
+    else {
+      let userProfilesTable = JSON.parse(new Buffer(json_data.Body).toString("utf8"));
+      userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
+      console.log(userProfiles);
+    }
   });
+  // // update user profiles
+  // fs.readFile('./JSON/userProfiles.json', (error, data) => {
+  //   if (error) throw error;
+  //   let userProfilesTable = JSON.parse(data);
+  //   userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
+  // });
   console.log('User profiles updated');
 
   // update rpg profiles
