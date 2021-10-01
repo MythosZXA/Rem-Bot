@@ -5,22 +5,25 @@ const fs = require('fs');
 const private = require('./private.json');
 const commands = require('./commands.js');
 const genshinCommands = require('./genshinCommands.js');
-// const musicCommands = require('./musicCommands.js');
+const gymCommands = require('./gymCommands.js');
 const profile = require('./profile.js');
 const rpgCommands = require('./rpgCommands.js');
-const userClass = require('./userClass.js');
+const userClass = require('./Class/userClass.js');
+const gymClass = require('./Class/gymClass.js');
 const userProfile = require('./userProfile.js');
 // aws
 const uuid = require('uuid');
 const AWS = require("aws-sdk");
 AWS.config.loadFromPath('./JSON/config.json');
-const s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
 
 // global variables
 const rem = new Discord.Client();
 const prefix = 'Rem';
+const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 let userProfiles = new Map();
 let rpgProfiles = new Map();
+let gymProfiles = new Map();
 
 // rem main
 rem.login(private.token);
@@ -30,22 +33,26 @@ rem.on('ready', () => {
 
   // update user profiles
   let params = {Bucket: 'rembot', Key: 'userProfiles.json'};
-  s3.getObject(params, function(err, data) {
-    if (err) 
-      console.log(err, err.stack); // an error occurred
+  s3.getObject(params, function(error, data) {
+    if (error) 
+      console.log(error, error.stack); // an error occurred
     else {
       let userProfilesTable = JSON.parse(new Buffer.from(data.Body).toString("utf8"));
       userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
+      console.log('User profiles updated');
     }
   });
-
-  // fs.readFile('./JSON/userProfiles.json', (error, data) => {
-  //   if (error) throw error;
-  //   let userProfilesTable = JSON.parse(data);
-  //   userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
-  // });
-  console.log('User profiles updated');
-
+  // update gym profiles
+  params = {Bucket: 'rembot', Key: 'gymProfiles.json'};
+  s3.getObject(params, function(error, data) {
+    if (error) 
+      console.log(error, error.stack); // an error occurred
+    else {
+      let gymProfilesTable = JSON.parse(new Buffer.from(data.Body).toString("utf8"));
+      gymProfilesTable.table.forEach(gymString => gymProfiles.set(gymString.userID, new gymClass(gymString)));
+      console.log('Gym profiles updated');
+    }
+  });
   // update rpg profiles
   // fs.readFile('./JSON/rpgProfiles.json', (error, data) => {
   //   if (error) throw error;
@@ -87,6 +94,6 @@ rem.on('message',(message) => {
     return;
   commands[arg[1]]?.(message, rpgProfiles, arg, userProfiles);
   genshinCommands[arg[1]]?.(message);
-  //musicCommands[arg[1]]?.(message, arg);
+  gymCommands[arg[1]]?.(message, gymProfiles, arg);
   rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
 });

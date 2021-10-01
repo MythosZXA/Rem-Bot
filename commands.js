@@ -25,20 +25,40 @@ function help(message) {
     .setDescription('To call for me, start a command off with \'Rem, \'')
     .addField('Normal Commands',
               `Remind [me/person] [message] in [hh:mm:ss]
+              Gym
               setBirthday [mm/dd/yyyy]`)
     .addField('Genshin Commands',
               `Daily`)
-    // .addField('Music',
-    //           `play,
-    //           skip,
-    //           stop`)
     .addField('RPG Commands',
               `Hero
               setName
               setColor
               setImage
               Adventure`);
+  message.channel.send(info);
+}
 
+function gym(message) {
+  const info = new MessageEmbed()
+    .setColor(0x19EFF5)
+    .attachFiles(new MessageAttachment('./Pictures/Rem.jpg', 'Rem.jpg'))
+    .setThumbnail('attachment://Rem.jpg')
+    .addField('Gym Commands',
+              `Push
+              Pull
+              Legs
+              setIBBPress [#]
+              setIBBPress [#]
+              setAltDBOHP [#]
+              setPullDown [#]
+              setLunges [#]
+              setDeadlift [#]
+              setCloseGrip [#]
+              setStandingBBOHP [#]
+              setMachineRow [#]
+              setCableRow [#]
+              setSquat [#]
+              setLegPress [#]`);
   message.channel.send(info);
 }
 
@@ -216,7 +236,7 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
   let uploadParams = {Bucket: 'rembot', Key: 'userProfiles.json', Body: ''};
   let file = './JSON/userProfiles.json';
   let fileStream = fs.createReadStream(file);
-  fileStream.on('error',function(error) {
+  fileStream.on('error', function(error) {
     console.log('File Error', error);
   });
   uploadParams.Body = fileStream;
@@ -236,6 +256,7 @@ function test(message, rpgProfiles, arg, userProfile) {
 module.exports = {
   clear,
   help,
+  gym,
   remind,
   save,
   'setbirthday' : setBirthday,

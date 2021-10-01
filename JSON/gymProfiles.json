@@ -1,0 +1,55 @@
+{
+	"table": [
+		{
+      "userID" : "246034440340373504",
+			"name": "Toan",
+			"iBBPress": "15",
+			"fBBPress": "0",
+			"altDBOHP": "0",
+			"pullDown": "0",
+      "bentRow": "0",
+			"lunges": "0",
+			"deadlift": "0",
+			"closeGrip": "0",
+			"standingBBOHP": "0",
+			"machineRow": "0",
+			"cableRow": "0",
+			"squat": "0",
+			"legPress": "0"
+		},
+		{
+      "userID" : "176147405417218048",
+			"name": "Minh",
+			"iBBPress": "0",
+			"fBBPress": "0",
+			"altDBOHP": "0",
+			"pullDown": "0",
+      "bentRow": "0",
+			"lunges": "0",
+			"deadlift": "0",
+			"closeGrip": "0",
+			"standingBBOHP": "0",
+			"machineRow": "0",
+			"cableRow": "0",
+			"squat": "0",
+			"legPress": "0"
+		},
+		{
+      "userID" : "293219833288589312",
+			"name": "Tuan",
+			"iBBPress": "0",
+			"fBBPress": "0",
+			"altDBOHP": "0",
+			"pullDown": "0",
+      "bentRow": "0",
+			"lunges": "0",
+			"deadlift": "0",
+			"closeGrip": "0",
+			"standingBBOHP": "0",
+			"machineRow": "0",
+			"cableRow": "0",
+			"squat": "0",
+			"legPress": "0"
+		}
+	]
+}
