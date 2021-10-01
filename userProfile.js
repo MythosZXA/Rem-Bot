@@ -1,3 +1,7 @@
-module.exports = class user {
+function birthdayWish(userProfiles) {
     
+}
+
+module.exports =  {
+    birthdayWish
 }

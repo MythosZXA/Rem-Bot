@@ -1,54 +1,65 @@
+// modules
 const Discord = require('discord.js');
-const rem = new Discord.Client();
-const private = require('./private.json');
 const fs = require('fs');
+// files
+const private = require('./private.json');
 const commands = require('./commands.js');
 const genshinCommands = require('./genshinCommands.js');
-const musicCommands = require('./musicCommands.js');
+// const musicCommands = require('./musicCommands.js');
+const profile = require('./profile.js');
 const rpgCommands = require('./rpgCommands.js');
 const userClass = require('./userClass.js');
-const profile = require('./profile.js');
+const userProfile = require('./userProfiles.js');
+// aws
 const uuid = require('uuid');
 const AWS = require("aws-sdk");
 AWS.config.loadFromPath('./JSON/config.json');
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
+// global variables
 const prefix = 'Rem';
 let userProfiles = new Map();
 let rpgProfiles = new Map();
+const rem = new Discord.Client();
 
+// rem main
 rem.login(private.token);
 rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
 
-  var params = {Bucket: 'rembot', Key: 'userProfiles.json'};
+  // update user profiles
+  let params = {Bucket: 'rembot', Key: 'userProfiles.json'};
   s3.getObject(params, function(err, data) {
     if (err) 
       console.log(err, err.stack); // an error occurred
     else {
       let userProfilesTable = JSON.parse(new Buffer.from(data.Body).toString("utf8"));
       userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
-      console.log(userProfiles);
     }
   });
-  // update user profiles
+
   // fs.readFile('./JSON/userProfiles.json', (error, data) => {
   //   if (error) throw error;
   //   let userProfilesTable = JSON.parse(data);
   //   userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
   // });
-  console.log('User profiles updated');
+  // console.log('User profiles updated');
 
   // update rpg profiles
-  fs.readFile('./JSON/rpgProfiles.json', (error, data) => {
-    if (error) throw error;
-    let rpgProfilesTable = JSON.parse(data);
-    rpgProfilesTable.table.forEach(hero => rpgProfiles.set(hero.userID, new profile(hero)));
-  });
-  console.log('RPG profiles updated');
+  // fs.readFile('./JSON/rpgProfiles.json', (error, data) => {
+  //   if (error) throw error;
+  //   let rpgProfilesTable = JSON.parse(data);
+  //   rpgProfilesTable.table.forEach(hero => rpgProfiles.set(hero.userID, new profile(hero)));
+  // });
+  // console.log('RPG profiles updated');
 
-
+  // let now = new Date();
+  // let midnight = new Date(now).setHours(24, 0, 0, 0);
+  // let secsToMidnight = (midnight - now) / 1000;
+  // setTimeout(() => {
+  //   userProfile.birthdayWish(userProfiles);
+  // }, secsToMidnight + 20);
 
   // prevent rem from sleeping by pinging
   setInterval(() => {
