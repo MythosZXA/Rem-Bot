@@ -9,7 +9,7 @@ const genshinCommands = require('./genshinCommands.js');
 const profile = require('./profile.js');
 const rpgCommands = require('./rpgCommands.js');
 const userClass = require('./userClass.js');
-const userProfile = require('./userProfiles.js');
+const userProfile = require('./userProfile.js');
 // aws
 const uuid = require('uuid');
 const AWS = require("aws-sdk");
@@ -17,10 +17,10 @@ AWS.config.loadFromPath('./JSON/config.json');
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 // global variables
+const rem = new Discord.Client();
 const prefix = 'Rem';
 let userProfiles = new Map();
 let rpgProfiles = new Map();
-const rem = new Discord.Client();
 
 // rem main
 rem.login(private.token);
@@ -44,7 +44,7 @@ rem.on('ready', () => {
   //   let userProfilesTable = JSON.parse(data);
   //   userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
   // });
-  // console.log('User profiles updated');
+  console.log('User profiles updated');
 
   // update rpg profiles
   // fs.readFile('./JSON/rpgProfiles.json', (error, data) => {
