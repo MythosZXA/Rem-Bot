@@ -64,11 +64,9 @@ rem.on('ready', () => {
   let now = convertTZ(new Date(), 'America/Chicago');
   let midnight = new Date(now).setHours(24, 0, 0, 0);
   let secsToMidnight = (midnight - now) / 1000;
-  console.log(secsToMidnight/60/60);
-  // birthdayWish(userProfiles);
-  // setTimeout(() => {
-  //   userProfile.birthdayWish(userProfiles);
-  // }, secsToMidnight + 20);
+  setTimeout(() => {
+    birthdayWish(userProfiles);
+  }, 1000 * 20);
 
   // prevent rem from sleeping by pinging
   setInterval(() => {
@@ -80,9 +78,9 @@ function convertTZ(date, tzString) {
   return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
 }
 
-// function birthdayWish(userProfiles) {
-//   console.log(userProfiles);
-// }
+function birthdayWish(userProfiles) {
+  console.log(userProfiles);
+}
 
 rem.on('message',(message) => {
   console.log(message.author.username + ': ' + message.content);
