@@ -10,7 +10,6 @@ const profile = require('./profile.js');
 const rpgCommands = require('./rpgCommands.js');
 const userClass = require('./Class/userClass.js');
 const gymClass = require('./Class/gymClass.js');
-const userProfile = require('./userProfile.js');
 // aws
 const uuid = require('uuid');
 const AWS = require("aws-sdk");
@@ -65,7 +64,19 @@ rem.on('ready', () => {
   let midnight = new Date(now).setHours(24, 0, 0, 0);
   let secsToMidnight = (midnight - now) / 1000;
   setTimeout(() => {
-    birthdayWish(userProfiles);
+    userProfiles.forEach(user => {
+      if (user.birthday != "") {
+        let birthdayFormat = user.birthday.split('/');
+        let month = parseInt(birthdayFormat[0]);
+        let day = parseInt(birthdayFormat[1]);
+        now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
+        let currentMonth = new Date(now).getMonth() + 1;
+        let currentDate = new Date(now).getDate();
+        if (month == currentMonth && day == currentDate) {
+          console.log('Happy bd!');
+        }
+      }
+    })
   }, 10000);
 
   // prevent rem from sleeping by pinging
@@ -73,14 +84,6 @@ rem.on('ready', () => {
     console.log('Ping');
   }, 1000*60*60);
 });
-
-// function convertTZ(date, tzString) {
-//   return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
-// }
-
-function birthdayWish(userProfiles) {
-  console.log(userProfiles);
-}
 
 rem.on('message',(message) => {
   console.log(message.author.username + ': ' + message.content);
