@@ -61,7 +61,7 @@ rem.on('ready', () => {
   // });
   // console.log('RPG profiles updated');
 
-  let now = new Date().toLocaleString('en-US', {timeZone: 'GMT-5'});
+  let now = new Date().toLocaleString('en-US');
   let midnight = new Date(now).setHours(24, 0, 0, 0);
   let secsToMidnight = (midnight - now) / 1000;
   console.log(secsToMidnight/60/60);
