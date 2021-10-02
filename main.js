@@ -61,9 +61,11 @@ rem.on('ready', () => {
   // });
   // console.log('RPG profiles updated');
 
-  // let now = new Date();
-  // let midnight = new Date(now).setHours(24, 0, 0, 0);
-  // let secsToMidnight = (midnight - now) / 1000;
+  let now = new Date();
+  let midnight = new Date(now).setHours(24, 0, 0, 0);
+  let secsToMidnight = (midnight - now) / 1000;
+  console.log(secsToMidnight/60/60);
+  birthdayWish(userProfiles);
   // setTimeout(() => {
   //   userProfile.birthdayWish(userProfiles);
   // }, secsToMidnight + 20);
@@ -74,6 +76,9 @@ rem.on('ready', () => {
   }, 1000*60*60);
 });
 
+function birthdayWish(userProfiles) {
+  console.log(userProfiles);
+}
 
 rem.on('message',(message) => {
   console.log(message.author.username + ': ' + message.content);
