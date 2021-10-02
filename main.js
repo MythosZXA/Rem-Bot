@@ -77,7 +77,7 @@ rem.on('ready', () => {
                             .members.cache.get(user.userID);
           rem.guilds.cache.get('773660297696772096')
              .channels.cache.get('803425860396908577')
-             .send(`Happy Birthday ${bdMember}!`);
+             .send(`Happy Birthday ${bdMember.user}!`);
         }
       }
     })
