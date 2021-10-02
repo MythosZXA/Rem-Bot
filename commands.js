@@ -84,6 +84,7 @@ async function remind(message, rpgProfiles, arg) {
   let minutes = parseInt(timerFormat[1]);
   let seconds = parseInt(timerFormat[2]);
   let countdown = 1000 * ((hours * 60 * 60) + (minutes * 60) + seconds);
+  
   // determine who to remind
   if(arg[2] == 'me') {
     // set reminder
@@ -250,7 +251,7 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
 }
 
 function test(message, rpgProfiles, arg, userProfile) {
-  message.channel.send(userProfile.get(message.author.id).name);
+  
 }
 
 module.exports = {

@@ -73,7 +73,11 @@ rem.on('ready', () => {
         let currentMonth = new Date(now).getMonth() + 1;
         let currentDate = new Date(now).getDate();
         if (month == currentMonth && day == currentDate) {
-          console.log('Happy bd!');
+          let bdMember = rem.guilds.cache.get('773660297696772096')
+                            .members.cache.get(user.id);
+          rem.guilds.cache.get('773660297696772096')
+             .channels.cache.get('803425860396908577')
+             .send(`Happy Birthday ${bdMember}!`);
         }
       }
     })
@@ -82,16 +86,17 @@ rem.on('ready', () => {
   // prevent rem from sleeping by pinging
   setInterval(() => {
     console.log('Ping');
-  }, 1000*60*60);
+  }, 1000 * 60 * 60);
 });
 
 rem.on('message',(message) => {
+  console.log(message.channel.id);
   console.log(message.author.username + ': ' + message.content);
   if(message.author.bot)
     return;
 
   if(message.content.toLowerCase().includes('thanks rem')) {
-    message.channel.send("You're welcome!");
+    message.channel.send('You\'re welcome!');
     return;
   }
   if(message.content.includes('😦')) {
