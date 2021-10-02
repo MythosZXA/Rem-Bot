@@ -61,7 +61,7 @@ rem.on('ready', () => {
   // });
   // console.log('RPG profiles updated');
 
-  let now = new Date().toLocaleString('en-US');
+  let now = convertTZ(new Date(), 'America/Chicago');
   let midnight = new Date(now).setHours(24, 0, 0, 0);
   let secsToMidnight = (midnight - now) / 1000;
   console.log(secsToMidnight/60/60);
@@ -75,6 +75,10 @@ rem.on('ready', () => {
     console.log('Ping');
   }, 1000*60*60);
 });
+
+function convertTZ(date, tzString) {
+  return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+}
 
 // function birthdayWish(userProfiles) {
 //   console.log(userProfiles);
