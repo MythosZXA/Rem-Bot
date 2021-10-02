@@ -63,25 +63,26 @@ rem.on('ready', () => {
   let now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
   let midnight = new Date(now).setHours(24, 0, 0, 0);
   let secsToMidnight = (midnight - now) / 1000;
-  setTimeout(() => {
-    userProfiles.forEach(user => {
-      if (user.birthday != "") {
-        let birthdayFormat = user.birthday.split('/');
-        let month = parseInt(birthdayFormat[0]);
-        let day = parseInt(birthdayFormat[1]);
-        now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
-        let currentMonth = new Date(now).getMonth() + 1;
-        let currentDate = new Date(now).getDate();
-        if (month == currentMonth && day == currentDate) {
-          let bdMember = rem.guilds.cache.get('773660297696772096')
-                            .members.cache.get(user.userID);
-          rem.guilds.cache.get('773660297696772096')
-             .channels.cache.get('803425860396908577')
-             .send(`Happy Birthday ${bdMember.user}!`);
-        }
-      }
-    })
-  }, 10000);
+  // setTimeout(() => {
+  //   userProfiles.forEach(user => {
+  //     if (user.birthday != "") {
+  //       let birthdayFormat = user.birthday.split('/');
+  //       let month = parseInt(birthdayFormat[0]);
+  //       let day = parseInt(birthdayFormat[1]);
+  //       now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
+  //       let currentMonth = new Date(now).getMonth() + 1;
+  //       let currentDate = new Date(now).getDate();
+  //       if (month == currentMonth && day == currentDate) {
+  //         let bdMember = rem.guilds.cache.get('773660297696772096')
+  //                           .members.cache.fetch(user.userID);
+  //         console.log(bdMember);
+  //         rem.guilds.cache.get('773660297696772096')
+  //            .channels.cache.get('803425860396908577')
+  //            .send(`Happy Birthday ${bdMember}!`);
+  //       }
+  //     }
+  //   })
+  // }, 10000);
 
   // prevent rem from sleeping by pinging
   setInterval(() => {
@@ -90,7 +91,6 @@ rem.on('ready', () => {
 });
 
 rem.on('message',(message) => {
-  console.log(message.channel.id);
   console.log(message.author.username + ': ' + message.content);
   if(message.author.bot)
     return;
