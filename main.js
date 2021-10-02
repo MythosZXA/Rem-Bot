@@ -74,7 +74,7 @@ rem.on('ready', () => {
         let currentDate = new Date(now).getDate();
         if (month == currentMonth && day == currentDate) {
           let bdMember = rem.guilds.cache.get('773660297696772096')
-                            .members.cache.get(user.id);
+                            .members.cache.get(user.userID);
           rem.guilds.cache.get('773660297696772096')
              .channels.cache.get('803425860396908577')
              .send(`Happy Birthday ${bdMember}!`);
