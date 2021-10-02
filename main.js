@@ -61,12 +61,12 @@ rem.on('ready', () => {
   // });
   // console.log('RPG profiles updated');
 
-  let now = convertTZ(new Date(), 'America/Chicago');
+  let now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
   let midnight = new Date(now).setHours(24, 0, 0, 0);
   let secsToMidnight = (midnight - now) / 1000;
   setTimeout(() => {
     birthdayWish(userProfiles);
-  }, 1000 * 20);
+  }, 10000);
 
   // prevent rem from sleeping by pinging
   setInterval(() => {
@@ -74,9 +74,9 @@ rem.on('ready', () => {
   }, 1000*60*60);
 });
 
-function convertTZ(date, tzString) {
-  return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
-}
+// function convertTZ(date, tzString) {
+//   return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+// }
 
 function birthdayWish(userProfiles) {
   console.log(userProfiles);
