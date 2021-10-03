@@ -63,32 +63,39 @@ rem.on('ready', () => {
   let now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
   let midnight = new Date(now).setHours(24, 0, 0, 0);
   let secsToMidnight = (midnight - now) / 1000;
-  // setTimeout(() => {
-  //   userProfiles.forEach(user => {
-  //     if (user.birthday != "") {
-  //       let birthdayFormat = user.birthday.split('/');
-  //       let month = parseInt(birthdayFormat[0]);
-  //       let day = parseInt(birthdayFormat[1]);
-  //       now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
-  //       let currentMonth = new Date(now).getMonth() + 1;
-  //       let currentDate = new Date(now).getDate();
-  //       if (month == currentMonth && day == currentDate) {
-  //         let bdMember = rem.guilds.cache.get('773660297696772096')
-  //                           .members.cache.fetch(user.userID);
-  //         console.log(bdMember);
-  //         rem.guilds.cache.get('773660297696772096')
-  //            .channels.cache.get('803425860396908577')
-  //            .send(`Happy Birthday ${bdMember}!`);
-  //       }
-  //     }
-  //   })
-  // }, 10000);
+  console.log(secsToMidnight / 60 / 60);
+  setTimeout(() => {
+    birthdayWish(userProfiles);
+  }, (1000 * secsToMidnight) + (1000 * 10));
 
   // prevent rem from sleeping by pinging
   setInterval(() => {
     console.log('Ping');
   }, 1000 * 60 * 60);
 });
+
+function birthdayWish(userProfiles) {
+  userProfiles.forEach(async (user) => {
+    if (user.birthday != "") {
+      let birthdayFormat = user.birthday.split('/');
+      let month = parseInt(birthdayFormat[0]);
+      let day = parseInt(birthdayFormat[1]);
+      now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
+      let currentMonth = new Date(now).getMonth() + 1;
+      let currentDate = new Date(now).getDate();
+      if (month == currentMonth && day == currentDate) {
+        let bdMember = await rem.guilds.cache.get('773660297696772096')
+                                .members.fetch(user.userID);
+        rem.guilds.cache.get('773660297696772096')
+           .channels.cache.get('773660297696772100')
+           .send({files: [{attachment: './Pictures/Birthday Rem.jpg', name: 'Birthday Rem.jpg'}]});
+        rem.guilds.cache.get('773660297696772096')
+           .channels.cache.get('773660297696772100')
+           .send(`Happy Birthday ${bdMember}!`);
+      }
+    }
+  })
+}
 
 rem.on('message',(message) => {
   console.log(message.author.username + ': ' + message.content);
