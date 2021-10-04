@@ -60,14 +60,8 @@ rem.on('ready', () => {
   // });
   // console.log('RPG profiles updated');
 
-  let nowString = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
-  let nowTime = new Date(nowString);
-  let midnight = new Date(nowTime).setHours(24, 0, 0, 0);
-  let secsToMidnight = (midnight - nowTime) / 1000;
-  console.log(`Hours until midnight: ${secsToMidnight / 60 / 60}`);
-  setTimeout(() => {
-    birthdayWish(userProfiles);
-  }, (1000 * secsToMidnight) + (1000 * 10));
+  console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
+  checkBirthdayTomorrow(userProfiles, getSecsToMidnight());
 
   // prevent rem from sleeping by pinging
   setInterval(() => {
@@ -79,27 +73,38 @@ function createUserMap() {
   
 }
 
-function birthdayWish(userProfiles) {
-  userProfiles.forEach(async (user) => {
-    if (user.birthday != "") {
-      let birthdayFormat = user.birthday.split('/');
-      let month = parseInt(birthdayFormat[0]);
-      let day = parseInt(birthdayFormat[1]);
-      now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
-      let currentMonth = new Date(now).getMonth() + 1;
-      let currentDate = new Date(now).getDate();
-      if (month == currentMonth && day == currentDate) {
-        let bdMember = await rem.guilds.cache.get('773660297696772096')
-                                .members.fetch(user.userID);
-        rem.guilds.cache.get('773660297696772096')
-           .channels.cache.get('773660297696772100')
-           .send({files: [{attachment: './Pictures/Birthday Rem.jpg', name: 'Birthday Rem.jpg'}]});
-        rem.guilds.cache.get('773660297696772096')
-           .channels.cache.get('773660297696772100')
-           .send(`Happy Birthday ${bdMember}!`);
+function getSecsToMidnight() {
+  let nowString = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
+  let nowTime = new Date(nowString);
+  let midnight = new Date(nowTime).setHours(24, 0, 0, 0);
+  return (midnight - nowTime) / 1000;
+}
+
+function checkBirthdayTomorrow(userProfiles, secsToMidnight) {
+  setTimeout(() => {
+    userProfiles.forEach(async (user) => {
+      if (user.birthday != "") {
+        let birthdayFormat = user.birthday.split('/');
+        let month = parseInt(birthdayFormat[0]);
+        let day = parseInt(birthdayFormat[1]);
+        now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
+        let currentMonth = new Date(now).getMonth() + 1;
+        let currentDate = new Date(now).getDate();
+        if (month == currentMonth && day == currentDate) {
+          let bdMember = await rem.guilds.cache.get('773660297696772096')
+                                  .members.fetch(user.userID);
+          rem.guilds.cache.get('773660297696772096')
+            .channels.cache.get('773660297696772100')
+            .send({files: [{attachment: './Pictures/Birthday Rem.jpg', name: 'Birthday Rem.jpg'}]});
+          rem.guilds.cache.get('773660297696772096')
+            .channels.cache.get('773660297696772100')
+            .send(`Happy Birthday ${bdMember}!`);
+        }
       }
-    }
-  })
+    })
+    console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
+    checkBirthdayTomorrow(userProfiles, getSecsToMidnight());
+  }, (1000 * secsToMidnight) + (1000 * 5));
 }
 
 rem.on('message',(message) => {
