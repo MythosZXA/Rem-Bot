@@ -20,9 +20,9 @@ AWS.config.loadFromPath('./JSON/config.json');
 const rem = new Discord.Client();
 const prefix = 'Rem';
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
-let userProfiles = new Map();
+let userMap = new Map();
+let gymMap = new Map();
 let rpgProfiles = new Map();
-let gymProfiles = new Map();
 
 // rem main
 rem.login(private.token);
@@ -30,28 +30,9 @@ rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
 
-  // update user profiles
-  let params = {Bucket: 'rembot', Key: 'userProfiles.json'};
-  s3.getObject(params, function(error, data) {
-    if (error) 
-      console.log(error, error.stack); // an error occurred
-    else {
-      let userProfilesTable = JSON.parse(new Buffer.from(data.Body).toString("utf8"));
-      userProfilesTable.table.forEach(userString => userProfiles.set(userString.userID, new userClass(userString)));
-      console.log('User profiles updated');
-    }
-  });
-  // update gym profiles
-  params = {Bucket: 'rembot', Key: 'gymProfiles.json'};
-  s3.getObject(params, function(error, data) {
-    if (error) 
-      console.log(error, error.stack); // an error occurred
-    else {
-      let gymProfilesTable = JSON.parse(new Buffer.from(data.Body).toString("utf8"));
-      gymProfilesTable.table.forEach(gymString => gymProfiles.set(gymString.userID, new gymClass(gymString)));
-      console.log('Gym profiles updated');
-    }
-  });
+  // update maps with files
+  createUserMap(userMap);
+  createGymMap(gymMap);
   // update rpg profiles
   // fs.readFile('./JSON/rpgProfiles.json', (error, data) => {
   //   if (error) throw error;
@@ -62,7 +43,7 @@ rem.on('ready', () => {
 
   // check for birthdays when tomorrow comes
   console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
-  checkBirthdayTomorrow(userProfiles, getSecsToMidnight());
+  checkBirthdayTomorrow(userMap, getSecsToMidnight());
 
   // prevent rem from sleeping by pinging
   setInterval(() => {
@@ -70,8 +51,30 @@ rem.on('ready', () => {
   }, 1000 * 60 * 60);
 });
 
-function createUserMap() {
-  
+function createUserMap(userMap) {
+  let params = {Bucket: 'rembot', Key: 'userProfiles.json'};
+  s3.getObject(params, function(error, data) {
+    if (error) 
+      console.log(error, error.stack);
+    else {
+      let userProfilesTable = JSON.parse(new Buffer.from(data.Body).toString("utf8"));
+      userProfilesTable.table.forEach(userString => userMap.set(userString.userID, new userClass(userString)));
+      console.log('User profiles updated');
+    }
+  });
+}
+
+function createGymMap(gymMap) {
+  let params = {Bucket: 'rembot', Key: 'gymProfiles.json'};
+  s3.getObject(params, function(error, data) {
+    if (error) 
+      console.log(error, error.stack); // an error occurred
+    else {
+      let gymProfilesTable = JSON.parse(new Buffer.from(data.Body).toString("utf8"));
+      gymProfilesTable.table.forEach(gymString => gymMap.set(gymString.userID, new gymClass(gymString)));
+      console.log('Gym profiles updated');
+    }
+  });
 }
 
 function getSecsToMidnight() {
