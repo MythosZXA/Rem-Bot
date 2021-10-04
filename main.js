@@ -60,6 +60,7 @@ rem.on('ready', () => {
   // });
   // console.log('RPG profiles updated');
 
+  // check for birthdays when tomorrow comes
   console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
   checkBirthdayTomorrow(userProfiles, getSecsToMidnight());
 
@@ -83,13 +84,16 @@ function getSecsToMidnight() {
 function checkBirthdayTomorrow(userProfiles, secsToMidnight) {
   setTimeout(() => {
     userProfiles.forEach(async (user) => {
-      if (user.birthday != "") {
+      if (user.birthday != "") { // enter if user has set their birthday
+        // get user birth month and date
         let birthdayFormat = user.birthday.split('/');
         let month = parseInt(birthdayFormat[0]);
         let day = parseInt(birthdayFormat[1]);
+        // get today's month and date
         now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
         let currentMonth = new Date(now).getMonth() + 1;
         let currentDate = new Date(now).getDate();
+        // if it's user's birthday then send happy birthday
         if (month == currentMonth && day == currentDate) {
           let bdMember = await rem.guilds.cache.get('773660297696772096')
                                   .members.fetch(user.userID);
@@ -102,6 +106,7 @@ function checkBirthdayTomorrow(userProfiles, secsToMidnight) {
         }
       }
     })
+    // check again tomorrow
     console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
     checkBirthdayTomorrow(userProfiles, getSecsToMidnight());
   }, (1000 * secsToMidnight) + (1000 * 5));
