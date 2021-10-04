@@ -132,8 +132,8 @@ rem.on('message',(message) => {
   let arg = message.content.toLowerCase().split(/ +/);
   if(arg[0] != 'rem,')
     return;
-  commands[arg[1]]?.(message, rpgProfiles, arg, userProfiles);
+  commands[arg[1]]?.(message, rpgProfiles, arg, userMap);
   genshinCommands[arg[1]]?.(message);
-  gymCommands[arg[1]]?.(message, gymProfiles, arg);
+  gymCommands[arg[1]]?.(message, gymMap, arg);
   rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
 });

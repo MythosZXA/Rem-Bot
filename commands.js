@@ -139,7 +139,7 @@ function save(message, rpgProfiles) {
   });
 }
 
-function setBirthday(message, rpgProfiles, arg, userProfiles) {
+function setBirthday(message, rpgProfiles, arg, userMap) {
   // validate input
   if (!arg[2].includes('/')) {
     message.channel.send('Invalid format. Please try again');
@@ -210,14 +210,14 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
   }
   
   // set birthday after passing validation checks
-  userProfiles.get(message.author.id).birthday = arg[2];
+  userMap.get(message.author.id).birthday = arg[2];
 
   // save to file
   let userProfilesTable = {
     table: []
   };
-  const iterator = userProfiles.values();
-  const iteratorFlag = userProfiles.values();
+  const iterator = userMap.values();
+  const iteratorFlag = userMap.values();
   do {
     let next = iterator.next().value;
     if(next !== undefined) {
@@ -250,7 +250,7 @@ function setBirthday(message, rpgProfiles, arg, userProfiles) {
   });
 }
 
-function test(message, rpgProfiles, arg, userProfile) {
+function test(message, rpgProfiles, arg, userMap) {
   
 }
 

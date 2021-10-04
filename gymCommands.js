@@ -3,100 +3,100 @@ const AWS = require("aws-sdk");
 AWS.config.loadFromPath('./JSON/config.json');
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
-function push(message, gymProfiles) {
+function push(message, gymMap) {
   message.channel.send(
     `Your push stats:
-    Inclined Barbell Press: ${gymProfiles.get(message.author.id).iBBPress}
-    Flat Barbell Press: ${gymProfiles.get(message.author.id).fBBPress}
-    Dumbbell Overhead Push: ${gymProfiles.get(message.author.id).dbOHP}
-    Close Grip Barbell Bench: ${gymProfiles.get(message.author.id).closeGrip}
-    Standing Barbell Overheadpush: ${gymProfiles.get(message.author.id).standingBBOHP}`);
+    Inclined Barbell Press: ${gymMap.get(message.author.id).iBBPress}
+    Flat Barbell Press: ${gymMap.get(message.author.id).fBBPress}
+    Dumbbell Overhead Push: ${gymMap.get(message.author.id).dbOHP}
+    Close Grip Barbell Bench: ${gymMap.get(message.author.id).closeGrip}
+    Standing Barbell Overheadpush: ${gymMap.get(message.author.id).standingBBOHP}`);
 }
 
-function pull(message, gymProfiles) {
+function pull(message, gymMap) {
   message.channel.send(
     `Your pull stats:
-    Pull Down: ${gymProfiles.get(message.author.id).pullDown}
-    Bent Over Row: ${gymProfiles.get(message.author.id).bentRow}
-    Machine Row: ${gymProfiles.get(message.author.id).machineRow}
-    Cable Row: ${gymProfiles.get(message.author.id).cableRow}`);
+    Pull Down: ${gymMap.get(message.author.id).pullDown}
+    Bent Over Row: ${gymMap.get(message.author.id).bentRow}
+    Machine Row: ${gymMap.get(message.author.id).machineRow}
+    Cable Row: ${gymMap.get(message.author.id).cableRow}`);
 }
 
-function legs(message, gymProfiles) {
+function legs(message, gymMap) {
   message.channel.send(
     `Your legs stats:
-    Lunges: ${gymProfiles.get(message.author.id).lunges}
-    Deadlift: ${gymProfiles.get(message.author.id).deadlift}
-    Squat: ${gymProfiles.get(message.author.id).squat}
-    Leg Press: ${gymProfiles.get(message.author.id).legPress}`);
+    Lunges: ${gymMap.get(message.author.id).lunges}
+    Deadlift: ${gymMap.get(message.author.id).deadlift}
+    Squat: ${gymMap.get(message.author.id).squat}
+    Leg Press: ${gymMap.get(message.author.id).legPress}`);
 }
 
-function setiBBPress(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).iBBPress = arg[2];
-  saveToFile(message, gymProfiles);
+function setiBBPress(message, gymMap, arg) {
+  gymMap.get(message.author.id).iBBPress = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setfBBPress(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).fBBPress = arg[2];
-  saveToFile(message, gymProfiles);
+function setfBBPress(message, gymMap, arg) {
+  gymMap.get(message.author.id).fBBPress = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setDBOHP(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).altDBOHP = arg[2];
-  saveToFile(message, gymProfiles);
+function setDBOHP(message, gymMap, arg) {
+  gymMap.get(message.author.id).altDBOHP = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setpullDown(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).pullDown = arg[2];
-  saveToFile(message, gymProfiles);
+function setpullDown(message, gymMap, arg) {
+  gymMap.get(message.author.id).pullDown = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setlunges(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).lunges = arg[2];
-  saveToFile(message, gymProfiles);
+function setlunges(message, gymMap, arg) {
+  gymMap.get(message.author.id).lunges = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setdeadlift(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).deadlift = arg[2];
-  saveToFile(message, gymProfiles);
+function setdeadlift(message, gymMap, arg) {
+  gymMap.get(message.author.id).deadlift = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setcloseGrip(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).closeGrip = arg[2];
-  saveToFile(message, gymProfiles);
+function setcloseGrip(message, gymMap, arg) {
+  gymMap.get(message.author.id).closeGrip = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setstandingBBOHP(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).standingBBOHP = arg[2];
-  saveToFile(message, gymProfiles);
+function setstandingBBOHP(message, gymMap, arg) {
+  gymMap.get(message.author.id).standingBBOHP = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setmachineRow(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).machineRow = arg[2];
-  saveToFile(message, gymProfiles);
+function setmachineRow(message, gymMap, arg) {
+  gymMap.get(message.author.id).machineRow = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setcableRow(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).cableRow = arg[2];
-  saveToFile(message, gymProfiles);
+function setcableRow(message, gymMap, arg) {
+  gymMap.get(message.author.id).cableRow = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setsquat(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).squat = arg[2];
-  saveToFile(message, gymProfiles);
+function setsquat(message, gymMap, arg) {
+  gymMap.get(message.author.id).squat = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function setlegPress(message, gymProfiles, arg) {
-  gymProfiles.get(message.author.id).legPress = arg[2];
-  saveToFile(message, gymProfiles);
+function setlegPress(message, gymMap, arg) {
+  gymMap.get(message.author.id).legPress = arg[2];
+  saveToFile(message, gymMap);
 }
 
-function saveToFile(message, gymProfiles) {
+function saveToFile(message, gymMap) {
   let gymProfilesTable = {
     table: []
   };
-  const iterator = gymProfiles.values();
-  const iteratorFlag = gymProfiles.values();
+  const iterator = gymMap.values();
+  const iteratorFlag = gymMap.values();
   do {
     let next = iterator.next().value;
     if(next !== undefined) {
