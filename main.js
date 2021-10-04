@@ -75,6 +75,10 @@ rem.on('ready', () => {
   }, 1000 * 60 * 60);
 });
 
+function createUserMap() {
+  
+}
+
 function birthdayWish(userProfiles) {
   userProfiles.forEach(async (user) => {
     if (user.birthday != "") {

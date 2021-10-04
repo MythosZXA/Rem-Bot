@@ -8,7 +8,7 @@ function push(message, gymProfiles) {
     `Your push stats:
     Inclined Barbell Press: ${gymProfiles.get(message.author.id).iBBPress}
     Flat Barbell Press: ${gymProfiles.get(message.author.id).fBBPress}
-    Alternating Dumbbell Overheadpush: ${gymProfiles.get(message.author.id).altDBOHP}
+    Dumbbell Overhead Push: ${gymProfiles.get(message.author.id).dbOHP}
     Close Grip Barbell Bench: ${gymProfiles.get(message.author.id).closeGrip}
     Standing Barbell Overheadpush: ${gymProfiles.get(message.author.id).standingBBOHP}`);
 }
@@ -41,7 +41,7 @@ function setfBBPress(message, gymProfiles, arg) {
   saveToFile(message, gymProfiles);
 }
 
-function setaltDBOHP(message, gymProfiles, arg) {
+function setDBOHP(message, gymProfiles, arg) {
   gymProfiles.get(message.author.id).altDBOHP = arg[2];
   saveToFile(message, gymProfiles);
 }
@@ -134,8 +134,8 @@ module.exports = {
   pull,
   legs,
   "setibbpress" : setiBBPress,
-  "setfbbpress" : setiBBPress,
-  "setaltdbohp" : setaltDBOHP,
+  "setfbbpress" : setfBBPress,
+  "setdbohp" : setDBOHP,
   "setpulldown" : setpullDown,
   "setlunges" : setlunges,
   "setdeadlift" : setdeadlift,

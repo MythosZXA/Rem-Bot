@@ -48,8 +48,8 @@ function gym(message) {
               Pull
               Legs
               setIBBPress [#]
-              setIBBPress [#]
-              setAltDBOHP [#]
+              setFBBPress [#]
+              setDBOHP [#]
               setPullDown [#]
               setLunges [#]
               setDeadlift [#]
