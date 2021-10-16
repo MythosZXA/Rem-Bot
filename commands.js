@@ -51,6 +51,7 @@ function gym(message) {
               setFBBPress [#]
               setDBOHP [#]
               setPullDown [#]
+              setBentRow [#]
               setLunges [#]
               setDeadlift [#]
               setCloseGrip [#]

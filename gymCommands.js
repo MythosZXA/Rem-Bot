@@ -51,6 +51,11 @@ function setpullDown(message, gymMap, arg) {
   saveToFile(message, gymMap);
 }
 
+function setbentRow(message, gymMap, arg) {
+  gymMap.get(message.author.id).bentRow = arg[2];
+  saveToFile(message, gymMap);
+}
+
 function setlunges(message, gymMap, arg) {
   gymMap.get(message.author.id).lunges = arg[2];
   saveToFile(message, gymMap);
@@ -137,6 +142,7 @@ module.exports = {
   "setfbbpress" : setfBBPress,
   "setdbohp" : setDBOHP,
   "setpulldown" : setpullDown,
+  "setbentrow" : setbentRow,
   "setlunges" : setlunges,
   "setdeadlift" : setdeadlift,
   "setclosegrip" : setcloseGrip,
