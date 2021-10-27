@@ -14,7 +14,9 @@ const gymClass = require('./Class/gymClass.js');
 // aws
 const uuid = require('uuid');
 const AWS = require("aws-sdk");
-AWS.config.loadFromPath('./JSON/config.json');
+if (process.env.NODE_ENV == 'production') {
+  AWS.config.loadFromPath('./JSON/config.json');
+}
 
 
 // global variables
