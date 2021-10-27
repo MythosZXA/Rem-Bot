@@ -3,7 +3,6 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const fs = require('fs');
 // files
-const private = require('./private.json');
 const commands = require('./commands.js');
 const genshinCommands = require('./genshinCommands.js');
 const gymCommands = require('./gymCommands.js');
