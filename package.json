@@ -13,7 +13,6 @@
     "aws-sdk": "^2.998.0",
     "discord.js": "^12.5.3",
     "dotenv": "^10.0.0",
-    "node.js": "^0.0.1-security",
-    "uuid": "^3.3.2"
+    "node.js": "^0.0.1-security"
   }
 }

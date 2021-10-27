@@ -11,9 +11,7 @@ const rpgCommands = require('./rpgCommands.js');
 const userClass = require('./Class/userClass.js');
 const gymClass = require('./Class/gymClass.js');
 // aws
-const uuid = require('uuid');
 const AWS = require("aws-sdk");
-
 // global variables
 const rem = new Discord.Client();
 const prefix = 'Rem';
