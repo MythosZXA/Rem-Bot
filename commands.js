@@ -1,10 +1,5 @@
-const { MessageEmbed, MessageAttachment, BitField } = require('discord.js');
+const { MessageEmbed, MessageAttachment } = require('discord.js');
 const fs = require('fs');
-const AWS = require('aws-sdk');
-if (process.env.NODE_ENV == 'production') {
-  //AWS.config.loadFromPath('./JSON/config.json');
-}
-const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 function clear(message, rpgProfiles, arg) {
   if(message.author.id != 246034440340373504) {
@@ -142,7 +137,7 @@ function save(message, rpgProfiles) {
   });
 }
 
-function setBirthday(message, rpgProfiles, arg, userMap) {
+function setBirthday(message, rpgProfiles, arg, userMap, s3) {
   // validate input
   if (!arg[2].includes('/')) {
     message.channel.send('Invalid format. Please try again');

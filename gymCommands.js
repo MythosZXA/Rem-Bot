@@ -1,9 +1,5 @@
 const fs = require('fs');
 const AWS = require("aws-sdk");
-if (process.env.NODE_ENV == 'production') {
-  //AWS.config.loadFromPath('./JSON/config.json');
-}
-const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 function push(message, gymMap) {
   message.channel.send(
@@ -33,72 +29,72 @@ function legs(message, gymMap) {
     Leg Press: ${gymMap.get(message.author.id).legPress}`);
 }
 
-function setiBBPress(message, gymMap, arg) {
+function setiBBPress(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).iBBPress = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setfBBPress(message, gymMap, arg) {
+function setfBBPress(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).fBBPress = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setDBOHP(message, gymMap, arg) {
+function setDBOHP(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).altDBOHP = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setpullDown(message, gymMap, arg) {
+function setpullDown(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).pullDown = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setbentRow(message, gymMap, arg) {
+function setbentRow(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).bentRow = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setlunges(message, gymMap, arg) {
+function setlunges(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).lunges = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setdeadlift(message, gymMap, arg) {
+function setdeadlift(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).deadlift = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setcloseGrip(message, gymMap, arg) {
+function setcloseGrip(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).closeGrip = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setstandingBBOHP(message, gymMap, arg) {
+function setstandingBBOHP(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).standingBBOHP = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setmachineRow(message, gymMap, arg) {
+function setmachineRow(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).machineRow = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setcableRow(message, gymMap, arg) {
+function setcableRow(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).cableRow = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setsquat(message, gymMap, arg) {
+function setsquat(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).squat = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function setlegPress(message, gymMap, arg) {
+function setlegPress(message, gymMap, arg, s3) {
   gymMap.get(message.author.id).legPress = arg[2];
-  saveToFile(message, gymMap);
+  saveToFile(message, gymMap, s3);
 }
 
-function saveToFile(message, gymMap) {
+function saveToFile(message, gymMap, s3) {
   let gymProfilesTable = {
     table: []
   };

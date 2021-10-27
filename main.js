@@ -14,10 +14,6 @@ const gymClass = require('./Class/gymClass.js');
 // aws
 const uuid = require('uuid');
 const AWS = require("aws-sdk");
-if (process.env.NODE_ENV == 'production') {
-  //AWS.config.loadFromPath('./JSON/config.json');
-}
-
 
 // global variables
 const rem = new Discord.Client();
@@ -47,11 +43,6 @@ rem.on('ready', () => {
   // check for birthdays when tomorrow comes
   console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
   checkBirthdayTomorrow(userMap, getSecsToMidnight());
-
-  // prevent rem from sleeping by pinging
-  setInterval(() => {
-    console.log('Ping');
-  }, 1000 * 60 * 60);
 });
 
 function createUserMap(userMap) {
@@ -133,10 +124,9 @@ rem.on('message',(message) => {
   }
 
   let arg = message.content.toLowerCase().split(/ +/);
-  if(arg[0] != 'rem,')
-    return;
-  commands[arg[1]]?.(message, rpgProfiles, arg, userMap);
+  if(arg[0] != 'rem,') return;
+  commands[arg[1]]?.(message, rpgProfiles, arg, userMap, s3);
   genshinCommands[arg[1]]?.(message);
-  gymCommands[arg[1]]?.(message, gymMap, arg);
+  gymCommands[arg[1]]?.(message, gymMap, arg, s3);
   rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
 });
