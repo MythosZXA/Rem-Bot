@@ -1,3 +1,3 @@
-#A discord bot__
-#Development for educational purposes__
+#A discord bot\
+#Development for educational purposes\
 #Usage for personal entertainment and convenience
