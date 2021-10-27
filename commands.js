@@ -1,7 +1,9 @@
 const { MessageEmbed, MessageAttachment, BitField } = require('discord.js');
 const fs = require('fs');
 const AWS = require('aws-sdk');
-AWS.config.loadFromPath('./JSON/config.json');
+if (process.env.NODE_ENV == 'production') {
+  AWS.config.loadFromPath('./JSON/config.json');
+}
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 function clear(message, rpgProfiles, arg) {
