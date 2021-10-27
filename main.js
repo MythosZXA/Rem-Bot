@@ -24,7 +24,7 @@ let gymMap = new Map();
 let rpgProfiles = new Map();
 
 // rem main
-rem.login(private.token);
+rem.login(process.env.token);
 rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
