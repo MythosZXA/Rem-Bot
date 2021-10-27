@@ -1,7 +1,7 @@
 const fs = require('fs');
 const AWS = require("aws-sdk");
 if (process.env.NODE_ENV == 'production') {
-  AWS.config.loadFromPath('./JSON/config.json');
+  //AWS.config.loadFromPath('./JSON/config.json');
 }
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
