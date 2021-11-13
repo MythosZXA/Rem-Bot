@@ -3,9 +3,9 @@ require('dotenv').config();
 const { Client, Intents } = require('discord.js');
 const fs = require('fs');
 // files
-const commands = require('./commands.js');
-const genshinCommands = require('./genshinCommands.js');
-const gymCommands = require('./gymCommands.js');
+const commands = require('./Commands/commands.js');
+const genshinCommands = require('./Commands/genshinCommands.js');
+const gymCommands = require('./Commands/gymCommands.js');
 const profile = require('./profile.js');
 const rpgCommands = require('./rpgCommands.js');
 const userClass = require('./Class/userClass.js');
@@ -41,6 +41,28 @@ rem.on('ready', () => {
   // check for birthdays when tomorrow comes
   console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
   checkBirthdayTomorrow(userMap, getSecsToMidnight());
+});
+
+rem.on('message',(message) => {
+  console.log(message.author.username + ': ' + message.content);
+  if(message.author.bot)
+    return;
+
+  if(message.content.toLowerCase().includes('thanks rem')) {
+    message.channel.send('You\'re welcome!');
+    return;
+  }
+  if(message.content.includes('😦')) {
+    message.channel.send('😦');
+    return;
+  }
+
+  let arg = message.content.toLowerCase().split(/ +/);
+  if(arg[0] != 'rem,') return;
+  commands[arg[1]]?.(message, rpgProfiles, arg, userMap, s3);
+  genshinCommands[arg[1]]?.(message);
+  gymCommands[arg[1]]?.(message, gymMap, arg, s3);
+  rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
 });
 
 function createUserMap(userMap) {
@@ -106,25 +128,3 @@ function checkBirthdayTomorrow(userProfiles, secsToMidnight) {
     checkBirthdayTomorrow(userProfiles, getSecsToMidnight());
   }, (1000 * secsToMidnight) + (1000 * 5));
 }
-
-rem.on('message',(message) => {
-  console.log(message.author.username + ': ' + message.content);
-  if(message.author.bot)
-    return;
-
-  if(message.content.toLowerCase().includes('thanks rem')) {
-    message.channel.send('You\'re welcome!');
-    return;
-  }
-  if(message.content.includes('😦')) {
-    message.channel.send('😦');
-    return;
-  }
-
-  let arg = message.content.toLowerCase().split(/ +/);
-  if(arg[0] != 'rem,') return;
-  commands[arg[1]]?.(message, rpgProfiles, arg, userMap, s3);
-  genshinCommands[arg[1]]?.(message);
-  gymCommands[arg[1]]?.(message, gymMap, arg, s3);
-  rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
-});
