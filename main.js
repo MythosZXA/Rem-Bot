@@ -1,6 +1,6 @@
 require('dotenv').config();
 // modules
-const Discord = require('discord.js');
+const { Client, Intents } = require('discord.js');
 const fs = require('fs');
 // files
 const commands = require('./commands.js');
@@ -13,7 +13,7 @@ const gymClass = require('./Class/gymClass.js');
 // aws
 const AWS = require("aws-sdk");
 // global variables
-const rem = new Discord.Client();
+const rem = new Client({ intents: [Intents.FLAGS.GUILDS] });
 const prefix = 'Rem';
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 let userMap = new Map();
@@ -22,6 +22,7 @@ let rpgProfiles = new Map();
 
 // rem main
 rem.login(process.env.token);
+
 rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
