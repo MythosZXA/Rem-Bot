@@ -1,6 +1,9 @@
 {
-  "name": "Rem-Bot-JS",
+  "name": "Rem-Bot",
   "version": "1.0.0",
+  "engines": {
+    "node": "16.x"
+  },
   "description": "",
   "main": "main.js",
   "scripts": {
