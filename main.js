@@ -1,24 +1,36 @@
-require('dotenv').config();
-// modules
+require('dotenv').config(); // environment variables
+// discord
 const { Client, Intents } = require('discord.js');
+const rem = new Client({ intents: [Intents.FLAGS.GUILDS] });
+// aws
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
 const fs = require('fs');
 // files
-const commands = require('./Commands/commands.js');
-const genshinCommands = require('./Commands/genshinCommands.js');
-const gymCommands = require('./Commands/gymCommands.js');
+const commands = require('./commands.js');
+const genshinCommands = require('./genshinCommands.js');
+const gymCommands = require('./gymCommands.js');
 const profile = require('./profile.js');
 const rpgCommands = require('./rpgCommands.js');
 const userClass = require('./Class/userClass.js');
 const gymClass = require('./Class/gymClass.js');
-// aws
-const AWS = require("aws-sdk");
+
+
 // global variables
-const rem = new Client({ intents: [Intents.FLAGS.GUILDS] });
 const prefix = 'Rem';
-const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 let userMap = new Map();
 let gymMap = new Map();
 let rpgProfiles = new Map();
+
+// set commands
+const { default: Collection } = require('@discordjs/collection');
+rem.commands = new Collection();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+for (const file of commandFiles) {
+  const command = require(`./commands/${file}`);
+  rem.commands.set(command.data.name, command);
+}
 
 // rem main
 rem.login(process.env.token);
@@ -63,6 +75,23 @@ rem.on('message',(message) => {
   genshinCommands[arg[1]]?.(message);
   gymCommands[arg[1]]?.(message, gymMap, arg, s3);
   rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
+});
+
+rem.on('interactionCreate', async interaction => {
+  if (!interaction.isCommand()) return;
+
+  const command = rem.commands.get(interaction.commandName);
+  if (!command) return;
+
+  try {
+    await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		await interaction.reply({ 
+      content: 'There was an error while executing this command!',
+      ephemeral: true 
+    });
+  }
 });
 
 function createUserMap(userMap) {
