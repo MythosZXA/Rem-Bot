@@ -14,12 +14,10 @@ module.exports = {
 					.addOptions([
 						{
 							label: '5 mins',
-							description: 'Set timer for 5 mins',
 							value: 'first_option',
 						},
 						{
 							label: '10 mins',
-							description: 'Set timer for 10 mins',
 							value: 'second_option',
 						},
 					]),
@@ -27,7 +25,8 @@ module.exports = {
 
 		await interaction.reply({ 
             content: 'How long should I set the timer for?',
-            components: [row]
+            components: [row],
+            ephemeral: true
         });
 	},
 };
