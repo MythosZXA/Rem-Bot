@@ -1,4 +1,5 @@
-require('dotenv').config(); // environment variables
+// environment variables
+require('dotenv').config();
 // discord
 const { Client, Intents } = require('discord.js');
 const rem = new Client({ intents: [Intents.FLAGS.GUILDS] });

@@ -1,38 +1,38 @@
 {
 	"table": [
 		{
-      "userID" : "246034440340373504",
+      		"userID" : "246034440340373504",
 			"name": "Toan",
 			"iBBPress": "15",
-			"fBBPress": "0",
+			"fBBPress": "35",
 			"dbOHP": "20",
 			"pullDown": "0",
-      		"bentRow": "0",
+      		"bentRow": "15",
 			"lunges": "0",
 			"deadlift": "0",
 			"closeGrip": "20",
 			"standingBBOHP": "0",
-			"machineRow": "0",
+			"machineRow": "92",
 			"cableRow": "0",
-			"squat": "0",
-			"legPress": "0"
+			"squat": "75",
+			"legPress": "170"
 		},
 		{
       		"userID" : "176147405417218048",
 			"name": "Minh",
 			"iBBPress": "47.5",
-			"fBBPress": "0",
+			"fBBPress": "60",
 			"dbOHP": "40",
 			"pullDown": "0",
-      		"bentRow": "0",
-			"lunges": "0",
+      		"bentRow": "45",
+			"lunges": "20",
 			"deadlift": "0",
 			"closeGrip": "45",
-			"standingBBOHP": "0",
-			"machineRow": "0",
+			"standingBBOHP": "22.5",
+			"machineRow": "80",
 			"cableRow": "0",
-			"squat": "0",
-			"legPress": "0"
+			"squat": "60",
+			"legPress": "170"
 		},
 		{
       		"userID" : "293219833288589312",
