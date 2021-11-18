@@ -10,18 +10,28 @@ module.exports = {
     const row = new MessageActionRow()
       .addComponents(
         new MessageSelectMenu()
-          .setCustomId('select')
+          .setCustomId('selectTimer')
           .setPlaceholder('Nothing selected')
           .addOptions([
             {
               label: '5 mins',
-              description: 'Set timer for 5 minutes',
               value: '5',
             },
             {
               label: '10 mins',
-              description: 'Set timer for 10 minutes',
               value: '10',
+            },
+            {
+              label: '15 mins',
+              value: '15',
+            },
+            {
+              label: '30 mins',
+              value: '30',
+            },
+            {
+              label: '1 hour',
+              value: '60',
             },
           ]),
       );
