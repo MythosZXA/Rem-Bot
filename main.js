@@ -1,4 +1,5 @@
-require('dotenv').config(); // environment variables
+// environment variables
+require('dotenv').config();
 // discord
 const { Client, Intents } = require('discord.js');
 const rem = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -78,19 +79,28 @@ rem.on('message',(message) => {
 });
 
 rem.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
+  // slash commands
+  if (interaction.isApplicationCommand()) {
+    const command = rem.commands.get(interaction.commandName);
+    if (!command) return; // if there isn't a file with the command name
 
-  const command = rem.commands.get(interaction.commandName);
-  if (!command) return;
-
-  try {
-    await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		await interaction.reply({ 
-      content: 'There was an error while executing this command!',
-      ephemeral: true 
-    });
+    // execute command, catch error if unsuccessful
+    try {
+      await command.execute(interaction);
+    } catch (error) {
+      console.error(error);
+      await interaction.reply({ 
+        content: 'There was an error while executing this command!',
+        ephemeral: true 
+      });
+    }
+  } else if (interaction.isSelectMenu()) {
+    if (interaction.customId == 'selectTimer') {
+      const duration = interaction.values[0];
+      setTimeout(() => {
+        interaction.channel.send(`${interaction.user} Time's up!`);
+      }, 1000 * 60 * duration); 
+    }
   }
 });
 

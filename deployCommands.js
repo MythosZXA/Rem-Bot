@@ -1,4 +1,5 @@
-require('dotenv').config(); // environment variables
+// environment variables
+require('dotenv').config();
 const fs = require('fs');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
