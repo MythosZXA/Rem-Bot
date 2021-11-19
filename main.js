@@ -79,8 +79,7 @@ rem.on('message',(message) => {
 });
 
 rem.on('interactionCreate', async interaction => {
-  // slash commands
-  if (interaction.isApplicationCommand()) {
+  if (interaction.isApplicationCommand()) {       // slash commands
     const command = rem.commands.get(interaction.commandName);
     if (!command) return; // if there isn't a file with the command name
 
@@ -94,12 +93,18 @@ rem.on('interactionCreate', async interaction => {
         ephemeral: true 
       });
     }
-  } else if (interaction.isSelectMenu()) {
-    if (interaction.customId == 'selectTimer') {
+  } else if (interaction.isSelectMenu()) {        // menu selection
+    if (interaction.customId == 'selectTimer') {  // timer
+      // get duration and set timer
       const duration = interaction.values[0];
       setTimeout(() => {
         interaction.channel.send(`${interaction.user} Time's up!`);
       }, 1000 * 60 * duration); 
+      // remove initial menu
+      interaction.update({
+        content: 'An option was selected',
+        components: []
+      }).catch(console.error);
     }
   }
 });
