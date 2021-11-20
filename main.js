@@ -6,20 +6,8 @@ const rem = new Client({ intents: [Intents.FLAGS.GUILDS] });
 // aws
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
-
-const fs = require('fs');
-// files
-const commands = require('./commands.js');
-const gymCommands = require('./gymCommands.js');
-const userClass = require('./Class/userClass.js');
-const gymClass = require('./Class/gymClass.js');
-
-// global variables
-const prefix = 'Rem';
-let userMap = new Map();
-let gymMap = new Map();
-
 // set commands
+const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
 rem.commands = new Collection();
 const commandFiles = fs.readdirSync('./SlashCommands').filter(file => file.endsWith('.js'));
@@ -27,23 +15,32 @@ for (const file of commandFiles) {
   const command = require(`./SlashCommands/${file}`);
   rem.commands.set(command.data.name, command);
 }
+// files
+const commands = require('./prefixCommands.js');
+const gymCommands = require('./gymCommands.js');
+// global variables
+const prefix = 'Rem';
+let userMap = new Map();
+let gymMap = new Map();
 
-// rem main
+
+// start up
 rem.login(process.env.token);
-
 rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
 
-  // update maps with files
-  createUserMap(userMap);
-  createGymMap(gymMap);
+  // update maps with aws files
+  const mapFunctions = require('./Functions/mapFunctions');
+  mapFunctions.createUserMap(s3, userMap);
+  mapFunctions.createGymMap(s3, gymMap);
 
   // check for birthdays when tomorrow comes
-  console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
-  checkBirthdayTomorrow(userMap, getSecsToMidnight());
+  const birthdayFunctions = require('./Functions/birthdayFunctions.js');
+  console.log(`Hours until midnight: ${birthdayFunctions.getSecsToMidnight() / 60 / 60}`);
+  birthdayFunctions.checkBirthdayTomorrow(rem, userMap, birthdayFunctions.getSecsToMidnight());
 });
-
+// prefix commands
 rem.on('message',(message) => {
   console.log(message.author.username + ': ' + message.content);
   if(message.author.bot)
@@ -63,7 +60,7 @@ rem.on('message',(message) => {
   commands[arg[1]]?.(message, arg, userMap, s3);
   gymCommands[arg[1]]?.(message, gymMap, arg, s3);
 });
-
+// slash commands
 rem.on('interactionCreate', async interaction => {
   if (interaction.isApplicationCommand()) {       // slash commands
     const command = rem.commands.get(interaction.commandName);
@@ -86,67 +83,3 @@ rem.on('interactionCreate', async interaction => {
     }
   }
 });
-
-function createUserMap(userMap) {
-  let params = {Bucket: 'rembot', Key: 'userProfiles.json'};
-  s3.getObject(params, function(error, data) {
-    if (error) 
-      console.log(error, error.stack);
-    else {
-      let userProfilesTable = JSON.parse(new Buffer.from(data.Body).toString("utf8"));
-      userProfilesTable.table.forEach(userString => userMap.set(userString.userID, new userClass(userString)));
-      console.log('User profiles updated');
-    }
-  });
-}
-
-function createGymMap(gymMap) {
-  let params = {Bucket: 'rembot', Key: 'gymProfiles.json'};
-  s3.getObject(params, function(error, data) {
-    if (error) 
-      console.log(error, error.stack); // an error occurred
-    else {
-      let gymProfilesTable = JSON.parse(new Buffer.from(data.Body).toString("utf8"));
-      gymProfilesTable.table.forEach(gymString => gymMap.set(gymString.userID, new gymClass(gymString)));
-      console.log('Gym profiles updated');
-    }
-  });
-}
-
-function getSecsToMidnight() {
-  let nowString = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
-  let nowTime = new Date(nowString);
-  let midnight = new Date(nowTime).setHours(24, 0, 0, 0);
-  return (midnight - nowTime) / 1000;
-}
-
-function checkBirthdayTomorrow(userProfiles, secsToMidnight) {
-  setTimeout(() => {
-    userProfiles.forEach(async (user) => {
-      if (user.birthday != "") { // enter if user has set their birthday
-        // get user birth month and date
-        let birthdayFormat = user.birthday.split('/');
-        let month = parseInt(birthdayFormat[0]);
-        let day = parseInt(birthdayFormat[1]);
-        // get today's month and date
-        now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
-        let currentMonth = new Date(now).getMonth() + 1;
-        let currentDate = new Date(now).getDate();
-        // if it's user's birthday then send happy birthday
-        if (month == currentMonth && day == currentDate) {
-          let bdMember = await rem.guilds.cache.get('773660297696772096')
-                                  .members.fetch(user.userID);
-          rem.guilds.cache.get('773660297696772096')
-            .channels.cache.get('773660297696772100')
-            .send({files: [{attachment: './Pictures/Birthday Rem.jpg', name: 'Birthday Rem.jpg'}]});
-          rem.guilds.cache.get('773660297696772096')
-            .channels.cache.get('773660297696772100')
-            .send(`Happy Birthday ${bdMember}!`);
-        }
-      }
-    })
-    // check again tomorrow
-    console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
-    checkBirthdayTomorrow(userProfiles, getSecsToMidnight());
-  }, (1000 * secsToMidnight) + (1000 * 5));
-}
