@@ -40,18 +40,19 @@ function gym(message) {
 }
 
 function help(message) {
-  const info = new MessageEmbed()
+  const helpEmbed = new MessageEmbed()
     .setColor(0x19EFF5)
-    .attachFiles(new MessageAttachment('./Pictures/Rem.jpg', 'Rem.jpg'))
     .setThumbnail('attachment://Rem.jpg')
     .setDescription('To call for me, start a command off with \'Rem, \'')
     .addField('Normal Commands',
               `Remind [me/person] [message] in [hh:mm:ss]
               Gym
-              setBirthday [mm/dd/yyyy]`)
-    .addField('Genshin Commands',
-              `Daily`);
-  message.channel.send(info);
+              setBirthday [mm/dd/yyyy]`);
+  const picture = new MessageAttachment('./Pictures/Rem.jpg');
+  message.channel.send({
+    embeds: [helpEmbed],
+    files: [picture]
+  });
 }
 
 async function remind(message, arg) {

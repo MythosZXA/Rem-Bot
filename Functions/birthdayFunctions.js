@@ -36,4 +36,4 @@ module.exports = {
       checkBirthdayTomorrow(userProfiles, getSecsToMidnight());
     }, (1000 * secsToMidnight) + (1000 * 5));
   }
-}
+};

@@ -2,7 +2,7 @@
 require('dotenv').config();
 // discord
 const { Client, Intents } = require('discord.js');
-const rem = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const rem = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 // aws
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
@@ -41,22 +41,21 @@ rem.on('ready', () => {
   birthdayFunctions.checkBirthdayTomorrow(rem, userMap, birthdayFunctions.getSecsToMidnight());
 });
 // prefix commands
-rem.on('messageCreate',(message) => {
+rem.on('messageCreate', message => {
   console.log(message.author.username + ': ' + message.content);
-  if(message.author.bot)
-    return;
+  if (message.author.bot) return;
 
-  if(message.content.toLowerCase().includes('thanks rem')) {
+  if (message.content.toLowerCase().includes('thanks rem')) {
     message.channel.send('You\'re welcome!');
     return;
   }
-  if(message.content.includes('🙁' || '☹️' || '😦' || '😧')) {
-    message.react('☹️');
+  if (message.content.includes('🙁')) {
+    message.react('🙁');
     return;
   }
 
   let arg = message.content.toLowerCase().split(/ +/);
-  if(arg[0] != 'rem,') return;
+  if (arg[0] != 'rem,') return;
   commands[arg[1]]?.(message, arg, userMap, s3);
   gymCommands[arg[1]]?.(message, gymMap, arg, s3);
 });
