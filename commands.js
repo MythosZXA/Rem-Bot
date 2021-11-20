@@ -14,27 +14,6 @@ function clear(message, rpgProfiles, arg) {
     });
 }
 
-function help(message) {
-  const info = new MessageEmbed()
-    .setColor(0x19EFF5)
-    .attachFiles(new MessageAttachment('./Pictures/Rem.jpg', 'Rem.jpg'))
-    .setThumbnail('attachment://Rem.jpg')
-    .setDescription('To call for me, start a command off with \'Rem, \'')
-    .addField('Normal Commands',
-              `Remind [me/person] [message] in [hh:mm:ss]
-              Gym
-              setBirthday [mm/dd/yyyy]`)
-    .addField('Genshin Commands',
-              `Daily`)
-    .addField('RPG Commands',
-              `Hero
-              setName
-              setColor
-              setImage
-              Adventure`);
-  message.channel.send(info);
-}
-
 function gym(message) {
   const info = new MessageEmbed()
     .setColor(0x19EFF5)
@@ -57,6 +36,21 @@ function gym(message) {
               setCableRow [#]
               setSquat [#]
               setLegPress [#]`);
+  message.channel.send(info);
+}
+
+function help(message) {
+  const info = new MessageEmbed()
+    .setColor(0x19EFF5)
+    .attachFiles(new MessageAttachment('./Pictures/Rem.jpg', 'Rem.jpg'))
+    .setThumbnail('attachment://Rem.jpg')
+    .setDescription('To call for me, start a command off with \'Rem, \'')
+    .addField('Normal Commands',
+              `Remind [me/person] [message] in [hh:mm:ss]
+              Gym
+              setBirthday [mm/dd/yyyy]`)
+    .addField('Genshin Commands',
+              `Daily`);
   message.channel.send(info);
 }
 
@@ -107,34 +101,6 @@ async function remind(message, rpgProfiles, arg) {
     }, countdown);
     message.channel.send('Okay!');
   }
-}
-
-function save(message, rpgProfiles) {
-  if(message.author.id != 246034440340373504) {
-    message.channel.send('Lack of authority');
-    return;
-  }
-
-  let rpgProfilesTable = {
-    table: []
-  };
-  const iterator = rpgProfiles.values();
-  const iteratorFlag = rpgProfiles.values();
-  do {
-    let next = iterator.next().value;
-    if(next !== undefined) {
-      rpgProfilesTable.table.push(next);
-    }
-  } while (!iteratorFlag.next().done);
-
-  fs.writeFile('./JSON/rpgProfiles.json', JSON.stringify(rpgProfilesTable, null, '\t'), error => {
-    if (error) {
-        console.log('Error writing file', error);
-    } else {
-        console.log('Successfully wrote file');
-        message.channel.send('Saved!');
-    }
-  });
 }
 
 function setBirthday(message, rpgProfiles, arg, userMap, s3) {
@@ -257,7 +223,6 @@ module.exports = {
   help,
   gym,
   remind,
-  save,
   'setbirthday' : setBirthday,
   test
 };

@@ -12,24 +12,20 @@ const fs = require('fs');
 const commands = require('./commands.js');
 const genshinCommands = require('./genshinCommands.js');
 const gymCommands = require('./gymCommands.js');
-const profile = require('./profile.js');
-const rpgCommands = require('./rpgCommands.js');
 const userClass = require('./Class/userClass.js');
 const gymClass = require('./Class/gymClass.js');
-
 
 // global variables
 const prefix = 'Rem';
 let userMap = new Map();
 let gymMap = new Map();
-let rpgProfiles = new Map();
 
 // set commands
 const { default: Collection } = require('@discordjs/collection');
 rem.commands = new Collection();
-const commandFiles = fs.readdirSync('./Commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./SlashCommands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
-  const command = require(`./Commands/${file}`);
+  const command = require(`./SlashCommands/${file}`);
   rem.commands.set(command.data.name, command);
 }
 
@@ -43,13 +39,6 @@ rem.on('ready', () => {
   // update maps with files
   createUserMap(userMap);
   createGymMap(gymMap);
-  // update rpg profiles
-  // fs.readFile('./JSON/rpgProfiles.json', (error, data) => {
-  //   if (error) throw error;
-  //   let rpgProfilesTable = JSON.parse(data);
-  //   rpgProfilesTable.table.forEach(hero => rpgProfiles.set(hero.userID, new profile(hero)));
-  // });
-  // console.log('RPG profiles updated');
 
   // check for birthdays when tomorrow comes
   console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
@@ -72,10 +61,9 @@ rem.on('message',(message) => {
 
   let arg = message.content.toLowerCase().split(/ +/);
   if(arg[0] != 'rem,') return;
-  commands[arg[1]]?.(message, rpgProfiles, arg, userMap, s3);
+  commands[arg[1]]?.(message, arg, userMap, s3);
   genshinCommands[arg[1]]?.(message);
   gymCommands[arg[1]]?.(message, gymMap, arg, s3);
-  rpgCommands[arg[1]]?.(message, rpgProfiles, arg);
 });
 
 rem.on('interactionCreate', async interaction => {
@@ -93,9 +81,9 @@ rem.on('interactionCreate', async interaction => {
         ephemeral: true 
       });
     }
-  } else if (interaction.isSelectMenu()) {        // interaction is a select menu
+  } else if (interaction.isSelectMenu()) {        // select menu interaction
     if (interaction.customId == 'selectTimer') {  // timer select menu
-      const timer = require('./Commands/timer');
+      const timer = require('./SlashCommands/timer');
       await timer.setTimer(interaction);
     }
   }
