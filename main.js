@@ -41,7 +41,7 @@ rem.on('ready', () => {
   birthdayFunctions.checkBirthdayTomorrow(rem, userMap, birthdayFunctions.getSecsToMidnight());
 });
 // prefix commands
-rem.on('message',(message) => {
+rem.on('messageCreate',(message) => {
   console.log(message.author.username + ': ' + message.content);
   if(message.author.bot)
     return;
