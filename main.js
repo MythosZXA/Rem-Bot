@@ -10,7 +10,6 @@ const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 const fs = require('fs');
 // files
 const commands = require('./commands.js');
-const genshinCommands = require('./genshinCommands.js');
 const gymCommands = require('./gymCommands.js');
 const userClass = require('./Class/userClass.js');
 const gymClass = require('./Class/gymClass.js');
@@ -54,15 +53,14 @@ rem.on('message',(message) => {
     message.channel.send('You\'re welcome!');
     return;
   }
-  if(message.content.includes('😦')) {
-    message.channel.send('😦');
+  if(message.content.includes('🙁' || '☹️' || '😦' || '😧')) {
+    message.react('☹️');
     return;
   }
 
   let arg = message.content.toLowerCase().split(/ +/);
   if(arg[0] != 'rem,') return;
   commands[arg[1]]?.(message, arg, userMap, s3);
-  genshinCommands[arg[1]]?.(message);
   gymCommands[arg[1]]?.(message, gymMap, arg, s3);
 });
 

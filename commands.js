@@ -1,7 +1,7 @@
 const { MessageEmbed, MessageAttachment } = require('discord.js');
 const fs = require('fs');
 
-function clear(message, rpgProfiles, arg) {
+function clear(message, arg) {
   if(message.author.id != 246034440340373504) {
     message.channel.send('Lack of authority');
     return;
@@ -54,7 +54,7 @@ function help(message) {
   message.channel.send(info);
 }
 
-async function remind(message, rpgProfiles, arg) {
+async function remind(message, arg) {
   // validate format
   if(arg[3] == null || !arg[arg.length - 2].toLowerCase().includes('in')) {
     message.channel.send('Invalid format. Please try again');
@@ -103,7 +103,7 @@ async function remind(message, rpgProfiles, arg) {
   }
 }
 
-function setBirthday(message, rpgProfiles, arg, userMap, s3) {
+function setBirthday(message, arg, userMap, s3) {
   // validate input
   if (!arg[2].includes('/')) {
     message.channel.send('Invalid format. Please try again');
@@ -214,7 +214,7 @@ function setBirthday(message, rpgProfiles, arg, userMap, s3) {
   });
 }
 
-function test(message, rpgProfiles, arg, userMap) {
+function test(message, arg, userMap) {
   
 }
 
