@@ -20,6 +20,7 @@ const commands = require('./prefixCommands.js');
 const gymCommands = require('./gymCommands.js');
 // global variables
 const prefix = 'Rem';
+const logChannel = rem.channels.cache.get('911494733828857866');
 let userMap = new Map();
 let gymMap = new Map();
 
@@ -62,6 +63,7 @@ rem.on('messageCreate', message => {
 // slash commands
 rem.on('interactionCreate', async interaction => {
   if (interaction.isApplicationCommand()) {       // slash commands
+    logChannel.send(`${interaction.user.tag} used command: ${interaction.commandName}`);
     const command = rem.commands.get(interaction.commandName);
     if (!command) return;                         // if there isn't a file with the command name
 
@@ -77,6 +79,8 @@ rem.on('interactionCreate', async interaction => {
     }
   } else if (interaction.isSelectMenu()) {        // select menu interaction
     if (interaction.customId == 'selectTimer') {  // timer select menu
+      logChannel.send(`${interaction.user.tag} selected: ${interaction.values[0]}`)
+      
       const timer = require('./SlashCommands/timer');
       await timer.setTimer(interaction);
     }
