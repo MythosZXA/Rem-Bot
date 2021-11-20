@@ -41,6 +41,19 @@ module.exports = {
       components: [row],
       ephemeral: true
     });
+
+    await setTimeout(() => {
+      interaction.fetchReply()
+        .then(reply => {
+          if (reply.components != undefined) {
+            interaction.editReply({
+              content: 'Request timed out',
+              components: []
+            })
+          }
+        })
+        .catch(console.error);
+    }, 1000 * 10);
 	},
 
   async setTimer(interaction) {
