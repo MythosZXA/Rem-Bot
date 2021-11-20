@@ -14,10 +14,6 @@ module.exports = {
           .setPlaceholder('Nothing selected')
           .addOptions([
             {
-              label: '1 min',
-              value: '1',
-            },
-            {
               label: '5 mins',
               value: '5',
             },
@@ -44,7 +40,7 @@ module.exports = {
       content: 'How long should I set the timer for?',
       components: [row],
       ephemeral: true
-    })
+    });
 	},
 
   async setTimer(interaction) {
