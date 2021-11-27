@@ -15,9 +15,6 @@ for (const file of commandFiles) {
   const command = require(`./SlashCommands/${file}`);
   rem.commands.set(command.data.name, command);
 }
-// files
-const commands = require('./prefixCommands.js');
-const gymCommands = require('./gymCommands.js');
 // global variables
 const prefix = 'Rem';
 let userMap = new Map();
@@ -40,6 +37,7 @@ rem.on('ready', () => {
   console.log(`Hours until midnight: ${birthdayFunctions.getSecsToMidnight() / 60 / 60}`);
   birthdayFunctions.checkBirthdayTomorrow(rem, userMap, birthdayFunctions.getSecsToMidnight());
 });
+
 // prefix commands
 rem.on('messageCreate', message => {
   console.log(message.author.username + ': ' + message.content);
@@ -56,9 +54,12 @@ rem.on('messageCreate', message => {
 
   let arg = message.content.toLowerCase().split(/ +/);
   if (arg[0] != 'rem,') return;
+  const commands = require('./prefixCommands.js');
+  const gymCommands = require('./gymCommands.js');
   commands[arg[1]]?.(message, arg, userMap, s3);
   gymCommands[arg[1]]?.(message, gymMap, arg, s3);
 });
+
 // slash commands
 rem.on('interactionCreate', async interaction => {
   if (interaction.isApplicationCommand()) {       // slash commands
