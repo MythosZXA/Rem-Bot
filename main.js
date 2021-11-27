@@ -6,6 +6,8 @@ const rem = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MES
 // aws
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
+// sequelize
+
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');

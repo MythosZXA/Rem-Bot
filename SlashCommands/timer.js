@@ -40,13 +40,13 @@ async function execute(interaction) {
   await setTimeout(() => {
     interaction.fetchReply()
       .then(reply => {
-        if (reply.components != undefined) {
+        if (reply.components.length != 0) {
           interaction.editReply({
             content: 'Request timed out',
             components: []
           })
-        }
-      })
+        } // if
+      }) // then
       .catch(console.error);
   }, 1000 * 10);
 }
@@ -65,8 +65,7 @@ async function setTimer(interaction) {
           ephemeral: true
         });
       }, 1000 * 60 * duration);
-      
-    })
+    }) // then
     .catch(console.error);
 }
 
