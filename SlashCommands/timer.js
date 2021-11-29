@@ -60,7 +60,7 @@ async function setTimer(interaction) {
   }).catch(console.error);
 
   setTimeout(() => {
-    await interaction.followUp({
+    interaction.followUp({
       content: `${interaction.user} Time is up!`,
       ephemeral: true
     });
