@@ -57,14 +57,20 @@ async function setTimer(interaction) {
     content: 'I will let you know when time is up!',
     components: [],
     ephemeral: true
-  }).catch(console.error);
-
-  await setTimeout(() => {
-    interaction.followUp({
-      content: `${interaction.user} Time is up!`,
-      ephemeral: true
-    });
-  }, 1000 * 60 * duration);
+  })
+    .then(() => {
+      // save message & user since interaction token expires
+      const message = interaction.message;
+      const user = interaction.user;
+      // reply to message after duration expires
+      setTimeout(() => {
+        message.reply({
+          content: `${user} Time is up!`,
+          ephemeral: true
+        })
+      }, 1000 * 60 * duration);
+    }) // then
+    .catch(console.error);
 }
 
 module.exports = {
