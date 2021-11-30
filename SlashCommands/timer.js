@@ -53,23 +53,23 @@ async function execute(interaction) {
 
 async function setTimer(interaction) {
   const duration = interaction.values[0];
+  // update message after selection
   await interaction.update({
     content: 'I will let you know when time is up!',
     components: [],
     ephemeral: true
   })
     .then(() => {
-      // save message & user since interaction token expires
-      const message = interaction.message;
+      // save channel to send message at a later time
+      const channel = interaction.channel;
       const user = interaction.user;
       // reply to message after duration expires
       setTimeout(() => {
-        message.reply({
+        channel.send({
           content: `${user} Time is up!`,
-          ephemeral: true
         })
       }, 1000 * 60 * duration);
-    }) // then
+    })
     .catch(console.error);
 }
 

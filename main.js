@@ -3,11 +3,17 @@ require('dotenv').config();
 // discord
 const { Client, Intents } = require('discord.js');
 const rem = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+// sql
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
+	host: 'localhost',
+	dialect: 'mysql',
+	logging: false,
+});
+const Users = require('./Models/userModel')(sequelize, Sequelize.DataTypes);
 // aws
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
-// sequelize
-
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
@@ -18,7 +24,6 @@ for (const file of commandFiles) {
   rem.commands.set(command.data.name, command);
 }
 // global variables
-const prefix = 'Rem';
 let userMap = new Map();
 let gymMap = new Map();
 
@@ -28,6 +33,9 @@ rem.login(process.env.token);
 rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
+
+  // sync mysql
+  Users.sync();
 
   // update maps with aws files
   const mapFunctions = require('./Functions/mapFunctions');
@@ -64,15 +72,15 @@ rem.on('messageCreate', message => {
 
 // slash commands
 rem.on('interactionCreate', async interaction => {
-  if (interaction.isApplicationCommand()) {       // slash commands
-    const logChannel = await rem.channels.fetch('911494733828857866');
-    await logChannel.send(`${interaction.user.tag} used command: ${interaction.commandName}`);
+  const logChannel = await rem.channels.fetch('911494733828857866');
+  if (interaction.isApplicationCommand()) {             // slash commands
+    await logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
     const command = rem.commands.get(interaction.commandName);
-    if (!command) return;                         // if there isn't a file with the command name
+    if (!command) return;                               // if there isn't a file with the command name
 
     // execute command, catch error if unsuccessful
     try {
-      await command.execute(interaction);
+      await command.execute(interaction, Users);
     } catch (error) {
       console.error(error);
       await interaction.reply({ 
@@ -80,13 +88,12 @@ rem.on('interactionCreate', async interaction => {
         ephemeral: true 
       });
     }
-  } else if (interaction.isSelectMenu()) {        // select menu interaction
-    if (interaction.customId == 'selectTimer') {  // timer select menu
-      const logChannel = await rem.channels.fetch('911494733828857866');
+  } else if (interaction.isSelectMenu()) {              // select menu interaction
+    if (interaction.customId == 'selectTimer') {        // timer select menu
       await logChannel.send(`${interaction.user.tag} selected: ${interaction.values[0]}`)
-      
-      const timer = require('./SlashCommands/timer');
-      await timer.setTimer(interaction);
+      const command = rem.commands.get('timer');
+
+      await command.setTimer(interaction);
     }
   }
 });
