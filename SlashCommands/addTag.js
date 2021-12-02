@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-async function execute(interaction, users) {
+async function execute(interaction, sequelize, DataTypes) {
+  const users = require('../Models/user')(sequelize, DataTypes);
   try {
     await users.create({
       userID: interaction.user.id,

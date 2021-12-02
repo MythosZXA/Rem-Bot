@@ -10,7 +10,9 @@ const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
 	dialect: 'mysql',
 	logging: false,
 });
-const users = require('./Models/user')(sequelize, Sequelize.DataTypes);
+require('./Models/user')(sequelize, Sequelize.DataTypes);
+require('./Models/currencyShop')(sequelize, Sequelize.DataTypes);
+require('./Models/userItems')(sequelize, Sequelize.DataTypes);
 // aws
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
@@ -26,7 +28,6 @@ for (const file of commandFiles) {
 // global variables
 let userMap = new Map();
 let gymMap = new Map();
-
 
 // start up
 rem.login(process.env.token);
@@ -80,7 +81,7 @@ rem.on('interactionCreate', async interaction => {
 
     // execute command, catch error if unsuccessful
     try {
-      await command.execute(interaction, users);
+      await command.execute(interaction, sequelize, Sequelize.DataTypes);
     } catch (error) {
       console.error(error);
       await interaction.reply({ 

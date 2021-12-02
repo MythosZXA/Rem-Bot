@@ -1,5 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define('currency_shop', {
+    itemID: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
 		name: {
 			type: DataTypes.STRING,
 			unique: true,
@@ -10,5 +14,6 @@ module.exports = (sequelize, DataTypes) => {
 		},
 	}, {
 		timestamps: false,
+    freezeTableName: true
 	});
 };
