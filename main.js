@@ -10,7 +10,7 @@ const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
 	dialect: 'mysql',
 	logging: false,
 });
-const Users = require('./Models/userModel')(sequelize, Sequelize.DataTypes);
+const users = require('./Models/user')(sequelize, Sequelize.DataTypes);
 // aws
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
@@ -32,10 +32,10 @@ let gymMap = new Map();
 rem.login(process.env.token);
 rem.on('ready', () => {
   console.log('Rem is online.');
-  rem.user.setActivity('for \'Rem, help\'', {type: 'WATCHING'});
+  rem.user.setActivity('for /help', {type: 'WATCHING'});
 
   // sync mysql
-  Users.sync();
+  sequelize.sync();
 
   // update maps with aws files
   const mapFunctions = require('./Functions/mapFunctions');
@@ -80,7 +80,7 @@ rem.on('interactionCreate', async interaction => {
 
     // execute command, catch error if unsuccessful
     try {
-      await command.execute(interaction, Users);
+      await command.execute(interaction, users);
     } catch (error) {
       console.error(error);
       await interaction.reply({ 

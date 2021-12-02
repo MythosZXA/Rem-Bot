@@ -39,24 +39,6 @@ function gym(message) {
   message.channel.send(info);
 }
 
-function help(message) {
-  const helpEmbed = new MessageEmbed()
-    .setColor(0x19EFF5)
-    .setThumbnail('attachment://Rem.jpg')
-    .setDescription('To call for me, start a command off with \'Rem, \'')
-    .addField('Prefix Commands',
-              `Remind [me/person] [message] in [hh:mm:ss]
-              Gym
-              setBirthday [mm/dd/yyyy]`)
-    .addField('Slash Commands',
-              `/timer`);
-  const picture = new MessageAttachment('./Pictures/Rem.jpg');
-  message.channel.send({
-    embeds: [helpEmbed],
-    files: [picture]
-  });
-}
-
 async function remind(message, arg) {
   // validate format
   if(arg[3] == null || !arg[arg.length - 2].toLowerCase().includes('in')) {
@@ -223,7 +205,6 @@ function test(message, arg, userMap) {
 
 module.exports = {
   clear,
-  help,
   gym,
   remind,
   'setbirthday' : setBirthday,
