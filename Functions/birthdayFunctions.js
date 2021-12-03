@@ -7,37 +7,49 @@ function getSecsToMidnight() {
   return (midnight - nowTime) / 1000;
 }
 
-function checkBirthdayTomorrow(rem, userProfiles, secsToMidnight) {
-  setTimeout(() => {
-    userProfiles.forEach(async (user) => {
-      if (user.birthday != "") { // if user has set their birthday
-        // get user birth month and date
-        let birthdayFormat = user.birthday.split('/');
-        let month = parseInt(birthdayFormat[0]);
-        let day = parseInt(birthdayFormat[1]);
+function checkBirthdayTomorrow(rem, sequelize, DataTypes, secsToMidnight) {
+  setTimeout(async () => {
+    const users = require('../Models/user')(sequelize, DataTypes);
+    const birthdays = await users.findAll({ attributes: ['birthday'], raw: true });
+    birthdays.forEach(async birthdayMap => {
+      const birthdayString = birthdayMap.birthday;
+      if (birthdayString == null) return;
+      // get user birth month and date
+      const birthdayFormat = birthdayString.split('-');
+      const userYear = parseInt(birthdayFormat[0]);
+      const userMonth = parseInt(birthdayFormat[1]);
+      const userDate = parseInt(birthdayFormat[2]);
 
-        // get today's month and date
-        now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
-        let currentMonth = new Date(now).getMonth() + 1;
-        let currentDate = new Date(now).getDate();
-
-        // if it's user's birthday then send happy birthday
-        if (month == currentMonth && day == currentDate) {
-          let bdMember = await rem.guilds.cache.get('773660297696772096')
-                                  .members.fetch(user.userID);
-          const picture = new MessageAttachment('./Pictures/Birthday Rem.jpg');
-          const generalChannel = await rem.channels.fetch('773660297696772100');
-          await generalChannel.send({
-            content: `Happy Birthday ${bdMember}`,
-            files: [picture]
-          });
-        } // if
-      } // if
-    });
+      // get today's month and date
+      now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
+      const currentMonth = new Date(now).getMonth() + 1;
+      const currentDate = new Date(now).getDate();
+      
+      // if it's user's birthday then send happy birthday
+      if (userMonth == currentMonth && userDate == currentDate) {
+        const userIDMap = await users.findAll(
+          { 
+            attributes: ['userID'],
+            where: { birthday:  birthdayString},
+            raw: true,
+          },
+        );
+        const userID = userIDMap[0].userID;
+        const bdMember = await rem.guilds.cache.get('773660297696772096')
+                                .members.fetch(userID);
+        const picture = new MessageAttachment('https://i.imgur.com/7IqikPC.jpg');
+        const generalChannel = await rem.channels.fetch('803425860396908577');
+        generalChannel.send({
+          content: `Happy Birthday ${bdMember}`,
+          files: [picture]
+        });
+      }
+    })
+    
     // check again tomorrow
     console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
-    checkBirthdayTomorrow(rem, userProfiles, getSecsToMidnight());
-  }, (1000 * secsToMidnight) + (1000 * 15));
+    checkBirthdayTomorrow(rem, sequelize, DataTypes, getSecsToMidnight());
+  }, (1000 * secsToMidnight) + (1000 * 5));
 }
 
 function validateFormat(interaction, birthdayString) {

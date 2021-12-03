@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
     },
     birthday: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       defaultValue: null,
     },
     balance: {

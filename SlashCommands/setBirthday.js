@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-async function execute(interaction, users) {
+async function execute(interaction, sequelize, DataTypes) {
   try {
     // validate input format
     let regex = new RegExp('[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}');
     const birthdayString = interaction.options.getString('birthday', true);
-    if (!regex.test(birthdayString)) {                         // if input isn't numbers
+    if (!regex.test(birthdayString)) {                                    // if input isn't numbers
       interaction.reply({
         content: 'Invalid format, please try again',
         ephemeral: true,
@@ -13,14 +13,16 @@ async function execute(interaction, users) {
       return;
     }
     const birthdayFunctions = require('../Functions/birthdayFunctions');
-    if (!birthdayFunctions.validateFormat(interaction, birthdayString)) {// if birthday is invalid
+    if (!birthdayFunctions.validateFormat(interaction, birthdayString)) { // if birthday is invalid
       return;
     }
 
     // set or update in database
+    const users = require('../Models/user')(sequelize, DataTypes);
     await users.update(
       { birthday: birthdayString},
-      { where: {userID: interaction.user.id} });
+      { where: { userID: interaction.user.id } }
+    );
 
     // reply to interation
     await interaction.reply({
@@ -39,7 +41,7 @@ async function execute(interaction, users) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('set_birthday')
-    .setDescription('Set your birthday in the database')
+    .setDescription('If you want a birthday message from Rem on your birthday')
     .addStringOption(option => 
       option.setName('birthday')
         .setDescription('yyyy-mm-dd')

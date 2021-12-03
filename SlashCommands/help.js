@@ -8,7 +8,6 @@ async function execute(interaction) {
     // .setDescription('To call for me, start a command off with \'Rem, \'')
     .addField('Prefix Commands',
               `Remind [me/person] [message] in [hh:mm:ss]
-              Gym
               setBirthday [mm/dd/yyyy]`)
     .addField('Slash Commands',
               `/timer`);

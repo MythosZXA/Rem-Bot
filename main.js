@@ -25,9 +25,6 @@ for (const file of commandFiles) {
   const command = require(`./SlashCommands/${file}`);
   rem.commands.set(command.data.name, command);
 }
-// global variables
-let userMap = new Map();
-let gymMap = new Map();
 
 // start up
 rem.login(process.env.token);
@@ -38,15 +35,10 @@ rem.on('ready', () => {
   // sync mysql
   sequelize.sync();
 
-  // update maps with aws files
-  const mapFunctions = require('./Functions/mapFunctions');
-  mapFunctions.createUserMap(s3, userMap);
-  mapFunctions.createGymMap(s3, gymMap);
-
   // check for birthdays when tomorrow comes
   const birthdayFunctions = require('./Functions/birthdayFunctions.js');
   console.log(`Hours until midnight: ${birthdayFunctions.getSecsToMidnight() / 60 / 60}`);
-  birthdayFunctions.checkBirthdayTomorrow(rem, userMap, birthdayFunctions.getSecsToMidnight());
+  birthdayFunctions.checkBirthdayTomorrow(rem, sequelize, Sequelize.DataTypes, birthdayFunctions.getSecsToMidnight());
 });
 
 // prefix commands
@@ -85,7 +77,7 @@ rem.on('interactionCreate', async interaction => {
     } catch (error) {
       console.error(error);
       await interaction.reply({ 
-        content: 'There was an error while executing this command!',
+        content: 'There was an error while executing this command. Let Toan know!',
         ephemeral: true 
       });
     }
