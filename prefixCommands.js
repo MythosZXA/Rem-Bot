@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 function clear(message, arg) {
   if(message.author.id != 246034440340373504) {
     message.channel.send('Lack of authority');

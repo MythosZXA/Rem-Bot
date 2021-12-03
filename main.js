@@ -10,9 +10,10 @@ const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
 	dialect: 'mysql',
 	logging: false,
 });
-require('./Models/user')(sequelize, Sequelize.DataTypes);
+require('./Models/users')(sequelize, Sequelize.DataTypes);
 require('./Models/currencyShop')(sequelize, Sequelize.DataTypes);
 require('./Models/userItems')(sequelize, Sequelize.DataTypes);
+require('./Models/hero')(sequelize, Sequelize.DataTypes);
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');

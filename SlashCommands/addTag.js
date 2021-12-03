@@ -3,12 +3,16 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 async function execute(interaction, sequelize, DataTypes) {
   const users = require('../Models/user')(sequelize, DataTypes);
   try {
+    // add userID and username to database
     await users.create({
       userID: interaction.user.id,
       username: interaction.user.tag,
     });
   
-    return interaction.reply('Added!');
+    return interaction.reply({
+      content: 'Added!',
+      ephemeral: true,
+    });
   }
   catch(error) {
     if (error.name === 'SequelizeUniqueConstraintError') {

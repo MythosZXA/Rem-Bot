@@ -10,7 +10,7 @@ function getSecsToMidnight() {
 function checkBirthdayTomorrow(rem, sequelize, DataTypes, secsToMidnight) {
   setTimeout(async () => {
     // grabs the birthday of all users in database
-    const users = require('../Models/user')(sequelize, DataTypes);
+    const users = require('../Models/users')(sequelize, DataTypes);
     const birthdays = await users.findAll({ attributes: ['birthday'], raw: true });
     // for each user birthday
     birthdays.forEach(async birthdayMap => {
@@ -39,7 +39,8 @@ function checkBirthdayTomorrow(rem, sequelize, DataTypes, secsToMidnight) {
         // send birthday message
         const picture = new MessageAttachment('https://i.imgur.com/7IqikPC.jpg');
         const generalChannel = await rem.channels.fetch('803425860396908577');
-        generalChannel.send({
+        await generalChannel.sendTyping();
+        await generalChannel.send({
           content: `Happy Birthday ${bdMember}`,
           files: [picture]
         });
@@ -48,7 +49,7 @@ function checkBirthdayTomorrow(rem, sequelize, DataTypes, secsToMidnight) {
     // check again tomorrow
     console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
     checkBirthdayTomorrow(rem, sequelize, DataTypes, getSecsToMidnight());
-  }, (1000 * secsToMidnight) + (1000 * 5));
+  }, (1000 * secsToMidnight) + (1000 * 10));
 }
 
 function validateFormat(interaction, birthdayString) {
@@ -131,7 +132,7 @@ function validateFormat(interaction, birthdayString) {
       ephemeral: true,
     });
     return false;
-  } else if (userDate == 29 && userMonth == 2) {     // 29 days on specific years
+  } else if (userDate == 29 && userMonth == 2) {     // 29 Feb days on specific years
     if ((year % 4) != 0) {
       interaction.reply({
         content: `February doesn\'t have 29 days that year! ${remdisappointed}`,
