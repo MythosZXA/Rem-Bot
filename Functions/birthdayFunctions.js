@@ -9,24 +9,24 @@ function getSecsToMidnight() {
 
 function checkBirthdayTomorrow(rem, sequelize, DataTypes, secsToMidnight) {
   setTimeout(async () => {
+    // grabs the birthday of all users in database
     const users = require('../Models/user')(sequelize, DataTypes);
     const birthdays = await users.findAll({ attributes: ['birthday'], raw: true });
+    // for each user birthday
     birthdays.forEach(async birthdayMap => {
       const birthdayString = birthdayMap.birthday;
       if (birthdayString == null) return;
       // get user birth month and date
       const birthdayFormat = birthdayString.split('-');
-      const userYear = parseInt(birthdayFormat[0]);
       const userMonth = parseInt(birthdayFormat[1]);
       const userDate = parseInt(birthdayFormat[2]);
-
       // get today's month and date
       now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
       const currentMonth = new Date(now).getMonth() + 1;
       const currentDate = new Date(now).getDate();
-      
-      // if it's user's birthday then send happy birthday
+      // if it's user's birthday
       if (userMonth == currentMonth && userDate == currentDate) {
+        // get user with the birthday
         const userIDMap = await users.findAll(
           { 
             attributes: ['userID'],
@@ -35,8 +35,8 @@ function checkBirthdayTomorrow(rem, sequelize, DataTypes, secsToMidnight) {
           },
         );
         const userID = userIDMap[0].userID;
-        const bdMember = await rem.guilds.cache.get('773660297696772096')
-                                .members.fetch(userID);
+        const bdMember = await rem.guilds.cache.get('773660297696772096').members.fetch(userID);
+        // send birthday message
         const picture = new MessageAttachment('https://i.imgur.com/7IqikPC.jpg');
         const generalChannel = await rem.channels.fetch('803425860396908577');
         generalChannel.send({
@@ -44,8 +44,7 @@ function checkBirthdayTomorrow(rem, sequelize, DataTypes, secsToMidnight) {
           files: [picture]
         });
       }
-    })
-    
+    });
     // check again tomorrow
     console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
     checkBirthdayTomorrow(rem, sequelize, DataTypes, getSecsToMidnight());

@@ -13,9 +13,6 @@ const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
 require('./Models/user')(sequelize, Sequelize.DataTypes);
 require('./Models/currencyShop')(sequelize, Sequelize.DataTypes);
 require('./Models/userItems')(sequelize, Sequelize.DataTypes);
-// aws
-const AWS = require("aws-sdk");
-const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
