@@ -14,9 +14,12 @@ require('./Models/users')(sequelize, Sequelize.DataTypes);
 require('./Models/currencyShop')(sequelize, Sequelize.DataTypes);
 require('./Models/userItems')(sequelize, Sequelize.DataTypes);
 require('./Models/hero')(sequelize, Sequelize.DataTypes);
+require('./Models/monsters')(sequelize, Sequelize.DataTypes);
+require('./Models/dungeons')(sequelize, Sequelize.DataTypes);
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
+const { INET } = require('sequelize');
 rem.commands = new Collection();
 const commandFiles = fs.readdirSync('./SlashCommands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
@@ -55,10 +58,8 @@ rem.on('messageCreate', message => {
 
   let arg = message.content.toLowerCase().split(/ +/);
   if (arg[0] != 'rem,') return;
-  const commands = require('./prefixCommands.js');
-  const gymCommands = require('./gymCommands.js');
-  commands[arg[1]]?.(message, arg, userMap, s3);
-  gymCommands[arg[1]]?.(message, gymMap, arg, s3);
+  const prefixCommands = require('./prefixCommands.js');
+  prefixCommands[arg[1]]?.(message, arg);
 });
 
 // slash commands
@@ -82,9 +83,14 @@ rem.on('interactionCreate', async interaction => {
   } else if (interaction.isSelectMenu()) {              // select menu interaction
     if (interaction.customId == 'selectTimer') {        // timer select menu
       await logChannel.send(`${interaction.user.tag} selected: ${interaction.values[0]}`)
-      const command = rem.commands.get('timer');
-
-      await command.setTimer(interaction);
+      const timer = rem.commands.get('timer');
+      await timer.setTimer(interaction);
+    }
+  } else if (interaction.isButton()) {                  // button interaction
+    if (interaction.customId == 'attack') {             // attack button
+      if (interaction.user.id != interaction.message.author.id) return;
+      const dungeons = rem.commands.get('dungeons');
+      await dungeons.attack(interaction, sequelize, Sequelize.DataTypes);
     }
   }
 });

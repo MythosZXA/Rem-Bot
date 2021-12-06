@@ -18,8 +18,8 @@ async function execute(interaction, sequelize, DataTypes) {
     }
 
     // set or update in database
-    const users = require('../Models/user')(sequelize, DataTypes);
-    await users.update(
+    const Users = require('../Models/users')(sequelize, DataTypes);
+    await Users.update(
       { birthday: birthdayString},
       { where: { userID: interaction.user.id } }
     );

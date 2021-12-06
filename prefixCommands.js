@@ -60,7 +60,7 @@ async function remind(message, arg) {
   }
 }
 
-function test(message, arg, userMap) {
+function test(message, arg) {
   
 }
 
