@@ -1,16 +1,3 @@
-function clear(message, arg) {
-  if(message.author.id != 246034440340373504) {
-    message.channel.send('Lack of authority');
-    return;
-  }
-
-  message.channel.bulkDelete(arg[2])
-    .catch((error) => {
-      message.channel.send("I can only clear between 1-100 messages that are not older than 2 weeks");
-      console.log(error);
-    });
-}
-
 async function remind(message, arg) {
   // validate format
   if(arg[3] == null || !arg[arg.length - 2].toLowerCase().includes('in')) {
@@ -65,7 +52,6 @@ function test(message, arg) {
 }
 
 module.exports = {
-  clear,
   remind,
   test
 };
