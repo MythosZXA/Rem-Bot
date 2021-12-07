@@ -10,12 +10,6 @@ const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
 	dialect: 'mysql',
 	logging: false,
 });
-require('./Models/users')(sequelize, Sequelize.DataTypes);
-require('./Models/currencyShop')(sequelize, Sequelize.DataTypes);
-require('./Models/userItems')(sequelize, Sequelize.DataTypes);
-require('./Models/hero')(sequelize, Sequelize.DataTypes);
-require('./Models/monsters')(sequelize, Sequelize.DataTypes);
-require('./Models/dungeons')(sequelize, Sequelize.DataTypes);
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
@@ -33,8 +27,8 @@ rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for /help', {type: 'WATCHING'});
 
-  // sync mysql
-  sequelize.sync();
+  require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
+  require('./Functions/heroFunctions').recoverMana(sequelize, Sequelize.DataTypes);
 
   // check for birthdays when tomorrow comes
   const birthdayFunctions = require('./Functions/birthdayFunctions.js');
@@ -87,10 +81,21 @@ rem.on('interactionCreate', async interaction => {
       await timer.setTimer(interaction);
     }
   } else if (interaction.isButton()) {                  // button interaction
-    if (interaction.customId == 'attack') {             // attack button
-      if (interaction.user.id != interaction.message.author.id) return;
-      const dungeons = rem.commands.get('dungeons');
-      await dungeons.attack(interaction, sequelize, Sequelize.DataTypes);
+    if (interaction.user.id != interaction.message.originalUser) return;
+    const dungeons = rem.commands.get('dungeons');
+    switch (interaction.customId) {
+      case 'attack':                                    // attack button
+        await dungeons.attack(interaction, sequelize, Sequelize.DataTypes);
+        break;
+      case 'nextFloor':                                 // next floor button
+        interaction.message.currentFloor++;
+        await dungeons.execute(interaction, sequelize, Sequelize.DataTypes);
+        break;
+      case 'leave':                                     // leave button
+        const Hero = require('./Models/hero')(sequelize, Sequelize.DataTypes);
+        await Hero.update({ busy: 0 }, { where: { userID: interaction.user.id } });
+        await interaction.message.delete();
+        break;
     }
   }
 });

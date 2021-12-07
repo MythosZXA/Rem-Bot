@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 async function execute(interaction, sequelize, DataTypes) {
-  const users = require('../Models/user')(sequelize, DataTypes);
+  const users = require('../Models/users')(sequelize, DataTypes);
   try {
     // add userID and username to database
     await users.create({

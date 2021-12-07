@@ -4,7 +4,27 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       primaryKey: true,
     },
+    exp: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
+    },
+    credits: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
+    },
+    busy: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
+    },
     health: {
+      type: DataTypes.INTEGER,
+      defaultValue: 100,
+      allowNull: false,
+    },
+    max_health: {
       type: DataTypes.INTEGER,
       defaultValue: 100,
       allowNull: false,
@@ -12,6 +32,16 @@ module.exports = (sequelize, DataTypes) => {
     mana: {
       type: DataTypes.INTEGER,
       defaultValue: 100,
+      allowNull: false,
+    },
+    strength: {
+      type: DataTypes.INTEGER,
+      defaultValue: 10,
+      allowNull: false,
+    },
+    defense: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
       allowNull: false,
     },
     crit_rate: {

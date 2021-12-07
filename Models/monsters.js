@@ -11,15 +11,24 @@ module.exports = (sequelize, DataTypes) => {
     },
     health: {
       type: DataTypes.INTEGER,
-      defaultValue: 100,
       allowNull: false,
     },
-    attack: {
+    strength: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     defense: {
       type: DataTypes.INTEGER,
-    }
+      allowNull: false,
+    },
+    exp: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    credits: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   {
     timestamps: false,
