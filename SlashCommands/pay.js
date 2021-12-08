@@ -1,16 +1,13 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 async function execute(interaction, sequelize, DataTypes) {
+  // required models for transaction
   const Hero = require('../Models/hero')(sequelize, DataTypes);
+  // required data for transaction
   const nickname = interaction.options.getString('name');
   const amount = interaction.options.getNumber('amount');
   const members = await interaction.guild.members.fetch();
-  let wantedMember;
-  members.forEach(user => {
-    if (user.nickname == null) return;
-    if (user.nickname.toUpperCase() == nickname.toUpperCase())
-      wantedMember = user;
-  });
+  const wantedMember = members.find(user => user.nickname?.toUpperCase() === nickname.toUpperCase());
   // check if this transaction can be made
   const payerCreditsMap = await Hero.findOne({        // get how much credits payer has
     where: { userID: interaction.user.id },
