@@ -87,8 +87,8 @@ rem.on('interactionCreate', async interaction => {
       case 'attack':                                    // attack button
         await dungeons.attack(interaction, sequelize, Sequelize.DataTypes);
         break;
-      case 'nextFloor':                                 // next floor button
-        interaction.message.currentFloor++;
+      case 'nextStage':                                 // next stage button
+        interaction.message.currentStage++;
         await dungeons.execute(interaction, sequelize, Sequelize.DataTypes);
         break;
       case 'leave':                                     // leave button

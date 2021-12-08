@@ -7,9 +7,13 @@ async function execute(interaction, sequelize, DataTypes) {
   const heroEmbed = new MessageEmbed()
     .setTitle('Hero')
     .setDescription('tbd class')
+    .addField('Overview',
+    `✳️ ${hero.exp}
+    🪙 ${hero.credits}`,
+    true)
     .addField('Stats',
-    `♥️ ${hero.health}
-    🔷 ${hero.mana}
+    `💟 ${hero.health}
+    💠 ${hero.mana}
     💥 ${hero.crit_rate}%`,
     true)
     .addField('Equipment',

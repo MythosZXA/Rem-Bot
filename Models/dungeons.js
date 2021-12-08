@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    floor: {
+    stage: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

@@ -7,8 +7,7 @@ async function execute(interaction) {
     .setThumbnail('https://i.imgur.com/oO1SZAs.jpg')
     // .setDescription('To call for me, start a command off with \'Rem, \'')
     .addField('Prefix Commands',
-              `Remind [me/person] [message] in [hh:mm:ss]
-              setBirthday [mm/dd/yyyy]`)
+              `Remind [me/person] [message] in [hh:mm:ss]`)
     .addField('Slash Commands',
               `/timer`);
 
