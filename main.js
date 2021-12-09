@@ -2,7 +2,12 @@
 require('dotenv').config();
 // discord
 const { Client, Intents } = require('discord.js');
-const rem = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES] });
+const rem = new Client({ intents: [
+  Intents.FLAGS.GUILDS,
+  Intents.FLAGS.GUILD_MEMBERS,
+  Intents.FLAGS.GUILD_MESSAGES,
+  Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS
+]});
 // sql
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
