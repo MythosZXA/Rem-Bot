@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { MessageActionRow, MessageButton } = require("discord.js");
 const dungeonFunctions = require('../Functions/dungeonFunctions');
 
 // create buttons for action rows
@@ -21,14 +21,14 @@ async function execute(interaction, sequelize, DataTypes) {
   const Hero = require('../Models/hero')(sequelize, DataTypes);
   const Dungeon = require('../Models/dungeons')(sequelize, DataTypes);
   const Monster = require('../Models/monsters')(sequelize, DataTypes);
-  // check if hero is busy (and can't do this dungeon)
-  if (await dungeonFunctions.checkBusy(Hero, interaction)) return;
-  else await Hero.update({ busy: 1 }, { where: { userID: interaction.user.id } });
+  // check if hero is available
+  if (await dungeonFunctions.checkStatus(Hero, interaction) != 0) return;
+  else await Hero.update({ status: 'Busy' }, { where: { userID: interaction.user.id } });
   // get data required for this battle
   const hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
   let currentDungeon, currentStage;                           // values representing state of dungeon
-  if (interaction.commandName == 'dungeons') {                // data is attached to slash command
-    currentDungeon = interaction.options.getNumber('dungeon');
+  if (interaction.commandName == 'dungeon') {                 // data is attached to slash command
+    currentDungeon = interaction.options.getNumber('number');
     currentStage = 1;
   } else {                                                    // data is attached to message
     currentDungeon = interaction.message.currentDungeon;
@@ -46,7 +46,7 @@ async function execute(interaction, sequelize, DataTypes) {
   // create button row for battle interaction
   const actionRow = new MessageActionRow().addComponents(attackButton, leaveButton);
   // display to discord
-  if (interaction.commandName == 'dungeons') {                // reply to slash command
+  if (interaction.commandName == 'dungeon') {                // reply to slash command
     await interaction.reply({
       embeds: [battleEmbed],
       components: [actionRow],
@@ -59,7 +59,7 @@ async function execute(interaction, sequelize, DataTypes) {
   }
   // get message to attach variables
   let message;
-  if (interaction.commandName == 'dungeons') {
+  if (interaction.commandName == 'dungeon') {
     message = await interaction.fetchReply();                 // message is the reply to slash command
     message.originalUser = interaction.user;
   } else {
@@ -120,11 +120,15 @@ async function attack(interaction, sequelize, DataTypes) {
       { where: { userID: interaction.user.id } }
     );
     message.messageField += `Received ${monster.strength} damage\n`;
+    // update hero instance after being attacked
+    hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
     // check hero condition after receiving attack
     if (hero.health <= 0) {                                   // hero defeated
       message.messageField += 'Your hero has been defeated!\n';
-      // update hero instance after being attacked
-      hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
+      await Hero.update(
+        { health: 0, status: 'Recovering' }, 
+        { where: { userID: interaction.user.id } }
+      );
       actionRow.addComponents(leaveButton);
     } else {                                                  // hero not defeated, battle continues
       actionRow.addComponents(attackButton, leaveButton);
@@ -141,11 +145,11 @@ async function attack(interaction, sequelize, DataTypes) {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('dungeons')
+    .setName('dungeon')
     .setDescription('Run a dungeon (solo)')
     .addNumberOption(option =>
-      option.setName('dungeon')
-        .setDescription('Dungeon #')
+      option.setName('number')
+        .setDescription('Dungeon number')
         .setRequired(true)
         .addChoice('1', 1)),
     execute,

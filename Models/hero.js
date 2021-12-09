@@ -4,6 +4,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       primaryKey: true,
     },
+    class: {
+      type: DataTypes.STRING,
+      defaultValue: 'Knight',
+      allowNull: false,
+    },
     exp: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
@@ -14,9 +19,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
       allowNull: false,
     },
-    busy: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
+    status: {
+      type: DataTypes.STRING,
+      defaultValue: 'Good',
       allowNull: false,
     },
     health: {

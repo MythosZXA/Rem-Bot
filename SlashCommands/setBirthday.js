@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 async function execute(interaction, sequelize, DataTypes) {
   try {
     // validate input format
-    let regex = new RegExp('[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}');
+    const regex = new RegExp('[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}');
     const birthdayString = interaction.options.getString('birthday', true);
     if (!regex.test(birthdayString)) {                                    // if input isn't numbers
       interaction.reply({

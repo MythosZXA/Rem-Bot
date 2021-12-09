@@ -1,21 +1,25 @@
 const { MessageEmbed } = require("discord.js");
 
-async function checkBusy(Hero, interaction) {
-  let busy = 0;
-  await Hero.findOne({ 
+async function checkStatus(Hero, interaction) {
+  const { status } = await Hero.findOne({ 
       where: { userID: interaction.user.id },
-      attributes: ['busy'],
+      attributes: ['status'],
       raw: true,
-    })
-    .then(busyMap => busy = busyMap.busy);
-  if (busy == 1 && interaction.commandName == 'dungeons') {
+    });
+  if (status == 'Busy' && interaction.commandName == 'dungeon') {
     await interaction.reply({
       content: 'Your hero is currently busy with another task!',
       ephemeral: true,
     });
-    return true;
+    return 2;
+  } else if (status == 'Recovering' && interaction.commandName == 'dungeon') {
+    await interaction.reply({
+      content: 'Your hero is currently recovering from defeat!',
+      ephemeral: true,
+    });
+    return 1;
   } else {
-    return false;
+    return 0;
   }
 }
 
@@ -34,6 +38,6 @@ function createBattleEmbed(hero, monster, currentStage) {
 }
 
 module.exports = {
-  checkBusy,
+  checkStatus,
   createBattleEmbed
 }

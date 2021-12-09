@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 
 async function execute(interaction) {
-  const row = new MessageActionRow()
+  const actionRow = new MessageActionRow()
     .addComponents(
       new MessageSelectMenu()
         .setCustomId('selectTimer')
@@ -33,7 +33,7 @@ async function execute(interaction) {
 
   await interaction.reply({ 
     content: 'How long should I set the timer for?',
-    components: [row],
+    components: [actionRow],
     ephemeral: true
   });
 

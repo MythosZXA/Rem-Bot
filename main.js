@@ -86,19 +86,26 @@ rem.on('interactionCreate', async interaction => {
       await timer.setTimer(interaction);
     }
   } else if (interaction.isButton()) {                  // button interaction
-    if (interaction.user.id != interaction.message.originalUser) return;
-    const dungeons = rem.commands.get('dungeons');
+    if (interaction.user != interaction.message.originalUser) return;
+    const dungeon = rem.commands.get('dungeon');
     switch (interaction.customId) {
       case 'attack':                                    // attack button
-        await dungeons.attack(interaction, sequelize, Sequelize.DataTypes);
+        await dungeon.attack(interaction, sequelize, Sequelize.DataTypes);
         break;
       case 'nextStage':                                 // next stage button
         interaction.message.currentStage++;
-        await dungeons.execute(interaction, sequelize, Sequelize.DataTypes);
+        await dungeon.execute(interaction, sequelize, Sequelize.DataTypes);
         break;
       case 'leave':                                     // leave button
         const Hero = require('./Models/hero')(sequelize, Sequelize.DataTypes);
-        await Hero.update({ busy: 0 }, { where: { userID: interaction.user.id } });
+        const { status } = await Hero.findOne({
+          attributes: ['status'],
+          where: { userID: interaction.user.id },
+          raw: true,
+        });
+        if (status == 'Busy') {
+          await Hero.update({ status: 'Good' }, { where: { userID: interaction.user.id } });
+        }
         await interaction.message.delete();
         break;
     }

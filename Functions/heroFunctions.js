@@ -7,6 +7,10 @@ async function recoverHealth(sequelize, DataTypes) {
       { health: +1 },
       { where: { health: { [Op.lt]: sequelize.col('max_health') } } },
     );
+    Hero.update(
+      { status: 'Good' },
+      { where: { status: 'Recovering', health: { [Op.eq]: sequelize.col('max_health') } } }
+    );
   }, 1000 * 10);
 }
 

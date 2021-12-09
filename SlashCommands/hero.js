@@ -6,7 +6,7 @@ async function execute(interaction, sequelize, DataTypes) {
   const [hero, created] = await Hero.findOrCreate({ where: { userID: interaction.user.id }, raw: true });
   const heroEmbed = new MessageEmbed()
     .setTitle('Hero')
-    .setDescription('tbd class')
+    .setDescription(`${hero.class}`)
     .addField('Overview',
     `✳️ ${hero.exp}
     🪙 ${hero.credits}`,
@@ -26,14 +26,13 @@ async function execute(interaction, sequelize, DataTypes) {
     Shoes:`,
     true);
   await interaction.reply({
-    embeds: [heroEmbed],
-    ephemeral: true,
-  })
+    embeds: [heroEmbed]
+  });
 }
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('hero')
     .setDescription('View your hero'),
-  execute
+  execute,
 }
