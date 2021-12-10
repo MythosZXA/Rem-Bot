@@ -22,7 +22,7 @@ async function execute(interaction, sequelize, DataTypes) {
   const Dungeon = require('../Models/dungeons')(sequelize, DataTypes);
   const Monster = require('../Models/monsters')(sequelize, DataTypes);
   // check if hero is available
-  if (await dungeonFunctions.checkStatus(Hero, interaction) != 0) return;
+  if (await dungeonFunctions.checkStatus(interaction ,Hero) != 0) return;
   else await Hero.update({ status: 'Busy' }, { where: { userID: interaction.user.id } });
   // get data required for this battle
   const hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
@@ -46,7 +46,7 @@ async function execute(interaction, sequelize, DataTypes) {
   // create button row for battle interaction
   const actionRow = new MessageActionRow().addComponents(attackButton, leaveButton);
   // display to discord
-  if (interaction.commandName == 'dungeon') {                // reply to slash command
+  if (interaction.commandName == 'dungeon') {                 // reply to slash command
     await interaction.reply({
       embeds: [battleEmbed],
       components: [actionRow],
@@ -92,22 +92,11 @@ async function attack(interaction, sequelize, DataTypes) {
   message.messageField = '';                                  // reset message field
   let actionRow = new MessageActionRow();
   // simulate battle
-  const critChance = Math.random() * (100 - 1) + 1;           // hero attacks
-  if (critChance <= hero.crit_rate) {                         // crit
-    monster.health -= hero.strength * 1.5;
-    message.messageField += `Dealt ${hero.strength * 1.5} crit damage!\n`;
-  } else {                                                    // didn't crit
-    monster.health -= 10;
-    message.messageField += `Dealt ${hero.strength} damage\n`;
-  }
+  await dungeonFunctions.simulateAttack(hero, monster, message);
   // check monster condition after attacking
   if (monster.health <= 0) {                                  // monster defeated
-    await Hero.increment(                                     // update rewards
-      { exp: +monster.exp, credits: +monster.credits },
-      { where: {userID: interaction.user.id } }
-    );
-    message.messageField += `Defeated ${monster.name}!\n`;
-    message.messageField += `Gained ${monster.exp} experience and received ${monster.credits} credits!`;
+    await dungeonFunctions.simulateVictory(interaction, Hero, monster, message);
+    await dungeonFunctions.simulateDrops(interaction, monster, message, sequelize, DataTypes);
     // check if there are more stages of the dungeon
     if (message.currentStage < message.numStage) {            // more stages available
       actionRow.addComponents(nextStageButton, leaveButton);
@@ -115,26 +104,19 @@ async function attack(interaction, sequelize, DataTypes) {
       actionRow.addComponents(leaveButton);
     }
   } else {                                                    // monster not defeated, battle continues
-    await Hero.increment(                                     // monster attacks
-      { health: -monster.strength },
-      { where: { userID: interaction.user.id } }
-    );
-    message.messageField += `Received ${monster.strength} damage\n`;
+    await dungeonFunctions.simulateBeingHit(interaction, Hero, monster, message);
     // update hero instance after being attacked
     hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
     // check hero condition after receiving attack
     if (hero.health <= 0) {                                   // hero defeated
-      message.messageField += 'Your hero has been defeated!\n';
-      await Hero.update(
-        { health: 0, status: 'Recovering' }, 
-        { where: { userID: interaction.user.id } }
-      );
+      await dungeonFunctions.simulateDefeat(interaction, Hero, message);
       actionRow.addComponents(leaveButton);
     } else {                                                  // hero not defeated, battle continues
       actionRow.addComponents(attackButton, leaveButton);
     }
   }
   // display battle simulation
+  hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
   const battleEmbed = dungeonFunctions.createBattleEmbed(hero, monster, message.currentStage);
   battleEmbed.spliceFields(3, 1, {name: 'Message', value: message.messageField});
   await interaction.update({

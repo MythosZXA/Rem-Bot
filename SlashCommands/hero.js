@@ -1,5 +1,10 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
+
+const closeButton = new MessageButton()
+  .setCustomId('close')
+  .setLabel('Close')
+  .setStyle('DANGER');
 
 async function execute(interaction, sequelize, DataTypes) {
   const Hero = require('../Models/hero')(sequelize, DataTypes);
@@ -8,12 +13,15 @@ async function execute(interaction, sequelize, DataTypes) {
     .setTitle('Hero')
     .setDescription(`${hero.class}`)
     .addField('Overview',
-    `✳️ ${hero.exp}
+    `${hero.status}
+    ✳️ ${hero.exp}
     🪙 ${hero.credits}`,
     true)
     .addField('Stats',
     `💟 ${hero.health}
     💠 ${hero.mana}
+    ⚔️ ${hero.strength}
+    🛡️ ${hero.defense}
     💥 ${hero.crit_rate}%`,
     true)
     .addField('Equipment',
@@ -25,9 +33,16 @@ async function execute(interaction, sequelize, DataTypes) {
     Gloves:
     Shoes:`,
     true);
+  const actionRow = new MessageActionRow().addComponents(closeButton);
   await interaction.reply({
-    embeds: [heroEmbed]
+    embeds: [heroEmbed],
+    components: [actionRow],
   });
+  const message = await interaction.fetchReply();
+  message.originalUser = interaction.user;
+  setTimeout(() => {
+    message.delete();
+  }, 1000 * 60);
 }
 
 module.exports = {

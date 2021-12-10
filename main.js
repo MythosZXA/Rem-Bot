@@ -31,7 +31,6 @@ rem.login(process.env.token);
 rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for /help', {type: 'WATCHING'});
-
   require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
   require('./Functions/heroFunctions').recoverMana(sequelize, Sequelize.DataTypes);
 
@@ -89,6 +88,9 @@ rem.on('interactionCreate', async interaction => {
     if (interaction.user != interaction.message.originalUser) return;
     const dungeon = rem.commands.get('dungeon');
     switch (interaction.customId) {
+      case 'close':                                     // close button
+        await interaction.message.delete();
+        break;
       case 'attack':                                    // attack button
         await dungeon.attack(interaction, sequelize, Sequelize.DataTypes);
         break;

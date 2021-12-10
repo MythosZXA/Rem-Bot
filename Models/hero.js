@@ -26,12 +26,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     health: {
       type: DataTypes.INTEGER,
-      defaultValue: 100,
+      defaultValue: 500,
       allowNull: false,
     },
     max_health: {
       type: DataTypes.INTEGER,
-      defaultValue: 100,
+      defaultValue: 500,
       allowNull: false,
     },
     mana: {
@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     strength: {
       type: DataTypes.INTEGER,
-      defaultValue: 10,
+      defaultValue: 50,
       allowNull: false,
     },
     defense: {

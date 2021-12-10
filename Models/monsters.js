@@ -21,6 +21,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    drops: {
+      type: DataTypes.STRING,
+    },
     exp: {
       type: DataTypes.INTEGER,
       allowNull: false,

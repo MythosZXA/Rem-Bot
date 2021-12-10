@@ -1,6 +1,7 @@
 const { MessageEmbed } = require("discord.js");
+const { Op } = require('sequelize');
 
-async function checkStatus(Hero, interaction) {
+async function checkStatus(interaction, Hero) {
   const { status } = await Hero.findOne({ 
       where: { userID: interaction.user.id },
       attributes: ['status'],
@@ -37,7 +38,69 @@ function createBattleEmbed(hero, monster, currentStage) {
     true);
 }
 
+async function simulateAttack(hero, monster, message) {
+  const critChance = Math.random() * (100 - 1) + 1;             // hero attacks
+  if (critChance <= hero.crit_rate) {                           // crit
+    monster.health -= hero.strength * 1.5;
+    message.messageField += `Dealt ${hero.strength * 1.5} crit damage!\n`;
+  } else {                                                      // didn't crit
+    monster.health -= hero.strength;
+    message.messageField += `Dealt ${hero.strength} damage\n`;
+  }
+}
+
+async function simulateBeingHit(interaction, Hero, monster, message) {
+  await Hero.increment(                                         // monster attacks
+    { health: -monster.strength },
+    { where: { userID: interaction.user.id } }
+  );
+  message.messageField += `Received ${monster.strength} damage\n`;
+}
+
+async function simulateVictory(interaction, Hero, monster, message) {
+  await Hero.increment(                                         // update rewards
+    { exp: +monster.exp, credits: +monster.credits },
+    { where: {userID: interaction.user.id } }
+  );
+  message.messageField += `Defeated ${monster.name}!\n`;
+  message.messageField += `Gained ${monster.exp} experience and received ${monster.credits} credits!`;
+}
+
+async function simulateDefeat(interaction, Hero, message) {
+  await Hero.update(
+    { health: 0, status: 'Recovering' }, 
+    { where: { userID: interaction.user.id } }
+  );
+  message.messageField += 'Your hero has been defeated!\n';
+}
+
+async function simulateDrops(interaction, monster, message, sequelize, DataTypes) {
+  const Items = require('../Models/items')(sequelize, DataTypes);
+  const UserItems = require('../Models/userItems')(sequelize, DataTypes);
+  const drops = await Items.findAll({                           // possible drops
+    where: { name: { [Op.startsWith]: monster.drops } },
+    raw: true,
+  });
+  await drops.forEach(item => {                                 // simulate drop chances
+    const dropChance = Math.random() * (100 - 1) + 1;
+    if (dropChance < item.drop_rate) {                          // item dropped
+      UserItems.create({                                        // add to inv
+        userID: interaction.user.id,
+        itemID: item.itemID,
+        name: item.name,
+        amount: 1,
+      });
+      message.messageField += `${monster.name} dropped a ${item.name}!\n`;
+    }
+  })
+}
+
 module.exports = {
   checkStatus,
-  createBattleEmbed
+  createBattleEmbed,
+  simulateAttack,
+  simulateBeingHit,
+  simulateVictory,
+  simulateDefeat,
+  simulateDrops,
 }

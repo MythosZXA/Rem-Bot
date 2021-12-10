@@ -11,7 +11,7 @@ async function recoverHealth(sequelize, DataTypes) {
       { status: 'Good' },
       { where: { status: 'Recovering', health: { [Op.eq]: sequelize.col('max_health') } } }
     );
-  }, 1000 * 10);
+  }, 1000);
 }
 
 async function recoverMana(sequelize, DataTypes) {
