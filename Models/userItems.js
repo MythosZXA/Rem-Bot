@@ -12,13 +12,21 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    type: {
+			type: DataTypes.STRING,
+      allowNull: false,
+		},
     name: {
 			type: DataTypes.STRING,
       allowNull: false,
 		},
+    attack: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
 		amount: {
 			type: DataTypes.INTEGER,
-			defaultValue: 0,
+			defaultValue: 1,
       allowNull: false,
 		},
 	}, 

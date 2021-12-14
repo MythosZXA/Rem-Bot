@@ -63,7 +63,7 @@ async function simulateVictory(interaction, Hero, monster, message) {
     { where: {userID: interaction.user.id } }
   );
   message.messageField += `Defeated ${monster.name}!\n`;
-  message.messageField += `Gained ${monster.exp} experience and received ${monster.credits} credits!`;
+  message.messageField += `Gained ${monster.exp} experience and received ${monster.credits} credits!\n`;
 }
 
 async function simulateDefeat(interaction, Hero, message) {
@@ -87,7 +87,9 @@ async function simulateDrops(interaction, monster, message, sequelize, DataTypes
       UserItems.create({                                        // add to inv
         userID: interaction.user.id,
         itemID: item.itemID,
+        type: item.type,
         name: item.name,
+        attack: item.attack,
         amount: 1,
       });
       message.messageField += `${monster.name} dropped a ${item.name}!\n`;

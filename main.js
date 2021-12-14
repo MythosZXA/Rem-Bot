@@ -31,6 +31,7 @@ rem.login(process.env.token);
 rem.on('ready', () => {
   console.log('Rem is online.');
   rem.user.setActivity('for /help', {type: 'WATCHING'});
+  
   require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
   require('./Functions/heroFunctions').recoverMana(sequelize, Sequelize.DataTypes);
 

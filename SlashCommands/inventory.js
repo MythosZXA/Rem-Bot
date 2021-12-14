@@ -1,16 +1,31 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { Formatters } = require('discord.js');
+const { Formatters, MessageButton, MessageActionRow } = require('discord.js');
+
+const closeButton = new MessageButton()
+  .setCustomId('close')
+  .setLabel('Close')
+  .setStyle('DANGER');
 
 async function execute(interaction, sequelize, DataTypes) {
   const UserItems = require('../Models/userItems')(sequelize, DataTypes);
   const items = await UserItems.findAll();
-  const displayHeader = 'ID'.padEnd(5) + 'Name'.padEnd(25) + 'Amount';
+  const displayHeader = 'ID'.padEnd(5) + 'Type'.padEnd(10) + 'Name'.padEnd(20) + 'Amount';
   const displayArray = items.map(item => 
     `${item.id}`.padEnd(5) +
-    `${item.name}`.padEnd(25) +
+    `${item.type}`.padEnd(10) +
+    `${item.name}`.padEnd(20) +
     `${item.amount}`)
     .join('\n');
-  return interaction.reply(Formatters.codeBlock(`${displayHeader}\n${displayArray}`));
+  const actionRow = new MessageActionRow().addComponents(closeButton);
+  await interaction.reply({
+    content: Formatters.codeBlock(`${displayHeader}\n${displayArray}`),
+    components: [actionRow],
+  });
+  const message = await interaction.fetchReply();
+  message.originalUser = interaction.user;
+  setTimeout(() => {
+    if (!message.deleted) message.delete();
+  }, 1000 * 60);
 }
 
 module.exports = {
