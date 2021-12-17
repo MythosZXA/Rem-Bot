@@ -1,3 +1,5 @@
+const { Formatters } = require('discord.js');
+
 async function remind(message, arg) {
   // validate format
   if(arg[3] == null || !arg[arg.length - 2].toLowerCase().includes('in')) {
@@ -48,7 +50,16 @@ async function remind(message, arg) {
 }
 
 function test(message, arg) {
-  
+  // message.channel.send(Formatters.blockQuote('hello'));
+  // message.channel.send(Formatters.bold('hello'));
+  message.channel.send(Formatters.channelMention('803425860396908577'));
+  // message.channel.send(Formatters.codeBlock('hello'));
+  // message.channel.send(Formatters.formatEmoji('832789209890553866'));
+  // message.channel.send(Formatters.inlineCode('hello'));
+  // message.channel.send(Formatters.italic('hello'));
+  // message.channel.send(Formatters.quote('hello'));
+  // message.channel.send(Formatters.italic('hello'));
+  // message.channel.send(Formatters.spoiler('hello'));
 }
 
 module.exports = {

@@ -104,7 +104,7 @@ async function attack(interaction, sequelize, DataTypes) {
       actionRow.addComponents(leaveButton);
     }
   } else {                                                    // monster not defeated, battle continues
-    await dungeonFunctions.simulateBeingHit(interaction, Hero, monster, message);
+    await dungeonFunctions.simulateBeingHit(interaction, Hero, hero, monster, message);
     // update hero instance after being attacked
     hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
     // check hero condition after receiving attack

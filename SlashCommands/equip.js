@@ -2,10 +2,10 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 
 async function execute(interaction, sequelize, DataTypes) {
   const Equip = require('../Models/equip')(sequelize, DataTypes);
-  const UserItems = require('../Models/userItems')(sequelize, DataTypes);
+  const Inventory = require('../Models/inventory')(sequelize, DataTypes);
   const Hero = require('../Models/hero')(sequelize, DataTypes);
   const itemID = interaction.options.getInteger('id');
-  const wantedItem = await UserItems.findOne({ 
+  const wantedItem = await Inventory.findOne({ 
     where: { id: itemID },
     attributes: { exclude: ['amount'] },
     raw: true 
@@ -13,6 +13,11 @@ async function execute(interaction, sequelize, DataTypes) {
   if (wantedItem == null) {                                // hero does not have item
     await interaction.reply({
       content: 'You do not have that item',
+      ephemeral: true,
+    });
+  } else if (wantedItem.attack == null) {                  // unequippable item
+    await interaction.reply({
+      content: 'This is not an equippable item',
       ephemeral: true,
     });
   } else {                                                 // equippable
@@ -34,14 +39,14 @@ async function execute(interaction, sequelize, DataTypes) {
         { strength: -equippedItem.attack },
         { where: { userID: interaction.user.id } },
       );
-      await UserItems.upsert(equippedItem);                // add to inventory
+      await Inventory.upsert(equippedItem);                // add to inventory
     }
     await Equip.upsert(wantedItem);                        // equip
     await Hero.increment(                                  // update stats
       { strength: +wantedItem.attack },
       { where: { userID: interaction.user.id } },
     );
-    await UserItems.destroy({                              // remove from inventory
+    await Inventory.destroy({                              // remove from inventory
       where: { 
         id: wantedItem.id,
         userID: interaction.user.id,

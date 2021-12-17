@@ -25,34 +25,35 @@ async function recoverMana(sequelize, DataTypes) {
 }
 
 async function updateClass(interaction, Hero, Equip) {
-  const { name : primaryWeapon } = await Equip.findOne({             // get primary weapon
-    where: {
-      userID: interaction.user.id,
-      type: 'Primary',
-    },
-    raw: true,
-  });
-  const { name : secondaryWeapon } = await Equip.findOne({           // get secondary weapon
-    where: {
-      userID: interaction.user.id,
-      type: 'Secondary',
-    },
-    raw: true,
-  });
-  // determine which class to change to
+  try {
+    const { name : primaryWeapon } = await Equip.findOne({           // get primary weapon
+      where: {
+        userID: interaction.user.id,
+        type: 'Primary',
+      },
+      raw: true,
+    });
+    const { name : secondaryWeapon } = await Equip.findOne({         // get secondary weapon
+      where: {
+        userID: interaction.user.id,
+        type: 'Secondary',
+      },
+      raw: true,
+    });
+     // determine which class to change to
   let changeTo = 'Adventurer';
   if (primaryWeapon.includes('Sword')) {                             // sword primary
     if (secondaryWeapon.includes('Shield')) {                        // shield secondary
       changeTo = 'Guardian';
-    } else if (secondaryWeapon.includes('Sword')) {                  // sword secodnary
+    } else if (secondaryWeapon.includes('Sword')) {                  // sword secondary
       changeTo = 'Striker';
-    } else if (secondaryWeapon.includes('Arcane')) {                 // arcane secodnary
+    } else if (secondaryWeapon.includes('Arcane')) {                 // arcane secondary
       changeTo = 'Mystic';
     }
   } else if (primaryWeapon.includes('Bow')) {                        // bow primary
     if (secondaryWeapon.includes('Arrows')) {                        // arrow secondary
       changeTo = 'Archer';
-    } else if (secondaryWeapon.includes('Arcane')) {                 // arcane secodnary
+    } else if (secondaryWeapon.includes('Arcane')) {                 // arcane secondary
       changeTo = 'Oracle';
     }
   } else if (primaryWeapon.includes('Staff')) {                      // staff primary
@@ -73,6 +74,11 @@ async function updateClass(interaction, Hero, Equip) {
     { class: changeTo },
     { where: { userID: interaction.user.id } },
   );
+  } catch (error) {
+    if (error instanceof TypeError) {                                // one weapon is empty, ignore
+      return;
+    }
+  }
 }
 
 module.exports= {

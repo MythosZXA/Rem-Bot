@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     defense: {
       type: DataTypes.INTEGER,
+      defaultValue: 0,
       allowNull: false,
     },
     drops: {

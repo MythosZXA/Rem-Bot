@@ -1,8 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-	return sequelize.define('user_items', {
+	return sequelize.define('inventory', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
     },
 		userID: {
       type: DataTypes.STRING,
@@ -22,7 +23,6 @@ module.exports = (sequelize, DataTypes) => {
 		},
     attack: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
 		amount: {
 			type: DataTypes.INTEGER,
@@ -32,5 +32,6 @@ module.exports = (sequelize, DataTypes) => {
 	}, 
   {
 		timestamps: false,
+    freezeTableName: true
 	});
 };

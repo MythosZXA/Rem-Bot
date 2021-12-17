@@ -31,12 +31,13 @@ async function execute(interaction, sequelize, DataTypes) {
     `Legs: `.padEnd(12) + `${legs?.name ? legs.name : ''}\n` +
     `Gloves: `.padEnd(12) + `${gloves?.name ? gloves.name : ''}\n` +
     `Shoes: `.padEnd(12) + `${shoes?.name ? shoes.name : ''}\n`;
-  // create embeb
+  // create embed
   const heroEmbed = new MessageEmbed()
     .setTitle('Hero')
     .setDescription(`${hero.class}`)
     .addField('Overview',
-    `${hero.status}
+    `LV: ${hero.level}
+    ${hero.status}
     ✳️ ${hero.exp}
     🪙 ${hero.credits}`,
     true)

@@ -7,12 +7,16 @@ const closeButton = new MessageButton()
   .setStyle('DANGER');
 
 async function execute(interaction, sequelize, DataTypes) {
-  const UserItems = require('../Models/userItems')(sequelize, DataTypes);
-  const items = await UserItems.findAll();
-  const displayHeader = 'ID'.padEnd(5) + 'Type'.padEnd(10) + 'Name'.padEnd(20) + 'Amount';
+  const Inventory = require('../Models/inventory')(sequelize, DataTypes);
+  const items = await Inventory.findAll({
+    where: { userID: interaction.user.id },
+    order: [ ['type', 'ASC'] ],
+    raw: true,
+  });
+  const displayHeader = 'ID'.padEnd(5) + 'Type'.padEnd(12) + 'Name'.padEnd(20) + 'Amount';
   const displayArray = items.map(item => 
     `${item.id}`.padEnd(5) +
-    `${item.type}`.padEnd(10) +
+    `${item.type}`.padEnd(12) +
     `${item.name}`.padEnd(20) +
     `${item.amount}`)
     .join('\n');

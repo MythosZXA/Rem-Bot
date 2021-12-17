@@ -1,5 +1,21 @@
 const { MessageEmbed } = require("discord.js");
 const { Op } = require('sequelize');
+const hero = require("../Models/hero");
+
+async function checkLevelUp(interaction, Hero, message) {
+  const hero = await Hero.findOne({
+    where: { userID: interaction.user.id },
+    raw: true,
+  });
+  const requiredEXP = 100 * Math.pow(1.1, hero.level)
+  if (hero.exp >= requiredEXP) {
+    await Hero.increment(
+      { level: +1, exp: -requiredEXP, max_health: +30, strength: +10, defense: +5 },
+      { where: { userID: interaction.user.id } },
+    );
+    message.messageField += 'Your hero leveled up!\n';
+  }
+}
 
 async function checkStatus(interaction, Hero) {
   const { status } = await Hero.findOne({ 
@@ -41,20 +57,23 @@ function createBattleEmbed(hero, monster, currentStage) {
 async function simulateAttack(hero, monster, message) {
   const critChance = Math.random() * (100 - 1) + 1;             // hero attacks
   if (critChance <= hero.crit_rate) {                           // crit
-    monster.health -= hero.strength * 1.5;
-    message.messageField += `Dealt ${hero.strength * 1.5} crit damage!\n`;
+    const finalDamage = (hero.strength * 1.5) * (1 - (monster.defense / 1000));
+    monster.health -= finalDamage;
+    message.messageField += `Dealt ${finalDamage} crit damage!\n`;
   } else {                                                      // didn't crit
-    monster.health -= hero.strength;
-    message.messageField += `Dealt ${hero.strength} damage\n`;
+    const finalDamage = hero.strength * (1 - (monster.defense / 1000));
+    monster.health -= hero.strength - monster.defense;
+    message.messageField += `Dealt ${finalDamage} damage\n`;
   }
 }
 
-async function simulateBeingHit(interaction, Hero, monster, message) {
+async function simulateBeingHit(interaction, Hero, hero, monster, message) {
+  const finalDamage = monster.strength * (1 - (hero.defense / 1000));
   await Hero.increment(                                         // monster attacks
-    { health: -monster.strength },
+    { health: -finalDamage},
     { where: { userID: interaction.user.id } }
   );
-  message.messageField += `Received ${monster.strength} damage\n`;
+  message.messageField += `Received ${finalDamage} damage\n`;
 }
 
 async function simulateVictory(interaction, Hero, monster, message) {
@@ -64,6 +83,7 @@ async function simulateVictory(interaction, Hero, monster, message) {
   );
   message.messageField += `Defeated ${monster.name}!\n`;
   message.messageField += `Gained ${monster.exp} experience and received ${monster.credits} credits!\n`;
+  await checkLevelUp(interaction, Hero, message);
 }
 
 async function simulateDefeat(interaction, Hero, message) {
@@ -75,29 +95,72 @@ async function simulateDefeat(interaction, Hero, message) {
 }
 
 async function simulateDrops(interaction, monster, message, sequelize, DataTypes) {
+  // require models to simulate monster drops
   const Items = require('../Models/items')(sequelize, DataTypes);
-  const UserItems = require('../Models/userItems')(sequelize, DataTypes);
-  const drops = await Items.findAll({                           // possible drops
+  const Inventory = require('../Models/inventory')(sequelize, DataTypes);
+  // check normal drops
+  const drops = await Items.findAll({                                // possible drops
     where: { name: { [Op.startsWith]: monster.drops } },
     raw: true,
   });
-  await drops.forEach(item => {                                 // simulate drop chances
+  await drops.forEach(async item => {                                // simulate drop chances
     const dropChance = Math.random() * (100 - 1) + 1;
-    if (dropChance < item.drop_rate) {                          // item dropped
-      UserItems.create({                                        // add to inv
-        userID: interaction.user.id,
-        itemID: item.itemID,
-        type: item.type,
-        name: item.name,
-        attack: item.attack,
-        amount: 1,
-      });
+    if (dropChance < item.drop_rate) {                               // item dropped
+      if (item.type == 'Material') {                                 // material type, update in inv
+        const [wantedItem, created] = await Inventory.findOrCreate({ // create if not found
+          where: { name: item.name },
+          defaults: { 
+            userID: interaction.user.id,
+            itemID: item.itemID,
+            type: item.type,
+            name: item.name,
+            amount: 1,
+          },
+        });
+        if (!created) {
+          await Inventory.increment(                                 // update if found
+            { amount: +1 },
+            { where: { userID: interaction.user.id, name: item.name } },
+          );
+        }
+      } else {
+        await Inventory.create({                                     // equip type, create in inv
+          userID: interaction.user.id,
+          itemID: item.itemID,
+          type: item.type,
+          name: item.name,
+          attack: item.attack,
+          amount: 1,
+        });
+      }
       message.messageField += `${monster.name} dropped a ${item.name}!\n`;
     }
-  })
+  });
+  // check collection drops
+  const { itemID : collectionID } = await Items.findOne({ where: { name: monster.collection}});
+  const [wantedItem, created] = await Inventory.findOrCreate({       // create if not found
+    where: { 
+      userID: interaction.user.id,
+      itemID: collectionID
+    },
+    defaults: {
+      userID: interaction.user.id,
+      itemID: collectionID,
+      type: 'Collection',
+      name: monster.collection,
+    },
+  });
+  if (!created) {
+    await Inventory.increment(                                       // update if found
+      { amount: +1 },
+      { where: { userID: interaction.user.id, name: monster.collection } },
+    );
+  }
+  message.messageField += `${monster.name} dropped a ${monster.collection}\n`;
 }
 
 module.exports = {
+  checkLevelUp,
   checkStatus,
   createBattleEmbed,
   simulateAttack,

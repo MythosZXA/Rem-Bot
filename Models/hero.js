@@ -9,6 +9,11 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'Knight',
       allowNull: false,
     },
+    level: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+      allowNull: false,
+    },
     exp: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
