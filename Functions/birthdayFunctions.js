@@ -7,7 +7,7 @@ function getSecsToMidnight() {
   return (midnight - nowTime) / 1000;
 }
 
-function checkBirthdayTomorrow(rem, sequelize, DataTypes, secsToMidnight) {
+function checkBirthdayTomorrow(rem, sequelize, DataTypes) {
   setTimeout(async () => {
     // grabs the birthday of all users in database
     const users = require('../Models/users')(sequelize, DataTypes);
@@ -49,7 +49,7 @@ function checkBirthdayTomorrow(rem, sequelize, DataTypes, secsToMidnight) {
     // check again tomorrow
     console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
     checkBirthdayTomorrow(rem, sequelize, DataTypes, getSecsToMidnight());
-  }, (1000 * secsToMidnight) + (1000 * 10));
+  }, (1000 * getSecsToMidnight()) + (1000 * 5));
 }
 
 function validateFormat(interaction, birthdayString) {

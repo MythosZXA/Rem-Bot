@@ -13,7 +13,17 @@ module.exports = (sequelize, DataTypes) => {
     birthday: {
       type: DataTypes.STRING,
       defaultValue: null,
-    }
+    },
+    streak: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
+    },
+    checkedIn: {
+      type: DataTypes.STRING,
+      defaultValue: 'false',
+      allowNull: false,
+    },
   }, {
     timestamps: false,
   });

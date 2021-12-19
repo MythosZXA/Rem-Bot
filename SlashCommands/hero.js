@@ -24,13 +24,13 @@ async function execute(interaction, sequelize, DataTypes) {
   const gloves = equipped.find(gloves => gloves?.type == 'Gloves');
   const shoes = equipped.find(shoes => shoes?.type == 'Shoes');
   const equipValueField = 
-    `Primary: `.padEnd(12) + `${primary?.name ? primary.name : ''}\n` +
-    `Secondary: `.padEnd(12) + `${secondary?.name ? secondary.name : ''}\n` +
-    `Helm: `.padEnd(12) + `${helm?.name ? helm.name : ''}\n` +
-    `Chest: `.padEnd(12) + `${chest?.name ? primary.name : ''}\n` +
-    `Legs: `.padEnd(12) + `${legs?.name ? legs.name : ''}\n` +
-    `Gloves: `.padEnd(12) + `${gloves?.name ? gloves.name : ''}\n` +
-    `Shoes: `.padEnd(12) + `${shoes?.name ? shoes.name : ''}\n`;
+    `Primary:    ${primary?.name ? primary.name : ''}\n` +
+    `Secondary:  ${secondary?.name ? secondary.name : ''}\n` +
+    `Helm:       ${helm?.name ? helm.name : ''}\n` +
+    `Chest:      ${chest?.name ? primary.name : ''}\n` +
+    `Legs:       ${legs?.name ? legs.name : ''}\n` +
+    `Gloves:     ${gloves?.name ? gloves.name : ''}\n` +
+    `Shoes:      ${shoes?.name ? shoes.name : ''}\n`;
   // create embed
   const heroEmbed = new MessageEmbed()
     .setTitle('Hero')
@@ -49,11 +49,14 @@ async function execute(interaction, sequelize, DataTypes) {
     💥 ${hero.crit_rate}%`,
     true)
     .addField('Equipment', equipValueField, true);
+  // close display button
   const actionRow = new MessageActionRow().addComponents(closeButton);
+  // display
   await interaction.reply({
     embeds: [heroEmbed],
     components: [actionRow],
   });
+  // attach original user to message (to ignore other users pressing)
   const message = await interaction.fetchReply();
   message.originalUser = interaction.user;
   setTimeout(() => {

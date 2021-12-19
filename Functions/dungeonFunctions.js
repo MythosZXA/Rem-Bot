@@ -168,4 +168,4 @@ module.exports = {
   simulateVictory,
   simulateDefeat,
   simulateDrops,
-}
+};
