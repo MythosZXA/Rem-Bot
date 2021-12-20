@@ -15,6 +15,10 @@ const leaveButton = new MessageButton()
   .setCustomId('leave')
   .setLabel('Leave')
   .setStyle('DANGER');
+const noSkillButton = new MessageButton()
+  .setCustomId('noSkill')
+  .setLabel('No Skill')
+  .setStyle('SECONDARY');
 
 async function execute(interaction, sequelize, DataTypes) {
   // required models for battle
@@ -45,16 +49,17 @@ async function execute(interaction, sequelize, DataTypes) {
   battleEmbed.addField('Message', `Entered stage ${currentStage}\n`);
   // create button row for battle interaction
   const actionRow = new MessageActionRow().addComponents(attackButton, leaveButton);
+  const skillRow = dungeonFunctions.createSkillActionRow(hero.class);
   // display to discord
   if (interaction.commandName == 'dungeon') {                 // reply to slash command
     await interaction.reply({
       embeds: [battleEmbed],
-      components: [actionRow],
+      components: [actionRow, skillRow],
     });
   } else {
     await interaction.message.edit({                          // reply exists, edit
       embeds: [battleEmbed],
-      components: [actionRow],
+      components: [actionRow, skillRow],
     });
   }
   // get message to attach variables
@@ -90,7 +95,8 @@ async function attack(interaction, sequelize, DataTypes) {
   const message = interaction.message;
   const monster = message.monster;
   message.messageField = '';                                  // reset message field
-  let actionRow = new MessageActionRow();
+  const actionRow = new MessageActionRow();
+  let skillRow = new MessageActionRow();
   // simulate battle
   await dungeonFunctions.simulateAttack(hero, monster, message);
   // check monster condition after attacking
@@ -103,6 +109,7 @@ async function attack(interaction, sequelize, DataTypes) {
     } else if (message.currentStage == message.numStage) {    // completed last stage
       actionRow.addComponents(leaveButton);
     }
+    skillRow.addComponents(noSkillButton);
   } else {                                                    // monster not defeated, battle continues
     await dungeonFunctions.simulateBeingHit(interaction, Hero, hero, monster, message);
     // update hero instance after being attacked
@@ -111,8 +118,10 @@ async function attack(interaction, sequelize, DataTypes) {
     if (hero.health <= 0) {                                   // hero defeated
       await dungeonFunctions.simulateDefeat(interaction, Hero, message);
       actionRow.addComponents(leaveButton);
+      skillRow.addComponents(noSkillButton);
     } else {                                                  // hero not defeated, battle continues
       actionRow.addComponents(attackButton, leaveButton);
+      skillRow = dungeonFunctions.createSkillActionRow(hero.class);
     }
   }
   // display battle simulation
@@ -121,7 +130,7 @@ async function attack(interaction, sequelize, DataTypes) {
   battleEmbed.spliceFields(3, 1, {name: 'Message', value: message.messageField});
   await interaction.update({
     embeds: [battleEmbed],
-    components: [actionRow],
+    components: [actionRow, skillRow],
   });
 }
 

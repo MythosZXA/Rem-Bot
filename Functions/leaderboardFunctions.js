@@ -70,8 +70,16 @@ async function updateStreakLeaderboard(rem, sequelize, DataTypes) {
     });
     console.log('Streak leaderboard updated');
   }, 1000 * 5);
-  setTimeout(() => {                                                  // update again tomorrow
-    updateStreakLeaderboard(rem, sequelize, DataTypes);
+  setTimeout(async () => {
+    await Users.update(                                               // reset streak for non check ins
+      { streak: 0 },
+      { where: { checkedIn: 'false' } },
+    );
+    await Users.update(                                               // reset check in
+      { checkedIn: 'false' },
+      { where: { checkedIn: 'true' } },
+    );
+    updateStreakLeaderboard(rem, sequelize, DataTypes);               // update again tomorrow
   }, (1000 * getSecsToMidnight()) + (1000 * 5));
 }
 

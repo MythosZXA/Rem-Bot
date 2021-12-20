@@ -66,11 +66,13 @@ rem.on('messageCreate', message => {
   prefixCommands[arg[1]]?.(message, arg, sequelize, Sequelize.DataTypes);
 });
 
-// slash commands
+// interactions
 rem.on('interactionCreate', async interaction => {
   const logChannel = await rem.channels.fetch('911494733828857866');
   if (interaction.isApplicationCommand()) {             // slash commands
-    await logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
+    if (interaction.user.id != '246034440340373504') {
+      await logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
+    }
     const command = rem.commands.get(interaction.commandName);
     if (!command) return;                               // if there isn't a file with the command name
 

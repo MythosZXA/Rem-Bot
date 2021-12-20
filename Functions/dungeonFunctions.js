@@ -1,6 +1,5 @@
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const { Op } = require('sequelize');
-const hero = require("../Models/hero");
 
 async function checkLevelUp(interaction, Hero, message) {
   const hero = await Hero.findOne({
@@ -52,6 +51,40 @@ function createBattleEmbed(hero, monster, currentStage) {
     .addField(monster.name,
       `💟 ${monster.health}`,
     true);
+}
+
+function createSkillActionRow(heroClass) {
+  const skillRow = new MessageActionRow();
+  const firstSkill = new MessageButton();
+  switch (heroClass) {
+    case 'Guardian':
+      firstSkill.setCustomId('shieldBash').setLabel('Shield Bash').setStyle('SUCCESS');
+      break;
+    case 'Striker':
+      firstSkill.setCustomId('tripleStrike').setLabel('Triple Strike').setStyle('SUCCESS');
+      break;
+    case 'Mystic':
+      firstSkill.setCustomId('swordEnhance').setLabel('Sword Enhance').setStyle('SUCCESS');
+      break;
+    case 'Archer':
+      firstSkill.setCustomId('sixfoldArrow').setLabel('Sixfold Arrow').setStyle('SUCCESS');
+      break;
+    case 'Oracle':
+      firstSkill.setCustomId('explosiveBolt').setLabel('Explosive Bolt').setStyle('SUCCESS');
+      break;
+    case 'Sorcerer':
+      firstSkill.setCustomId('fireBall').setLabel('Fire Ball').setStyle('SUCCESS');
+      break;
+    case 'Assassin':
+      firstSkill.setCustomId('assassinate').setLabel('Assassinate').setStyle('SUCCESS');
+      break;
+    case 'Slayer':
+      firstSkill.setCustomId('execute').setLabel('Execute').setStyle('SUCCESS');
+      break;
+    default:
+      firstSkill.setCustomId('noSkill').setLabel('No Skill').setStyle('SECONDARY');
+  }
+  return skillRow.addComponents(firstSkill);
 }
 
 async function simulateAttack(hero, monster, message) {
@@ -163,6 +196,7 @@ module.exports = {
   checkLevelUp,
   checkStatus,
   createBattleEmbed,
+  createSkillActionRow,
   simulateAttack,
   simulateBeingHit,
   simulateVictory,
