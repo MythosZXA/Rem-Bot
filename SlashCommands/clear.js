@@ -7,19 +7,20 @@ async function execute(interaction) {
       ephemeral: true,
     });
   }
-  await interaction.channel.bulkDelete(interaction.options.getNumber('amount', true))
-    .catch((error) => {
-      interaction.reply({
-        content: 'I can only clear between 1-100 messages that are not older than 2 weeks',
-        ephemeral: true,
-      });
-      console.log(error);
-  });
-  const message = await interaction.reply({
-    content: 'Deleted',
-    fetchReply: true,
-  });
-  message.delete();
+  try {
+    await interaction.channel.bulkDelete(interaction.options.getNumber('amount', true));
+    const message = await interaction.reply({
+      content: 'Deleted',
+      fetchReply: true,
+    });
+    message.delete();
+  } catch(error) {
+    await interaction.reply({
+      content: 'I can only clear between 1-100 messages that are not older than 2 weeks',
+      ephemeral: true,
+    });
+    console.log(error);
+  }
 }
 
 module.exports = {

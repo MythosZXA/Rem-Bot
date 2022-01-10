@@ -43,7 +43,7 @@ function checkBirthday(rem, sequelize, DataTypes) {
 }
 
 function validateFormat(interaction, birthdayString) {
-  let remdisappointed = interaction.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
+  const remdisappointed = interaction.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
   // parse input
   const birthdayFormat = birthdayString.split('-');
   const userYear = parseInt(birthdayFormat[0]);

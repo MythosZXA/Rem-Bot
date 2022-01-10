@@ -6,7 +6,6 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { joinVoiceChannel, createAudioResource, createAudioPlayer } = require("@discordjs/voice");
 
 async function execute(interaction) {
-  if (interaction.user.id != '246034440340373504') return;
   if (!interaction.member.voice.channelId) {
     await interaction.reply({
       content: 'Please join a voice channel first',
@@ -25,6 +24,8 @@ async function execute(interaction) {
   
   audioPlayer.play(resource);
   connection.subscribe(audioPlayer);
+  await interaction.reply('Playing');
+  await interaction.deleteReply();
 }
 
 module.exports = {

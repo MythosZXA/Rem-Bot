@@ -1,82 +1,49 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 
 async function execute(interaction) {
-  const actionRow = new MessageActionRow()
-    .addComponents(
-      new MessageSelectMenu()
-        .setCustomId('selectTimer')
-        .setPlaceholder('Nothing selected')
-        .addOptions([
-          {
-            label: '5 mins',
-            value: '5',
-          },
-          {
-            label: '10 mins',
-            value: '10',
-          },
-          {
-            label: '15 mins',
-            value: '15',
-          },
-          {
-            label: '30 mins',
-            value: '30',
-          },
-          {
-            label: '1 hour',
-            value: '60',
-          },
-        ]),
-    );
-
-  await interaction.reply({ 
-    content: 'How long should I set the timer for?',
-    components: [actionRow],
-    ephemeral: true
-  });
-
-  await setTimeout(() => {
-    interaction.fetchReply()
-      .then(reply => {
-        if (reply.components.length != 0) {
-          interaction.editReply({
-            content: 'Request timed out',
-            components: []
-          })
-        } // if
-      }) // then
-      .catch(console.error);
-  }, 1000 * 10);
-}
-
-async function setTimer(interaction) {
-  const duration = interaction.values[0];
-  // update message after selection
-  await interaction.update({
-    content: 'I will let you know when time is up!',
-    components: [],
-    ephemeral: true
-  })
-    .then(() => {
-      // save channel to send message at a later time
-      const channel = interaction.channel;
-      const user = interaction.user;
-      // reply to message after duration expires
-      setTimeout(() => {
-        channel.send({
-          content: `${user} Time is up!`,
-        })
-      }, 1000 * 60 * duration);
-    })
-    .catch(console.error);
+  // get duration of timer
+  const hrs = interaction.options.getInteger('hr');
+  const mins = interaction.options.getInteger('min');
+  let duration = 0;
+  if (hrs) duration += hrs * 60;
+  if (mins) duration += mins;
+  // duration validation
+  const remdisappointed = interaction.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
+  if (hrs == null && mins == null) {
+    await interaction.reply({
+      content: 'Please enter some values',
+      ephemeral: true,
+    });
+  } else if (duration == 0) {
+    await interaction.reply({
+      content: `Why are you even setting a timer ${remdisappointed}`,
+      ephemeral: true,
+    });
+  } else {
+    // confirmation message
+    await interaction.reply({
+      content: 'I will let you know when time is up!',
+      ephemeral: true,
+    });
+    // save info required to send msg later
+    const user = interaction.user;
+    const textChannel = interaction.channel;
+    // set timer
+    setTimeout(() => {
+      textChannel.send(`${user} Time is up!`);
+    }, 1000 * 60 * duration);
+  }
 }
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('timer')
-		.setDescription('Set a timer'),
+		.setDescription('Set a timer')
+    .addIntegerOption(option =>
+      option.setName('hr')
+      .setDescription('How many hours'))
+    .addIntegerOption(option =>
+      option.setName('min')
+      .setDescription('How many minutes')),
 	execute,
-  setTimer
 };
