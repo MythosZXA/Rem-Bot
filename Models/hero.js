@@ -29,14 +29,19 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'Good',
       allowNull: false,
     },
+    location: {
+      type: DataTypes.STRING,
+      defaultValue: 'Small Village',
+      allowNull: false,
+    },
     health: {
       type: DataTypes.INTEGER,
-      defaultValue: 500,
+      defaultValue: 20,
       allowNull: false,
     },
     max_health: {
       type: DataTypes.INTEGER,
-      defaultValue: 500,
+      defaultValue: 20,
       allowNull: false,
     },
     mana: {
@@ -44,9 +49,14 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 100,
       allowNull: false,
     },
+    max_mana: {
+      type: DataTypes.INTEGER,
+      defaultValue: 100,
+      allowNull: false,
+    },
     strength: {
       type: DataTypes.INTEGER,
-      defaultValue: 50,
+      defaultValue: 5,
       allowNull: false,
     },
     defense: {
@@ -56,7 +66,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     crit_rate: {
       type: DataTypes.INTEGER,
-      defaultValue: 5,
+      defaultValue: 15,
+      allowNull: false,
+    },
+    crit_damage: {
+      type: DataTypes.INTEGER,
+      defaultValue: 30,
       allowNull: false,
     }
   },

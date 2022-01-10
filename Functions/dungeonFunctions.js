@@ -6,10 +6,10 @@ async function checkLevelUp(interaction, Hero, message) {
     where: { userID: interaction.user.id },
     raw: true,
   });
-  const requiredEXP = 100 * Math.pow(1.1, hero.level)
+  const requiredEXP = 100 * Math.pow(1.05, hero.level)
   if (hero.exp >= requiredEXP) {
     await Hero.increment(
-      { level: +1, exp: -requiredEXP, max_health: +30, strength: +10, defense: +5 },
+      { level: +1, exp: -requiredEXP, max_health: +5, strength: +1, defense: +1 },
       { where: { userID: interaction.user.id } },
     );
     message.messageField += 'Your hero leveled up!\n';
@@ -87,15 +87,169 @@ function createSkillActionRow(heroClass) {
   return skillRow.addComponents(firstSkill);
 }
 
-async function simulateAttack(hero, monster, message) {
+async function shieldBash(Hero, hero, monster, message) {
+  if (hero.mana < 20) return false;
+  // deals 80% damage and stuns for 2 turns
+  const critChance = Math.random() * (100 - 1) + 1;               // hero attacks
+  let skillDamage = hero.strength * .8;
+  let finalDamage = skillDamage;
+  if (critChance <= hero.crit_rate) {                             // crit
+    finalDamage = (skillDamage +                                  // base damage
+                  (skillDamage * hero.crit_damage / 100)) *       // add crit
+                  (1 - (monster.defense / 1000));                 // subtract monster defense
+    monster.health -= finalDamage;
+    message.messageField += `Dealt ${finalDamage} crit damage!\n`;
+  } else {                                                        // didn't crit
+    finalDamage = skillDamage * (1 - (monster.defense / 1000));
+    monster.health -= finalDamage;
+    message.messageField += `Dealt ${finalDamage} damage\n`;
+  }
+  await Hero.increment(                                           // reduce mana
+    { mana: -20 },
+    { where: { userID: hero.userID } },
+  );
+  monster.disabled = 2;                                           // stun monster
+  message.messageField += `Stunned ${monster.name} for 2 turns!\n`;
+}
+
+async function tripleStrike(Hero, hero, monster, message) {
+  if (hero.mana < 40) return false;
+  // deals 60% damage 3 times
+  for (let i = 0; i < 3; i++) {
+    let critChance = Math.random() * (100 - 1) + 1;               // hero attacks
+    let skillDamage = hero.strength * .6;
+    let finalDamage = skillDamage;
+    if (critChance <= hero.crit_rate) {                           // crit
+      finalDamage = (skillDamage +                                // base damage
+                    (skillDamage * hero.crit_damage / 100)) *     // add crit
+                    (1 - (monster.defense / 1000));               // subtract monster defense
+      monster.health -= finalDamage;
+      message.messageField += `Dealt ${finalDamage} crit damage!\n`;
+    } else {                                                      // didn't crit
+      finalDamage = skillDamage * (1 - (monster.defense / 1000));
+      monster.health -= finalDamage;
+      message.messageField += `Dealt ${finalDamage} damage\n`;
+    }
+  }
+  await Hero.increment(                                           // reduce mana
+    { mana: -40 },
+    { where: { userID: hero.userID } },
+  );
+}
+
+async function enhanceSword(Hero, hero, monster, message) {
+  // if (hero.mana < 20) return false;
+  // // deals 80% damage and stuns for 2 turns
+  // const critChance = Math.random() * (100 - 1) + 1;             // hero attacks
+  // let finalDamage = hero.strength;
+  // if (critChance <= hero.crit_rate) {                           // crit
+  //   finalDamage = (hero.strength * .8 * 1.5) * (1 - (monster.defense / 1000));
+  //   monster.health -= finalDamage;
+  //   message.messageField += `Dealt ${finalDamage} crit damage!\n`;
+  // } else {                                                      // didn't crit
+  //   finalDamage = (hero.strength * .8) * (1 - (monster.defense / 1000));
+  //   monster.health -= finalDamage;
+  //   message.messageField += `Dealt ${finalDamage} damage\n`;
+  // }
+  // await Hero.increment(                                         // reduce mana
+  //   { mana: -20 },
+  //   { where: { userID: hero.userID } },
+  // );
+}
+
+async function sixfoldArrow(Hero, hero, monster, message) {
+  if (hero.mana < 45) return false;
+  // deals 45% damage six times
+  for (let i = 0; i < 6; i++) {
+    let critChance = Math.random() * (100 - 1) + 1;             // hero attacks
+    let skillDamage = hero.strength * .45;
+    let finalDamage = skillDamage;
+    if (critChance <= hero.crit_rate) {                         // crit
+      finalDamage = (skillDamage +                              // base damage
+                    (skillDamage * hero.crit_damage / 100)) *   // add crit
+                    (1 - (monster.defense / 1000));             // subtract monster defense
+      monster.health -= finalDamage;
+      message.messageField += `Dealt ${finalDamage} crit damage!\n`;
+    } else {                                                    // didn't crit
+      finalDamage = skillDamage * (1 - (monster.defense / 1000));
+      monster.health -= finalDamage;
+      message.messageField += `Dealt ${finalDamage} damage\n`;
+    }
+  }
+  await Hero.increment(                                         // reduce mana
+    { mana: -45 },
+    { where: { userID: hero.userID } },
+  );
+}
+
+async function explosiveBolt(Hero, hero, monster, message) {
+  // if (hero.mana < 50) return false;
+  // // deals crit damage and crit dmg is 4x if monster hp < 50%
+  // let finalDamage = hero.strength;
+  // if (monster.health < monster.max_health / 2) {
+  //   finalDamage = (hero.strength * 4) * (1 - (monster.defense / 1000));
+  // } else {
+  //   finalDamage = (hero.strength * 1.5) * (1 - (monster.defense / 1000));
+  // }
+  // monster.health -= finalDamage;
+  // message.messageField += `Dealt ${finalDamage} crit damage!\n`;
+  // await Hero.increment(
+  //   { mana: -50 },
+  //   { where: { userID: hero.userID } },
+  // );
+}
+
+async function assassinate(Hero, hero, monster, message) {
+  if (hero.mana < 50) return false;
+  // deals crit damage and base dmg is 2.5x if monster hp < 50%
+  let finalDamage = hero.strength;
+  if (monster.health < monster.max_health / 2) {
+    finalDamage = (finalDamage * 2.5 +
+                  (finalDamage * 2.5 * 1.5)) *
+                  (1 - (monster.defense / 1000));
+  } else {
+    finalDamage = (finalDamage +
+                  (finalDamage * hero.crit_rate)) *
+                  (1 - (monster.defense / 1000));
+  }
+  monster.health -= finalDamage;
+  message.messageField += `Dealt ${finalDamage} crit damage!\n`;
+  await Hero.increment(
+    { mana: -50 },
+    { where: { userID: hero.userID } },
+  );
+}
+
+async function execute(Hero, hero, monster, message) {
+  if (hero.mana < 15) return false;
+  // deals 130% damage at the cost of 5% hp
+  const critChance = Math.random() * (100 - 1) + 1;               // hero attacks
+  let finalDamage = hero.strength;
+  if (critChance <= hero.crit_rate) {                             // crit
+    finalDamage = (hero.strength * 1.5) * (1 - (monster.defense / 1000));
+    monster.health -= finalDamage;
+    message.messageField += `Dealt ${finalDamage} crit damage!\n`;
+  } else {                                                        // didn't crit
+    finalDamage = (hero.strength) * (1 - (monster.defense / 1000));
+    monster.health -= finalDamage;
+    message.messageField += `Dealt ${finalDamage} damage\n`;
+  }
+  await Hero.increment(                                           // reduce mana
+    { mana: -15 },
+    { where: { userID: hero.userID } },
+  );
+}
+
+function simulateAttack(hero, monster, message) {
   const critChance = Math.random() * (100 - 1) + 1;             // hero attacks
+  let finalDamage = hero.strength;
   if (critChance <= hero.crit_rate) {                           // crit
-    const finalDamage = (hero.strength * 1.5) * (1 - (monster.defense / 1000));
+    finalDamage = (hero.strength * 1.5) * (1 - (monster.defense / 1000));
     monster.health -= finalDamage;
     message.messageField += `Dealt ${finalDamage} crit damage!\n`;
   } else {                                                      // didn't crit
-    const finalDamage = hero.strength * (1 - (monster.defense / 1000));
-    monster.health -= hero.strength - monster.defense;
+    finalDamage = hero.strength * (1 - (monster.defense / 1000));
+    monster.health -= finalDamage;
     message.messageField += `Dealt ${finalDamage} damage\n`;
   }
 }
@@ -197,6 +351,13 @@ module.exports = {
   checkStatus,
   createBattleEmbed,
   createSkillActionRow,
+  shieldBash,
+  tripleStrike,
+  enhanceSword,
+  sixfoldArrow,
+  explosiveBolt,
+  assassinate,
+  execute,
   simulateAttack,
   simulateBeingHit,
   simulateVictory,

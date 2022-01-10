@@ -2,13 +2,16 @@
 require('dotenv').config();
 // discord
 const { Client, Intents } = require('discord.js');
-const rem = new Client({ intents: [
-  Intents.FLAGS.GUILDS,
-  Intents.FLAGS.GUILD_MEMBERS,
-  Intents.FLAGS.GUILD_MESSAGES,
-  Intents.FLAGS.GUILD_VOICE_STATES,
-  Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS
-]});
+const rem = new Client({
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MEMBERS,
+    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+    Intents.FLAGS.GUILD_VOICE_STATES,
+    Intents.FLAGS.GUILD_MESSAGES,
+  ]
+});
+const { getVoiceConnection } = require('@discordjs/voice');
 // sql
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
@@ -31,15 +34,17 @@ for (const file of commandFiles) {
 // start up
 rem.login(process.env.token);
 rem.on('ready', async () => {
+  // set up
   console.log('Rem is online.');
   rem.user.setActivity('for /help', {type: 'WATCHING'});
-  
+
   // auto regen heroes health and mana
   require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
   require('./Functions/heroFunctions').recoverMana(sequelize, Sequelize.DataTypes);
-  // check for birthdays when tomorrow comes
-  const birthdayFunctions = require('./Functions/birthdayFunctions.js');
-  birthdayFunctions.checkBirthdayTomorrow(rem, sequelize, Sequelize.DataTypes);
+  // check for special days when tomorrow comes
+  const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
+  specialDaysFunctions.checkHoliday(rem);
+  specialDaysFunctions.checkBirthday(rem, sequelize, Sequelize.DataTypes);
   // update leaderboards
   const leaderboardFunctions = require('./Functions/leaderboardFunctions');
   await leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
@@ -100,7 +105,17 @@ rem.on('interactionCreate', async interaction => {
         await interaction.message.delete();
         break;
       case 'attack':                                    // attack button
-        await dungeon.attack(interaction, sequelize, Sequelize.DataTypes);
+        await dungeon.battle(interaction, sequelize, Sequelize.DataTypes);
+        break;
+      case 'shieldBash':                                // skill buttons
+      case 'tripleStrike':
+      case 'swordEnhance':
+      case 'sixfoldArrow':
+      case 'explosiveBolt':
+      case 'fireBall':
+      case 'assassinate':
+      case 'execute':
+        // await dungeon.battle(interaction, sequelize, Sequelize.DataTypes, interaction.customId)
         break;
       case 'nextStage':                                 // next stage button
         interaction.message.currentStage++;
@@ -120,3 +135,10 @@ rem.on('interactionCreate', async interaction => {
     }
   }
 });
+
+rem.on('voiceStateUpdate', (oldState, newState) => {
+  const voiceConnection = getVoiceConnection(newState.guild.id);
+  if (voiceConnection && !newState.channelId && oldState?.channel.members.size == 1) {
+    voiceConnection.destroy();
+  }
+})

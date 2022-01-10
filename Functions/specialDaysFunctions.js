@@ -1,44 +1,34 @@
 const { MessageAttachment } = require("discord.js");
 
-function getSecsToMidnight() {
+function secsToMidnight() {
   let nowString = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
   let nowTime = new Date(nowString);
   let midnight = new Date(nowTime).setHours(24, 0, 0, 0);
   return (midnight - nowTime) / 1000;
 }
 
-function checkBirthdayTomorrow(rem, sequelize, DataTypes) {
+function checkBirthday(rem, sequelize, DataTypes) {
   setTimeout(async () => {
     // grabs the birthday of all users in database
-    const users = require('../Models/users')(sequelize, DataTypes);
-    const birthdays = await users.findAll({ attributes: ['birthday'], raw: true });
-    // for each user birthday
-    birthdays.forEach(async birthdayMap => {
-      const birthdayString = birthdayMap.birthday;
-      if (birthdayString == null) return;
+    const Users = require('../Models/users')(sequelize, DataTypes);
+    const guildUsers = (await Users.findAll({ raw: true }));
+    // get today's month and date
+    const now = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
+    const currentMonth = new Date(now).getMonth() + 1;
+    const currentDate = new Date(now).getDate();
+    // compare each birthday to today's date
+    guildUsers.forEach(async user => {
+      if (user.birthday == null) return;
       // get user birth month and date
-      const birthdayFormat = birthdayString.split('-');
+      const birthdayFormat = user.birthday.split('-');
       const userMonth = parseInt(birthdayFormat[1]);
       const userDate = parseInt(birthdayFormat[2]);
-      // get today's month and date
-      now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
-      const currentMonth = new Date(now).getMonth() + 1;
-      const currentDate = new Date(now).getDate();
       // if it's user's birthday
       if (userMonth == currentMonth && userDate == currentDate) {
-        // get user with the birthday
-        const userIDMap = await users.findAll(
-          { 
-            attributes: ['userID'],
-            where: { birthday:  birthdayString},
-            raw: true,
-          },
-        );
-        const userID = userIDMap[0].userID;
-        const bdMember = await rem.guilds.cache.get('773660297696772096').members.fetch(userID);
+        const bdMember = await rem.guilds.cache.get('773660297696772096').members.fetch(user.userID);
         // send birthday message
         const picture = new MessageAttachment('https://i.imgur.com/7IqikPC.jpg');
-        const generalChannel = await rem.channels.fetch('803425860396908577');
+        const generalChannel = await rem.channels.fetch('773660297696772100');
         await generalChannel.sendTyping();
         await generalChannel.send({
           content: `Happy Birthday ${bdMember}`,
@@ -47,9 +37,9 @@ function checkBirthdayTomorrow(rem, sequelize, DataTypes) {
       }
     });
     // check again tomorrow
-    console.log(`Hours until midnight: ${getSecsToMidnight() / 60 / 60}`);
-    checkBirthdayTomorrow(rem, sequelize, DataTypes, getSecsToMidnight());
-  }, (1000 * getSecsToMidnight()) + (1000 * 5));
+    console.log(`Hours until midnight: ${secsToMidnight() / 60 / 60}`);
+    checkBirthday(rem, sequelize, DataTypes, secsToMidnight());
+  }, (1000 * secsToMidnight()) + (1000 * 5));
 }
 
 function validateFormat(interaction, birthdayString) {
@@ -150,8 +140,30 @@ function validateFormat(interaction, birthdayString) {
   return true;
 }
 
+function checkHoliday(rem) {
+  setTimeout(async () => {
+    // get today's month and date
+    now = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
+    const currentMonth = new Date(now).getMonth() + 1;
+    const currentDate = new Date(now).getDate();
+    // christmas
+    if (currentMonth == 12 && currentDate == 25) {
+      const picture = new MessageAttachment('https://i.imgur.com/hURyyWx.jpg');
+      const generalChannel = await rem.channels.fetch('773660297696772100');
+      await generalChannel.sendTyping();
+      await generalChannel.send({
+        content: `Merry Christmas @everyone`,
+        files: [picture]
+      });
+    }
+    // check again tomorrow
+    checkHoliday(rem);
+  }, (1000 * secsToMidnight()) + (1000 * 5));
+}
+
 module.exports = {
-  getSecsToMidnight,
-  checkBirthdayTomorrow,
-  validateFormat
+  secsToMidnight,
+  checkBirthday,
+  validateFormat,
+  checkHoliday
 };

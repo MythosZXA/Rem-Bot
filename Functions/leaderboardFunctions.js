@@ -11,7 +11,7 @@ async function updateHeroLeaderboard(rem, sequelize, DataTypes) {
   // fetch leaderboard message to update
   const guild = await rem.guilds.fetch('773660297696772096');
   const leaderboardChannel = await rem.channels.fetch('921925078541824052');
-  const heroLeaderboardMessage = await leaderboardChannel.messages.fetch('921938788991791155');
+  const heroLeaderboardMessage = await leaderboardChannel.messages.fetch('923023729255141397');
   // update leaderboard
   const Hero = require('../Models/hero')(sequelize, DataTypes);
   const heroes = await Hero.findAll({                               // get all heroes in DB
@@ -31,7 +31,7 @@ async function updateHeroLeaderboard(rem, sequelize, DataTypes) {
       `${hero.credits}`.padEnd(10) +
       '\n';
   });
-  setTimeout(async () => {
+  setTimeout(() => {
     heroLeaderboardMessage.edit({                                   // update message
       content: Formatters.codeBlock(displayString) 
     });
@@ -46,7 +46,7 @@ async function updateStreakLeaderboard(rem, sequelize, DataTypes) {
   // fetch leaderboard message to update
   const guild = await rem.guilds.fetch('773660297696772096');
   const leaderboardChannel = await rem.channels.fetch('921925078541824052');
-  const streakLeaderboardMessage = await leaderboardChannel.messages.fetch('921942698242482217');
+  const streakLeaderboardMessage = await leaderboardChannel.messages.fetch('923023883731357737');
   // update leaderboard
   const Users = require('../Models/users')(sequelize, DataTypes);
   const guildUsers = await Users.findAll({                            // get all users in DB
@@ -64,7 +64,7 @@ async function updateStreakLeaderboard(rem, sequelize, DataTypes) {
       `${guildUser.streak}`.padEnd(10) +
       '\n';
   });
-  setTimeout(async () => {
+  setTimeout(() => {
     streakLeaderboardMessage.edit({                                   // update message
       content: Formatters.codeBlock(displayString) 
     });

@@ -44,6 +44,8 @@ async function execute(interaction, sequelize, DataTypes) {
       raw: true
     });
   const monster = await Monster.findOne({ where: { monsterID: monsterID }, raw: true });
+  monster.max_health = monster.health;
+  monster.disabled = 0;
   // create battle display using embed
   const battleEmbed = dungeonFunctions.createBattleEmbed(hero, monster, currentStage);
   battleEmbed.addField('Message', `Entered stage ${currentStage}\n`);
@@ -88,7 +90,7 @@ async function execute(interaction, sequelize, DataTypes) {
   }, )
 }
 
-async function attack(interaction, sequelize, DataTypes) {
+async function battle(interaction, sequelize, DataTypes, skillName) {
   // get data required for this battle
   const Hero = require('../Models/hero')(sequelize, DataTypes);
   let hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
@@ -97,8 +99,25 @@ async function attack(interaction, sequelize, DataTypes) {
   message.messageField = '';                                  // reset message field
   const actionRow = new MessageActionRow();
   let skillRow = new MessageActionRow();
-  // simulate battle
-  await dungeonFunctions.simulateAttack(hero, monster, message);
+  // simulate attack
+  if (!skillName) {                                           // regular attack
+    dungeonFunctions.simulateAttack(hero, monster, message);
+  } else {                                                    // skill use
+    if ((await dungeonFunctions[skillName]?.(Hero, hero, monster, message)) == false) {
+      // not enough mana, display info and do nothing
+      message.messageField += 'Not enough mana!\n';
+      hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
+      const battleEmbed = dungeonFunctions.createBattleEmbed(hero, monster, message.currentStage);
+      battleEmbed.spliceFields(3, 1, {name: 'Message', value: message.messageField});
+      actionRow.addComponents(attackButton, leaveButton);
+      skillRow = dungeonFunctions.createSkillActionRow(hero.class);
+      await interaction.update({
+        embeds: [battleEmbed],
+        components: [actionRow, skillRow],
+      });
+      return;
+    }
+  }
   // check monster condition after attacking
   if (monster.health <= 0) {                                  // monster defeated
     await dungeonFunctions.simulateVictory(interaction, Hero, monster, message);
@@ -111,7 +130,11 @@ async function attack(interaction, sequelize, DataTypes) {
     }
     skillRow.addComponents(noSkillButton);
   } else {                                                    // monster not defeated, battle continues
-    await dungeonFunctions.simulateBeingHit(interaction, Hero, hero, monster, message);
+    if (monster.disabled == 0) {                             // monster attack
+      await dungeonFunctions.simulateBeingHit(interaction, Hero, hero, monster, message);
+    } else {                                                  // monster can't attack, reduce turn
+      monster.disabled--;
+    }
     // update hero instance after being attacked
     hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
     // check hero condition after receiving attack
@@ -143,6 +166,6 @@ module.exports = {
         .setDescription('Dungeon number')
         .setRequired(true)
         .addChoice('1', 1)),
-    execute,
-    attack,
+  execute,
+  battle,
 }

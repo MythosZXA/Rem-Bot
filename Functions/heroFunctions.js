@@ -41,37 +41,37 @@ async function updateClass(interaction, Hero, Equip) {
       raw: true,
     });
      // determine which class to change to
-  let changeTo = 'Adventurer';
+  let newClass = 'Adventurer';
   if (primaryWeapon.includes('Sword')) {                             // sword primary
     if (secondaryWeapon.includes('Shield')) {                        // shield secondary
-      changeTo = 'Guardian';
+      newClass = 'Guardian';
     } else if (secondaryWeapon.includes('Sword')) {                  // sword secondary
-      changeTo = 'Striker';
+      newClass = 'Striker';
     } else if (secondaryWeapon.includes('Arcane')) {                 // arcane secondary
-      changeTo = 'Mystic';
+      newClass = 'Mystic';
     }
   } else if (primaryWeapon.includes('Bow')) {                        // bow primary
     if (secondaryWeapon.includes('Arrows')) {                        // arrow secondary
-      changeTo = 'Archer';
+      newClass = 'Archer';
     } else if (secondaryWeapon.includes('Arcane')) {                 // arcane secondary
-      changeTo = 'Oracle';
+      newClass = 'Oracle';
     }
   } else if (primaryWeapon.includes('Staff')) {                      // staff primary
     if (secondaryWeapon.includes('Arcane')) {                        // arcane secondary
-      changeTo = 'Sorcerer';
+      newClass = 'Sorcerer';
     }
   } else if (primaryWeapon.includes('Dagger')) {                     // dagger primary
     if (secondaryWeapon.includes('Dagger')) {                        // dagger secondary
-      changeTo = 'Assassin';
+      newClass = 'Assassin';
     }
   } else if (primaryWeapon.includes('Greatsword')) {                 // greatsword primary
     if (secondaryWeapon.includes('Imprint')) {                       // imprint secondary
-      changeTo = 'Slayer';
+      newClass = 'Slayer';
     }
   }
   // change class
   await Hero.update(
-    { class: changeTo },
+    { class: newClass },
     { where: { userID: interaction.user.id } },
   );
   } catch (error) {
