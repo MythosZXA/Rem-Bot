@@ -1,6 +1,20 @@
+async function message(rem, message, arg) {
+  const guild = await rem.guilds.fetch('773660297696772096');
+  // if arg[2] is nickname
+  const user = (await guild.members.fetch()).find(guildMember => 
+    guildMember.nickname?.toLowerCase() == arg[2].toLowerCase());
+  // if arg[2] is text channel name
+  const textChannel = (await guild.channels.fetch()).find(guildChannel =>
+    guildChannel.name == arg[2].toLowerCase());
+  // send msg to destination
+  const msgToSend = arg.join(' ').substring(14 + arg[2].length);
+  if (user)
+    await user.send(msgToSend);
+  else if (textChannel)
+    await textChannel.send(msgToSend);
+}
 
-
-async function remind(message, arg) {
+async function remind(rem, message, arg) {
   // validate format
   if(arg[3] == null || !arg[arg.length - 2].toLowerCase().includes('in')) {
     message.channel.send('Invalid format. Please try again');
@@ -49,11 +63,12 @@ async function remind(message, arg) {
   }
 }
 
-async function test(message, arg, sequelize, DataTypes) {
+async function test(rem, message, arg, sequelize, DataTypes) {
   
 }
 
 module.exports = {
+  message,
   remind,
   test
 };

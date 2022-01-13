@@ -4,12 +4,14 @@ require('dotenv').config();
 const { Client, Intents } = require('discord.js');
 const rem = new Client({
   intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    Intents.FLAGS.GUILD_VOICE_STATES,
-    Intents.FLAGS.GUILD_MESSAGES,
-  ]
+    'GUILDS',
+    'GUILD_MEMBERS',
+    'GUILD_EMOJIS_AND_STICKERS',
+    'GUILD_VOICE_STATES',
+    'GUILD_MESSAGES',
+    'DIRECT_MESSAGES',
+  ],
+  partials: ['CHANNEL']
 });
 const { getVoiceConnection } = require('@discordjs/voice');
 // sql
@@ -52,9 +54,12 @@ rem.on('ready', async () => {
 });
 
 // prefix commands
-rem.on('messageCreate', message => {
-  console.log(message.author.username + ': ' + message.content);
+rem.on('messageCreate', async message => {
+  console.log(`${message.author.username}: ${message.content}`);
   if (message.author.bot) return;
+  const logChannel = await rem.channels.fetch('911494733828857866');
+  if (!message.inGuild() && message.author.id != '246034440340373504') 
+    await logChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`)
 
   if (message.content.toLowerCase().includes('thanks rem')) {
     message.channel.send('You\'re welcome!');
@@ -65,10 +70,10 @@ rem.on('messageCreate', message => {
     return;
   }
 
-  let arg = message.content.toLowerCase().split(/ +/);
-  if (arg[0] != 'rem,') return;
+  let arg = message.content.split(/ +/);
+  if (arg[0].toLowerCase() != 'rem,') return;
   const prefixCommands = require('./prefixCommands.js');
-  prefixCommands[arg[1]]?.(message, arg, sequelize, Sequelize.DataTypes);
+  prefixCommands[arg[1].toLowerCase()]?.(rem, message, arg, sequelize, Sequelize.DataTypes);
 });
 
 // interactions
