@@ -57,9 +57,10 @@ rem.on('ready', async () => {
 rem.on('messageCreate', async message => {
   console.log(`${message.author.username}: ${message.content}`);
   if (message.author.bot) return;
+  // logs DMs
   const logChannel = await rem.channels.fetch('911494733828857866');
   if (!message.inGuild() && message.author.id != '246034440340373504') 
-    await logChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`)
+    await logChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`);
 
   if (message.content.toLowerCase().includes('thanks rem')) {
     message.channel.send('You\'re welcome!');
@@ -80,9 +81,7 @@ rem.on('messageCreate', async message => {
 rem.on('interactionCreate', async interaction => {
   const logChannel = await rem.channels.fetch('911494733828857866');
   if (interaction.isApplicationCommand()) {             // slash commands
-    if (interaction.user.id != '246034440340373504') {
-      await logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
-    }
+    await logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
     const command = rem.commands.get(interaction.commandName);
     if (!command) return;                               // if there isn't a file with the command name
 

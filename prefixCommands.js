@@ -1,3 +1,23 @@
+const { MessageEmbed } = require('discord.js');
+
+function help(rem, message, arg) {
+  const helpEmbed = new MessageEmbed()
+    .setColor(0x19EFF5)
+    .setThumbnail('https://i.imgur.com/oO1SZAs.jpg')
+    .addField('Normal Commands',
+              `/add_tag----------| gain access to the server
+              /check_in---------| daily streaks, like snapchat
+              /play--------------| plays an mp3 file
+              /set_birthday-----| birthday message on birthday
+              /timer-------------| set a timer`)
+    // .addField('RPG Commands',
+    //           `/hero
+    //           /dungeon
+    //           /shop
+    //           /pay`);
+  message.channel.send({ embeds: [helpEmbed] });
+}
+
 async function message(rem, message, arg) {
   const guild = await rem.guilds.fetch('773660297696772096');
   // if arg[2] is nickname
@@ -68,6 +88,7 @@ async function test(rem, message, arg, sequelize, DataTypes) {
 }
 
 module.exports = {
+  help,
   message,
   remind,
   test
