@@ -60,7 +60,7 @@ async function updateStreakLeaderboard(rem, sequelize, DataTypes) {
     order: [[ 'streak', 'DESC' ]],
     raw: true,
   });
-  if (!guildMembers) return;                                          // no members with streaks
+  if (guildMembers.length == 0) return;                                          // no members with streaks
   // create leaderboard display
   let displayString =                                                 // leaderboard header
     'User'.padEnd(15) +
@@ -109,7 +109,7 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
     order: [[ 'rpsWins', 'DESC' ]],
     raw: true,
   });
-  if (!guildMembers) return;                                          // no members with wins
+  if (guildMembers.length == 0) return;                               // no members with wins
   // create leaderboard display
   let displayString =                                                 // leaderboard header
     'User'.padEnd(15) +

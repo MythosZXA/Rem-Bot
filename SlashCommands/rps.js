@@ -110,12 +110,14 @@ async function play(interaction, sequelize, DataTypes) {
   });
   // update data & leaderboard
   const Users = require('../Models/users')(sequelize, DataTypes);
-  await Users.increment(
-    { rpsWins: +1 },
-    { where: { userID: winner.id } },
-  );
-  const leaderboardFunctions = require('../Functions/leaderboardFunctions');
-  await leaderboardFunctions.updateRPSLeaderboard(interaction.client, sequelize, DataTypes);
+  if (winner) {
+    await Users.increment(
+      { rpsWins: +1 },
+      { where: { userID: winner.id } },
+    );
+    const leaderboardFunctions = require('../Functions/leaderboardFunctions');
+    await leaderboardFunctions.updateRPSLeaderboard(interaction.client, sequelize, DataTypes);
+  }
 }
 
 module.exports = {

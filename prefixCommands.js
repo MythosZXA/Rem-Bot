@@ -7,12 +7,14 @@ function help(message, arg) {
     .addField('Normal Commands',
               `/check_in
               /play
+              /rock_paper_scissors
               /set_birthday
               /timer`,
               true)
     .addField('Info',
               `| daily streaks, like snapchat
               | plays an mp3 file
+              | play RPS with someone
               | birthday message on birthday
               | set a timer`,
               true);
