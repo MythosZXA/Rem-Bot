@@ -68,7 +68,7 @@ async function execute(interaction, sequelize, DataTypes) {
   let message;
   if (interaction.commandName == 'dungeon') {
     message = await interaction.fetchReply();                 // message is the reply to slash command
-    message.originalUser = interaction.user;
+    message.originalMember = interaction.member;
   } else {
     message = await interaction.message;                      // message is attached to this button
     await interaction.reply({                                 // reply so button interaction don't fail

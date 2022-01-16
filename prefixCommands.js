@@ -1,15 +1,21 @@
 const { MessageEmbed } = require('discord.js');
 
-function help(rem, message, arg) {
+function help(message, arg) {
   const helpEmbed = new MessageEmbed()
     .setColor(0x19EFF5)
     .setThumbnail('https://i.imgur.com/oO1SZAs.jpg')
     .addField('Normal Commands',
-              `/add_tag----------| gain access to the server
-              /check_in---------| daily streaks, like snapchat
-              /play--------------| plays an mp3 file
-              /set_birthday-----| birthday message on birthday
-              /timer-------------| set a timer`)
+              `/check_in
+              /play
+              /set_birthday
+              /timer`,
+              true)
+    .addField('Info',
+              `| daily streaks, like snapchat
+              | plays an mp3 file
+              | birthday message on birthday
+              | set a timer`,
+              true);
     // .addField('RPG Commands',
     //           `/hero
     //           /dungeon
@@ -18,8 +24,8 @@ function help(rem, message, arg) {
   message.channel.send({ embeds: [helpEmbed] });
 }
 
-async function message(rem, message, arg) {
-  const guild = await rem.guilds.fetch('773660297696772096');
+async function message(message, arg) {
+  const guild = await message.client.guilds.fetch('773660297696772096');
   // if arg[2] is nickname
   const user = (await guild.members.fetch()).find(guildMember => 
     guildMember.nickname?.toLowerCase() == arg[2].toLowerCase());
@@ -34,7 +40,7 @@ async function message(rem, message, arg) {
     await textChannel.send(msgToSend);
 }
 
-async function remind(rem, message, arg) {
+async function remind(message, arg) {
   // validate format
   if(arg[3] == null || !arg[arg.length - 2].toLowerCase().includes('in')) {
     message.channel.send('Invalid format. Please try again');
@@ -83,7 +89,7 @@ async function remind(rem, message, arg) {
   }
 }
 
-async function test(rem, message, arg, sequelize, DataTypes) {
+async function test(message, arg, sequelize, DataTypes) {
   
 }
 

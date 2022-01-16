@@ -58,7 +58,7 @@ async function execute(interaction, sequelize, DataTypes) {
   });
   // attach original user to message (to ignore other users pressing)
   const message = await interaction.fetchReply();
-  message.originalUser = interaction.user;
+  message.originalmember = interaction.member;
   setTimeout(() => {
     if (!message.deleted) message.delete();
   }, 1000 * 60);

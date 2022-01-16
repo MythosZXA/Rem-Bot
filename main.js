@@ -38,7 +38,7 @@ rem.login(process.env.token);
 rem.on('ready', async () => {
   // set up
   console.log('Rem is online.');
-  rem.user.setActivity('for /help', {type: 'WATCHING'});
+  // rem.user.setActivity('for /help', {type: 'WATCHING'});
 
   // auto regen heroes health and mana
   require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
@@ -52,6 +52,32 @@ rem.on('ready', async () => {
   await leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
   await leaderboardFunctions.updateStreakLeaderboard(rem, sequelize, Sequelize.DataTypes);
 });
+
+// add user to database on join
+rem.on('guildMemberAdd', async member => {
+  if (member.user.bot) return;
+  const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
+  try {
+    // add userID and username to database
+    await Users.create({
+      userID: member.id,
+      username: member.user.tag,
+    });
+  } catch(error) {
+    console.log(error);
+  }
+});
+
+// remove user from database on leave
+rem.on('guildMemberRemove', async member => {
+  if (member.user.bot) return;
+  const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
+  try {
+    await Users.destroy({ where: { userID: member.id } });
+  } catch(error) {
+    console.log(error);
+  }
+})
 
 // prefix commands
 rem.on('messageCreate', async message => {
@@ -74,7 +100,7 @@ rem.on('messageCreate', async message => {
   let arg = message.content.split(/ +/);
   if (arg[0].toLowerCase() != 'rem,') return;
   const prefixCommands = require('./prefixCommands.js');
-  prefixCommands[arg[1].toLowerCase()]?.(rem, message, arg, sequelize, Sequelize.DataTypes);
+  prefixCommands[arg[1].toLowerCase()]?.(message, arg, sequelize, Sequelize.DataTypes);
 });
 
 // interactions
@@ -96,17 +122,38 @@ rem.on('interactionCreate', async interaction => {
       });
     }
   } else if (interaction.isSelectMenu()) {              // select menu interaction
-    if (interaction.customId == 'selectTimer') {        // timer select menu
-      await logChannel.send(`${interaction.user.tag} selected: ${interaction.values[0]}`)
-      const timer = rem.commands.get('timer');
-      await timer.setTimer(interaction);
-    }
+    
   } else if (interaction.isButton()) {                  // button interaction
-    if (interaction.user != interaction.message.originalUser) return;
+    // validate the presser of this button
+    if (interaction.message?.opponent) {
+      if (interaction.member?.nickname.toLowerCase() != interaction.message.opponent.toLowerCase()) {
+        await interaction.reply({
+          content: 'You are not the opponent of this game',
+          ephemeral: true,
+        });
+        return;
+      }
+    } else if (interaction.member != interaction.message?.originalMember) {
+      await interaction.reply({
+        content: 'You cannot interact with this button',
+        ephemeral: true,
+      });
+      return;
+    }
+
+    // execute button functions
+    const rps = rem.commands.get('rock_paper_scissors');
     const dungeon = rem.commands.get('dungeon');
     switch (interaction.customId) {
+      // rps buttons
+      case 'rock':
+      case 'paper':
+      case 'scissors':
+        await rps.play(interaction, sequelize, Sequelize.DataTypes);
+        break;
+      // rpg buttons
       case 'close':                                     // close button
-        await interaction.message.delete();
+        await interaction.message.delete(interaction);
         break;
       case 'attack':                                    // attack button
         await dungeon.battle(interaction, sequelize, Sequelize.DataTypes);

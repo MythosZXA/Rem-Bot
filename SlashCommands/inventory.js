@@ -26,7 +26,7 @@ async function execute(interaction, sequelize, DataTypes) {
     components: [actionRow],
   });
   const message = await interaction.fetchReply();
-  message.originalUser = interaction.user;
+  message.originalMember = interaction.member;
   setTimeout(() => {
     if (!message.deleted) message.delete();
   }, 1000 * 60);
