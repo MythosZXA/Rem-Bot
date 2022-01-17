@@ -7,12 +7,12 @@ function help(message, arg) {
     .addField('Normal Commands',
               `/check_in
               /play
-              /rock_paper_scissors
+              /rps
               /set_birthday
               /timer`,
               true)
     .addField('Info',
-              `| daily streaks, like snapchat
+              `| daily streaks, get 10 coins
               | plays an mp3 file
               | play RPS with someone
               | birthday message on birthday
@@ -92,12 +92,18 @@ async function remind(message, arg) {
 }
 
 async function test(message, arg, sequelize, DataTypes) {
-  
+  console.log(arg);
+}
+
+async function update(message, arg, seqeulize, DataTypes) {
+  const leaderboardFunctions = require('./Functions/leaderboardFunctions');
+  await leaderboardFunctions.updateRPSLeaderboard(message.client, seqeulize, DataTypes);
 }
 
 module.exports = {
   help,
   message,
   remind,
-  test
+  test,
+  update,
 };

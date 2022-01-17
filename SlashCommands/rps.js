@@ -13,77 +13,108 @@ const scissorsButton = new MessageButton()
   .setCustomId('scissors')
   .setLabel('Scissors')
   .setStyle('PRIMARY');
+const declineButton = new MessageButton()
+  .setCustomId('decline')
+  .setLabel('Decline')
+  .setStyle('DANGER');
 const rpsChoices = new MessageActionRow()
-  .setComponents([rockButton, paperButton, scissorsButton]);
+  .setComponents([rockButton, paperButton, scissorsButton, declineButton]);
 
-async function execute(interaction) {
+async function execute(interaction, sequelize, DataTypes) {
+  // validate bet value
+  const betAmount = interaction.options.getInteger('coins', true);
+  if (betAmount < 0) {
+    const remdisappointed = interaction.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
+    await interaction.reply({
+      content: `No betting negative values ${remdisappointed}`,
+      ephemeral: true,
+    });
+    return;
+  }
   // find guild member by nickname
   const opponentNickname = interaction.options.getString('nickname', true);
-  const opponent = (await (await interaction.client.guilds.fetch('773660297696772096')).members.fetch())
-    .find(guildMember => guildMember.nickname?.toLowerCase() == opponentNickname.toLowerCase());
-  // initiate the game if opponent is found
-  if (!opponent) {                                          // no opponent
+  const opponentMember = (await (await interaction.client.guilds.fetch('773660297696772096')).members.fetch())
+    .find(guildMember => guildMember.nickname?.toUpperCase() === opponentNickname.toUpperCase());
+  if (!opponentMember) {                                      // no opponent, exit
     await interaction.reply({
       content: 'I could not find anyone with that nickname!',
       ephemeral: true,
     });
     return;
-  } else {                                                  // opponent found
-    await interaction.reply({      
-      content: `${opponent}, ${interaction.member.nickname} wants to play rock-paper-scissors!`,
-      components: [rpsChoices],
-    });
-    // attach related information to message
-    const gameMessage = await interaction.fetchReply();
-    gameMessage.originalMember = interaction.member;
-    gameMessage.opponent = opponentNickname;
-    gameMessage.choice = interaction.options.getString('choice', true);
-    // update message if opponent didn't play
-    setTimeout(async () => {
-      if (!gameMessage.content.includes('Results')) {
-        await gameMessage.edit({
-          content: `${gameMessage.opponent} didn't want to play :(`,
-          components: [],
-        });
-      }
-    }, 1000 * 60 * 10);
   }
+  // check to see if both parties has enough coins
+  const Users = require('../Models/users')(sequelize, DataTypes);
+  const { Op } = require('sequelize');
+  const gameMembers = await Users.findAll({
+    where: { userID: { [Op.or]: [interaction.member.id, opponentMember.id] } },
+    raw: true,
+  });
+  let enoughCoins = true;
+  gameMembers.forEach(async member => {
+    if (member.coins < interaction.options.getInteger('coins', true)) {
+      enoughCoins = false;
+    }
+  })
+  if (!enoughCoins) {                                         // not enough coins, exit
+    await interaction.reply({
+      content: 'Either you or your opponent does not have enough coins!',
+      ephemeral: true,
+    });
+    return;
+  }
+  // initiate game
+  await interaction.reply({      
+    content: `${opponentMember}, ${interaction.member.nickname} \n` +
+    `wants to play rock-paper-scissors with a bet of ${betAmount} coins!`,
+    components: [rpsChoices],
+  });
+  // attach related information to message
+  const gameMessage = await interaction.fetchReply();
+  gameMessage.originalMember = interaction.member;
+  gameMessage.opponentNickname = opponentNickname;
+  gameMessage.requesterChoice = interaction.options.getString('choice', true);
+  gameMessage.betAmount = betAmount;
+  // update message if opponent didn't play in 10 mins
+  setTimeout(async () => {
+    await cancelGame(gameMessage);
+  }, 1000 * 60 * 10);
 }
 
 async function play(interaction, sequelize, DataTypes) {
   // determine winner
-  let requesterChoice = interaction.message.choice.toLowerCase();
-  let opponentChoice = interaction.customId;
+  const gameMessage = interaction.message;
+  let requesterChoice = gameMessage.requesterChoice.toUpperCase();
+  let opponentChoice = interaction.customId.toUpperCase();
   let winner;
   if (requesterChoice == opponentChoice) {                                        // tie
     winner = undefined;
-  } else if ((requesterChoice == 'rock' && opponentChoice == 'scissors') ||
-             (requesterChoice == 'paper' && opponentChoice == 'rock') ||
-             (requesterChoice == 'scissors' && opponentChoice == 'paper')) {      // requester wins
-    winner = interaction.message.originalMember;
+  } else if ((requesterChoice === 'ROCK' && opponentChoice === 'SCISSORS') ||
+             (requesterChoice === 'PAPER' && opponentChoice === 'ROCK') ||
+             (requesterChoice === 'SCISSORS' && opponentChoice === 'PAPER')) {    // requester wins
+    winner = gameMessage.originalMember;
   } else {                                                                        // opponent wins
     winner = interaction.member;
   }
   // switch choices to emojis for display
-  switch (interaction.message.choice) {
-    case 'Rock':
+  switch (requesterChoice) {
+    case 'ROCK':
       requesterChoice = '✊';
       break;
-    case 'Paper':
+    case 'PAPER':
       requesterChoice = '✋';
       break;
-    case 'Scissors':
+    case 'SCISSORS':
       requesterChoice = '✌️';
       break;
   }
-  switch (interaction.customId) {
-    case 'rock':
+  switch (opponentChoice) {
+    case 'ROCK':
       opponentChoice = '✊';
       break;
-    case 'paper':
+    case 'PAPER':
       opponentChoice = '✋';
       break;
-    case 'scissors':
+    case 'SCISSORS':
       opponentChoice = '✌️';
       break;
   }
@@ -92,10 +123,10 @@ async function play(interaction, sequelize, DataTypes) {
   if (winner) {
     displayEmbed.setTitle(`${winner.nickname} wins!`);
   } else {
-    displayEmbed.setTitle('It is a tie!')
+    displayEmbed.setTitle('It\'s a tie!')
   }
   displayEmbed
-    .addField(`${interaction.message.originalMember.nickname}`,
+    .addField(`${gameMessage.originalMember.nickname}`,
               `${requesterChoice}`,
               true)
     .addField('🆚', '---', true)
@@ -108,21 +139,45 @@ async function play(interaction, sequelize, DataTypes) {
     embeds: [displayEmbed],
     components: [],
   });
-  // update data & leaderboard
+  // update data
   const Users = require('../Models/users')(sequelize, DataTypes);
   if (winner) {
+    // increase winner stats
+    const betAmount = gameMessage.betAmount;
     await Users.increment(
-      { rpsWins: +1 },
+      { rpsWins: +1 , coins: sequelize.literal(+betAmount) },
       { where: { userID: winner.id } },
     );
+    // decrease loser stats
+    if (winner == gameMessage.originalMember) {                                   // requester won
+      await Users.increment(
+        { coins: sequelize.literal(-betAmount) },
+        { where: { userID: interaction.user.id } },
+      );
+    } else {                                                                      // requester lost
+      await Users.increment(
+        { coins: sequelize.literal(-betAmount) },
+        { where: { userID: gameMessage.originalMember.id } },
+      );
+    }
+    // update leaderboard
     const leaderboardFunctions = require('../Functions/leaderboardFunctions');
     await leaderboardFunctions.updateRPSLeaderboard(interaction.client, sequelize, DataTypes);
   }
 }
 
+async function cancelGame(gameMessage) {
+  if (!gameMessage.content.includes('Results')) {
+    await gameMessage.edit({
+      content: `${gameMessage.opponentNickname} didn't want to play :(`,
+      components: [],
+    });
+  }
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('rock_paper_scissors')
+    .setName('rps')
     .setDescription('Play a game of rock-paper-scissors with someone')
     .addStringOption(option =>
       option.setName('nickname')
@@ -134,7 +189,12 @@ module.exports = {
       .setRequired(true)
       .addChoice('Rock', 'Rock')
       .addChoice('Paper', 'Paper')
-      .addChoice('Scissors', 'Scissors')),
+      .addChoice('Scissors', 'Scissors'))
+    .addIntegerOption(option =>
+      option.setName('coins')
+      .setDescription('How much coins do you want to bet')
+      .setRequired(true)),
   execute,
   play,
+  cancelGame,
 };

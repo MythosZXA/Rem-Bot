@@ -47,10 +47,12 @@ rem.on('ready', async () => {
   const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
   specialDaysFunctions.checkHoliday(rem);
   specialDaysFunctions.checkBirthday(rem, sequelize, Sequelize.DataTypes);
-  // update leaderboards
+  // update leaderboards on startup
   const leaderboardFunctions = require('./Functions/leaderboardFunctions');
   await leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
-  await leaderboardFunctions.updateStreakLeaderboard(rem, sequelize, Sequelize.DataTypes);
+  await leaderboardFunctions.updateRPSLeaderboard(rem, sequelize, Sequelize.DataTypes);
+  // update on new day
+  await leaderboardFunctions.checkStreakCondition(rem, sequelize, Sequelize.DataTypes);
 });
 
 // add user to database on join
@@ -121,12 +123,13 @@ rem.on('interactionCreate', async interaction => {
         ephemeral: true 
       });
     }
-  } else if (interaction.isSelectMenu()) {              // select menu interaction
+  } else if (interaction.isSelectMenu()) {              // select menu interactions
     
-  } else if (interaction.isButton()) {                  // button interaction
+  } else if (interaction.isButton()) {                  // button interactions
     // validate the presser of this button
-    if (interaction.message?.opponent) {
-      if (interaction.member?.nickname.toLowerCase() != interaction.message.opponent.toLowerCase()) {
+    if (interaction.message?.opponentMember) {          // rps case
+      const opponentMember = interaction.message.opponentMember;
+      if (interaction.member?.nickname.toUpperCase() != opponentMember.nickname?.toUpperCase()) {
         await interaction.reply({
           content: 'You are not the opponent of this game',
           ephemeral: true,
@@ -142,7 +145,7 @@ rem.on('interactionCreate', async interaction => {
     }
 
     // execute button functions
-    const rps = rem.commands.get('rock_paper_scissors');
+    const rps = rem.commands.get('rps');
     const dungeon = rem.commands.get('dungeon');
     switch (interaction.customId) {
       // rps buttons
@@ -150,6 +153,9 @@ rem.on('interactionCreate', async interaction => {
       case 'paper':
       case 'scissors':
         await rps.play(interaction, sequelize, Sequelize.DataTypes);
+        break;
+      case 'decline':
+        await rps.cancelGame(interaction.message);
         break;
       // rpg buttons
       case 'close':                                     // close button
@@ -187,7 +193,11 @@ rem.on('interactionCreate', async interaction => {
   }
 });
 
+// voice activities
 rem.on('voiceStateUpdate', (oldState, newState) => {
+  // rem joins voice channel when toan does
+
+  // rem leaves voice if she is the last person in voice channel
   const voiceConnection = getVoiceConnection(newState.guild.id);
   if (voiceConnection && !newState.channelId && oldState?.channel.members.size == 1) {
     voiceConnection.destroy();
