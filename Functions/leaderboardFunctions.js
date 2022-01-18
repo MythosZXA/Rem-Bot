@@ -80,7 +80,7 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
         `${guildMember.rpsWins}`.padEnd(10) +
         `${guildMember.streak}`.padEnd(10) +
         '\n';
-    }, index * 30);
+    }, index * 50);
   });
   // update leaderboard
   setTimeout(() => {

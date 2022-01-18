@@ -92,7 +92,8 @@ async function remind(message, arg) {
 }
 
 async function test(message, arg, sequelize, DataTypes) {
-  console.log(arg);
+  const emojiString = arg[2].split(':');
+  console.log(emojiString);
 }
 
 async function update(message, arg, seqeulize, DataTypes) {

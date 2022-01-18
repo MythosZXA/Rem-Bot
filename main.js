@@ -85,11 +85,11 @@ rem.on('guildMemberRemove', async member => {
 rem.on('messageCreate', async message => {
   console.log(`${message.author.username}: ${message.content}`);
   if (message.author.bot) return;
-  // logs DMs
+  // log DMs
   const logChannel = await rem.channels.fetch('911494733828857866');
   if (!message.inGuild() && message.author.id != '246034440340373504') 
     await logChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`);
-
+  // misc responses
   if (message.content.toLowerCase().includes('thanks rem')) {
     message.channel.send('You\'re welcome!');
     return;
@@ -99,7 +99,9 @@ rem.on('messageCreate', async message => {
     return;
   }
 
-  let arg = message.content.split(/ +/);
+  const arg = message.content.split(' ');
+  const mp3Emoji = arg[0].split(':');
+  if (mp3Emoji[0] === '<') require('./Functions/voiceFunctions').play(message, mp3Emoji[1]);
   if (arg[0].toLowerCase() != 'rem,') return;
   const prefixCommands = require('./prefixCommands.js');
   prefixCommands[arg[1].toLowerCase()]?.(message, arg, sequelize, Sequelize.DataTypes);
