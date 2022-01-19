@@ -30,7 +30,7 @@ async function play(message, mp3Name) {
   if (!(await join(message))) return;
   const voiceConnection = getVoiceConnection(message.guildId);
   const audioResource = createAudioResource(`./mp3/${mp3Name}.mp3`, { inlineVolume: true });
-  audioResource.volume.setVolume(0.3);
+  audioResource.volume.setVolume(0.35);
   voiceConnection.audioPlayer.play(audioResource);
   await message.delete();
 }

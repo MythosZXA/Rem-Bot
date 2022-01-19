@@ -64,8 +64,8 @@ async function execute(interaction, sequelize, DataTypes) {
   }
   // initiate game
   await interaction.reply({      
-    content: `${opponentMember}, ${interaction.member.nickname} \n` +
-    `wants to play rock-paper-scissors with a bet of ${betAmount} coins!`,
+    content: `${opponentMember}, ${interaction.member.nickname} ` +
+    `wants to play\nrock-paper-scissors with a bet of ${betAmount} coins!`,
     components: [rpsChoices],
   });
   // attach related information to message

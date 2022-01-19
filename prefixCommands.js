@@ -6,18 +6,19 @@ function help(message, arg) {
     .setThumbnail('https://i.imgur.com/oO1SZAs.jpg')
     .addField('Normal Commands',
               `/check_in
-              /play
               /rps
               /set_birthday
               /timer`,
               true)
     .addField('Info',
               `| daily streaks, get 10 coins
-              | plays an mp3 file
-              | play RPS with someone
+              | play rock paper scissors with someone
               | birthday message on birthday
               | set a timer`,
-              true);
+              true)
+    .addField('Playing Server Sounds',
+              `Join a voice channel and send a ! followed by a space
+              and then corresponding emoji to text channel => ! :emoji:`);
     // .addField('RPG Commands',
     //           `/hero
     //           /dungeon
@@ -27,6 +28,8 @@ function help(message, arg) {
 }
 
 async function message(message, arg) {
+  if (message.member.id !== '246034440340373504') return;
+
   const guild = await message.client.guilds.fetch('773660297696772096');
   // if arg[2] is nickname
   const user = (await guild.members.fetch()).find(guildMember => 

@@ -1,7 +1,7 @@
 // environment variables
 require('dotenv').config();
 // discord
-const { Client, Intents } = require('discord.js');
+const { Client } = require('discord.js');
 const rem = new Client({
   intents: [
     'GUILDS',
@@ -13,7 +13,6 @@ const rem = new Client({
   ],
   partials: ['CHANNEL']
 });
-const { getVoiceConnection } = require('@discordjs/voice');
 // sql
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
@@ -39,18 +38,21 @@ rem.on('ready', async () => {
   // set up
   console.log('Rem is online.');
   // rem.user.setActivity('for /help', {type: 'WATCHING'});
-
+  await (await rem.guilds.fetch('773660297696772096')).members.fetch();
+  
   // auto regen heroes health and mana
-  require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
-  require('./Functions/heroFunctions').recoverMana(sequelize, Sequelize.DataTypes);
+  // require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
+  // require('./Functions/heroFunctions').recoverMana(sequelize, Sequelize.DataTypes);
+
+  // update leaderboards on startup
+  const leaderboardFunctions = require('./Functions/leaderboardFunctions');
+  // await leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
+  await leaderboardFunctions.updateRPSLeaderboard(rem, sequelize, Sequelize.DataTypes);
+
   // check for special days when tomorrow comes
   const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
   specialDaysFunctions.checkHoliday(rem);
   specialDaysFunctions.checkBirthday(rem, sequelize, Sequelize.DataTypes);
-  // update leaderboards on startup
-  const leaderboardFunctions = require('./Functions/leaderboardFunctions');
-  await leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
-  await leaderboardFunctions.updateRPSLeaderboard(rem, sequelize, Sequelize.DataTypes);
   // update on new day
   await leaderboardFunctions.checkStreakCondition(rem, sequelize, Sequelize.DataTypes);
 });
@@ -100,8 +102,10 @@ rem.on('messageCreate', async message => {
   }
 
   const arg = message.content.split(' ');
-  const mp3Emoji = arg[0].split(':');
-  if (mp3Emoji[0] === '<') require('./Functions/voiceFunctions').play(message, mp3Emoji[1]);
+  if (message.content.includes(':')) {
+    const mp3Emoji = arg[1].split(':');
+    if (arg[0] === '!') require('./Functions/voiceFunctions').play(message, mp3Emoji[1]);
+  }
   if (arg[0].toLowerCase() != 'rem,') return;
   const prefixCommands = require('./prefixCommands.js');
   prefixCommands[arg[1].toLowerCase()]?.(message, arg, sequelize, Sequelize.DataTypes);
@@ -129,9 +133,9 @@ rem.on('interactionCreate', async interaction => {
     
   } else if (interaction.isButton()) {                  // button interactions
     // validate the presser of this button
-    if (interaction.message?.opponentMember) {          // rps case
-      const opponentMember = interaction.message.opponentMember;
-      if (interaction.member?.nickname.toUpperCase() != opponentMember.nickname?.toUpperCase()) {
+    if (interaction.message?.opponentNickname) {          // rps case
+      const opponentNickname = interaction.message.opponentNickname;
+      if (interaction.member?.nickname.toUpperCase() != opponentNickname.toUpperCase()) {
         await interaction.reply({
           content: 'You are not the opponent of this game',
           ephemeral: true,
@@ -160,48 +164,50 @@ rem.on('interactionCreate', async interaction => {
         await rps.cancelGame(interaction.message);
         break;
       // rpg buttons
-      case 'close':                                     // close button
-        await interaction.message.delete(interaction);
-        break;
-      case 'attack':                                    // attack button
-        await dungeon.battle(interaction, sequelize, Sequelize.DataTypes);
-        break;
-      case 'shieldBash':                                // skill buttons
-      case 'tripleStrike':
-      case 'swordEnhance':
-      case 'sixfoldArrow':
-      case 'explosiveBolt':
-      case 'fireBall':
-      case 'assassinate':
-      case 'execute':
-        // await dungeon.battle(interaction, sequelize, Sequelize.DataTypes, interaction.customId)
-        break;
-      case 'nextStage':                                 // next stage button
-        interaction.message.currentStage++;
-        await dungeon.execute(interaction, sequelize, Sequelize.DataTypes);
-        break;
-      case 'leave':                                     // leave button
-        const { status } = await Hero.findOne({
-          attributes: ['status'],
-          where: { userID: interaction.user.id },
-          raw: true,
-        });
-        if (status == 'Busy') {
-          await Hero.update({ status: 'Good' }, { where: { userID: interaction.user.id } });
-        }
-        await interaction.message.delete();
-        break;
+      // case 'close':                                     // close button
+      //   await interaction.message.delete(interaction);
+      //   break;
+      // case 'attack':                                    // attack button
+      //   await dungeon.battle(interaction, sequelize, Sequelize.DataTypes);
+      //   break;
+      // case 'shieldBash':                                // skill buttons
+      // case 'tripleStrike':
+      // case 'swordEnhance':
+      // case 'sixfoldArrow':
+      // case 'explosiveBolt':
+      // case 'fireBall':
+      // case 'assassinate':
+      // case 'execute':
+      //   // await dungeon.battle(interaction, sequelize, Sequelize.DataTypes, interaction.customId)
+      //   break;
+      // case 'nextStage':                                 // next stage button
+      //   interaction.message.currentStage++;
+      //   await dungeon.execute(interaction, sequelize, Sequelize.DataTypes);
+      //   break;
+      // case 'leave':                                     // leave button
+      //   const { status } = await Hero.findOne({
+      //     attributes: ['status'],
+      //     where: { userID: interaction.user.id },
+      //     raw: true,
+      //   });
+      //   if (status == 'Busy') {
+      //     await Hero.update({ status: 'Good' }, { where: { userID: interaction.user.id } });
+      //   }
+      //   await interaction.message.delete();
+      //   break;
     }
   }
 });
 
 // voice activities
 rem.on('voiceStateUpdate', (oldState, newState) => {
-  // rem joins voice channel when toan does
+  const { getVoiceConnection } = require('@discordjs/voice');
 
-  // rem leaves voice if she is the last person in voice channel
+  const joinCondition = (!oldState.channelId && newState.channelId);
+  const leaveCondition = (oldState.channelId && !newState.channelId);
   const voiceConnection = getVoiceConnection(newState.guild.id);
-  if (voiceConnection && !newState.channelId && oldState?.channel.members.size == 1) {
+  // rem leaves voice if she is the last person in voice channel
+  if (voiceConnection && leaveCondition && oldState?.channel.members.size == 1) {
     voiceConnection.destroy();
   }
-})
+});

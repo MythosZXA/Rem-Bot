@@ -26,13 +26,11 @@ async function updateHeroLeaderboard(rem, sequelize, DataTypes) {
     '\n';
   await heroes.forEach(async (hero, index) => {                     // add each hero to display
     const member = await guild.members.fetch(hero.userID);
-    setTimeout(() => {
-      displayString += 
-        `${member.nickname}`.padEnd(15) +
-        `${hero.level}`.padEnd(10) +
-        `${hero.credits}`.padEnd(10) +
-        '\n';
-    }, index * 50);
+    displayString += 
+      `${member.nickname}`.padEnd(15) +
+      `${hero.level}`.padEnd(10) +
+      `${hero.credits}`.padEnd(10) +
+      '\n';
   });
   // update leaderboard
   setTimeout(() => {
@@ -40,7 +38,7 @@ async function updateHeroLeaderboard(rem, sequelize, DataTypes) {
       content: Formatters.codeBlock(displayString) 
     });
     console.log('Hero leaderboard updated');
-  }, 1000 * 5);
+  }, 1000 * 3);
   // update at midnight
   setTimeout(() => {                                                // update again tomorrow
     updateHeroLeaderboard(rem, sequelize, DataTypes);
@@ -71,16 +69,14 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
     'RPS Wins'.padEnd(10) +
     'Streaks'.padEnd(10) +
     '\n';
-  await guildMembers.forEach(async (guildMember, index) => {          // add each user to display
+  guildMembers.forEach(async (guildMember, index) => {                // add each user to display
     const member = await guild.members.fetch(guildMember.userID);
-    setTimeout(() => {
-      displayString += 
-        `${member.nickname}`.padEnd(15) +
-        `${guildMember.coins}`.padEnd(10)+
-        `${guildMember.rpsWins}`.padEnd(10) +
-        `${guildMember.streak}`.padEnd(10) +
-        '\n';
-    }, index * 50);
+    displayString += 
+      `${member.nickname}`.padEnd(15) +
+      `${guildMember.coins}`.padEnd(10)+
+      `${guildMember.rpsWins}`.padEnd(10) +
+      `${guildMember.streak}`.padEnd(10) +
+      '\n';
   });
   // update leaderboard
   setTimeout(() => {
@@ -88,7 +84,7 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
       content: Formatters.codeBlock(displayString) 
     });
     console.log('RPS leaderboard updated');
-  }, 1000 * 5);
+  }, 1000 * 3);
 }
 
 async function checkStreakCondition(rem, sequelize, DataTypes) {
