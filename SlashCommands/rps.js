@@ -45,12 +45,12 @@ async function execute(interaction, sequelize, DataTypes) {
   // check to see if both parties has enough coins
   const Users = require('../Models/users')(sequelize, DataTypes);
   const { Op } = require('sequelize');
-  const gameMembers = await Users.findAll({
+  const gameMembers = await Users.findAll({                   // get players of this game
     where: { userID: { [Op.or]: [interaction.member.id, opponentMember.id] } },
     raw: true,
   });
   let enoughCoins = true;
-  gameMembers.forEach(async member => {
+  gameMembers.forEach(async member => {                       // check players' coins
     if (member.coins < interaction.options.getInteger('coins', true)) {
       enoughCoins = false;
     }
@@ -62,7 +62,7 @@ async function execute(interaction, sequelize, DataTypes) {
     });
     return;
   }
-  // initiate game
+  // initiate game by sending game message
   await interaction.reply({      
     content: `${opponentMember}, ${interaction.member.nickname} ` +
     `wants to play\nrock-paper-scissors with a bet of ${betAmount} coins!`,
@@ -70,8 +70,9 @@ async function execute(interaction, sequelize, DataTypes) {
   });
   // attach related information to message
   const gameMessage = await interaction.fetchReply();
+  gameMessage.buttonType = 'rps';
   gameMessage.originalMember = interaction.member;
-  gameMessage.opponentNickname = opponentNickname;
+  gameMessage.opponentMember = opponentMember;
   gameMessage.requesterChoice = interaction.options.getString('choice', true);
   gameMessage.betAmount = betAmount;
   // update message if opponent didn't play in 10 mins
@@ -167,9 +168,10 @@ async function play(interaction, sequelize, DataTypes) {
 }
 
 async function cancelGame(gameMessage) {
+  const opponentNickname = gameMessage.opponentMember.opponentNickname;
   if (!gameMessage.content.includes('Results')) {
     await gameMessage.edit({
-      content: `${gameMessage.opponentNickname} didn't want to play :(`,
+      content: `${opponentNickname} didn't want to play :(`,
       components: [],
     });
   }

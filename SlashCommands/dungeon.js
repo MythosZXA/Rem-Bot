@@ -78,21 +78,22 @@ async function execute(interaction, sequelize, DataTypes) {
     await interaction.deleteReply();
     message.messageField = '';                                // reset message field in embed
   }
-  // attach dungeon related variables to the message
+  // attach dungeon related data to the message
+  message.buttonType = 'dungeon';
+  message.originalMember = interaction.member;
   message.monster = monster;
   message.currentDungeon = currentDungeon;
   message.currentStage = currentStage;
   message.numStage = (await Dungeon.findAll({ where: { dungeon: currentDungeon }, raw: true })).length;
   message.messageField = battleEmbed.fields[3].value; 
   // delete message if not interacted with
-  setTimeout(() => {
 
-  }, )
 }
 
 async function battle(interaction, sequelize, DataTypes, skillName) {
-  // get data required for this battle
+  // required models for this battle
   const Hero = require('../Models/hero')(sequelize, DataTypes);
+  // get data required for this battle
   let hero = await Hero.findOne({ where: { userID: interaction.user.id }, raw: true });
   const message = interaction.message;
   const monster = message.monster;

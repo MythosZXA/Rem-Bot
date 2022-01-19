@@ -102,10 +102,12 @@ rem.on('messageCreate', async message => {
   }
 
   const arg = message.content.split(' ');
-  if (message.content.includes(':')) {
+  // check if message is a sound command
+  if (message.content.includes(':') && arg.length == 2) {
     const mp3Emoji = arg[1].split(':');
     if (arg[0] === '!') require('./Functions/voiceFunctions').play(message, mp3Emoji[1]);
   }
+  // check if message is a prefix command
   if (arg[0].toLowerCase() != 'rem,') return;
   const prefixCommands = require('./prefixCommands.js');
   prefixCommands[arg[1].toLowerCase()]?.(message, arg, sequelize, Sequelize.DataTypes);
@@ -132,69 +134,93 @@ rem.on('interactionCreate', async interaction => {
   } else if (interaction.isSelectMenu()) {              // select menu interactions
     
   } else if (interaction.isButton()) {                  // button interactions
-    // validate the presser of this button
-    if (interaction.message?.opponentNickname) {          // rps case
-      const opponentNickname = interaction.message.opponentNickname;
-      if (interaction.member?.nickname.toUpperCase() != opponentNickname.toUpperCase()) {
-        await interaction.reply({
-          content: 'You are not the opponent of this game',
-          ephemeral: true,
-        });
-        return;
-      }
-    } else if (interaction.member != interaction.message?.originalMember) {
-      await interaction.reply({
-        content: 'You cannot interact with this button',
-        ephemeral: true,
-      });
-      return;
-    }
-
-    // execute button functions
-    const rps = rem.commands.get('rps');
-    const dungeon = rem.commands.get('dungeon');
-    switch (interaction.customId) {
-      // rps buttons
-      case 'rock':
-      case 'paper':
-      case 'scissors':
-        await rps.play(interaction, sequelize, Sequelize.DataTypes);
+    const interactionMember = interaction.member;
+    const originalMember = interaction.message.originalMember;
+    const buttonType = interaction.message.buttonType;
+    const buttonName = interaction.customId;
+    switch(buttonType) {
+      case 'dungeon':                                   // dungeon buttons
+        const dungeon = rem.commands.get('dungeon');
+        // validate dungeon button pressers
+        if (interactionMember !== originalMember) {
+          await interaction.reply({                     // presser isn't the original member, exit
+            content: 'You cannot interact with this button',
+            ephemeral: true,
+          });
+          return;
+        }
+        // execute button
+        switch(buttonName) {
+          case 'attack':
+            await dungeon.battle(interaction, sequelize, Sequelize.DataTypes);
+            break;
+          case 'shieldBash':
+          case 'tripleStrike':
+          case 'swordEnhance':
+          case 'sixfoldArrow':
+          case 'explosiveBolt':
+          case 'fireBall':
+          case 'assassinate':
+          case 'execute':
+            // await dungeon.battle(interaction, sequelize, Sequelize.DataTypes, interaction.customId)
+            break;
+          case 'nextStage':
+            interaction.message.currentStage++;
+            await dungeon.execute(interaction, sequelize, Sequelize.DataTypes);
+            break;
+          case 'leave':
+            const { status } = await Hero.findOne({
+              attributes: ['status'],
+              where: { userID: originalMember.id },
+              raw: true,
+            });
+            if (status === 'Busy') {
+              await Hero.update({ status: 'Good' }, { where: { userID: originalMember.id } });
+            }
+            await interaction.message.delete();
+            break;
+        }
         break;
-      case 'decline':
-        await rps.cancelGame(interaction.message);
+      case 'hero':                                      // hero buttons
+        // validate dungeon button pressers
+        if (interactionMember !== originalMember) {
+          await interaction.reply({                     // presser isn't the original member, exit
+            content: 'You cannot interact with this button',
+            ephemeral: true,
+          });
+          return;
+        }
+        // execute button
+        switch(buttonName) {
+          case 'close':
+            await interaction.message.edit({ content: 'deleted' });
+            await interaction.message.delete();
+            break;
+        }
         break;
-      // rpg buttons
-      // case 'close':                                     // close button
-      //   await interaction.message.delete(interaction);
-      //   break;
-      // case 'attack':                                    // attack button
-      //   await dungeon.battle(interaction, sequelize, Sequelize.DataTypes);
-      //   break;
-      // case 'shieldBash':                                // skill buttons
-      // case 'tripleStrike':
-      // case 'swordEnhance':
-      // case 'sixfoldArrow':
-      // case 'explosiveBolt':
-      // case 'fireBall':
-      // case 'assassinate':
-      // case 'execute':
-      //   // await dungeon.battle(interaction, sequelize, Sequelize.DataTypes, interaction.customId)
-      //   break;
-      // case 'nextStage':                                 // next stage button
-      //   interaction.message.currentStage++;
-      //   await dungeon.execute(interaction, sequelize, Sequelize.DataTypes);
-      //   break;
-      // case 'leave':                                     // leave button
-      //   const { status } = await Hero.findOne({
-      //     attributes: ['status'],
-      //     where: { userID: interaction.user.id },
-      //     raw: true,
-      //   });
-      //   if (status == 'Busy') {
-      //     await Hero.update({ status: 'Good' }, { where: { userID: interaction.user.id } });
-      //   }
-      //   await interaction.message.delete();
-      //   break;
+      case 'rps':                                       // rock-paper-scissors buttons
+        const rps = rem.commands.get('rps');
+        // validate rps button pressers
+        const opponentMember = interaction.message.opponentMember;
+        if (interactionMember !== originalMember && interactionMember !== opponentMember) {
+          await interaction.reply({                     // presser isn't a participant, exit
+            content: 'You are not the opponent of this game',
+            ephemeral: true,
+          });
+          return;
+        }
+        // execute buttons
+        switch(buttonName) {
+          case 'rock':
+          case 'paper':
+          case 'scissors':
+            await rps.play(interaction, sequelize, Sequelize.DataTypes);
+            break;
+          case 'decline':
+            await rps.cancelGame(interaction.message);
+            break;
+        }
+        break;
     }
   }
 });

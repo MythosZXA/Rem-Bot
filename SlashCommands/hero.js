@@ -7,8 +7,10 @@ const closeButton = new MessageButton()
   .setStyle('DANGER');
 
 async function execute(interaction, sequelize, DataTypes) {
+  // required models for hero
   const Equip = require('../Models/equip')(sequelize, DataTypes);
   const Hero = require('../Models/hero')(sequelize, DataTypes);
+  // get hero data
   const [hero, created] = await Hero.findOrCreate({ where: { userID: interaction.user.id }, raw: true });
   const equipped = await Equip.findAll({
     where: { userID: interaction.user.id },
@@ -31,7 +33,7 @@ async function execute(interaction, sequelize, DataTypes) {
     `Legs:       ${legs?.name ? legs.name : ''}\n` +
     `Gloves:     ${gloves?.name ? gloves.name : ''}\n` +
     `Shoes:      ${shoes?.name ? shoes.name : ''}\n`;
-  // create embed
+  // create hero display using embed
   const heroEmbed = new MessageEmbed()
     .setTitle('Hero')
     .setDescription(`${hero.class}`)
@@ -51,16 +53,18 @@ async function execute(interaction, sequelize, DataTypes) {
     .addField('Equipment', equipValueField, true);
   // close display button
   const actionRow = new MessageActionRow().addComponents(closeButton);
-  // display
+  // send display
   await interaction.reply({
     embeds: [heroEmbed],
     components: [actionRow],
   });
-  // attach original user to message (to ignore other users pressing)
-  const message = await interaction.fetchReply();
-  message.originalmember = interaction.member;
-  setTimeout(() => {
-    if (!message.deleted) message.delete();
+  // attach hero related data to the message
+  const heroMessage = await interaction.fetchReply();
+  heroMessage.buttonType = 'hero';
+  heroMessage.originalMember = interaction.member;
+  // delete message after a min
+  setTimeout(async () => {
+    if (heroMessage.content !== 'deleted') await heroMessage.delete();
   }, 1000 * 60);
 }
 
