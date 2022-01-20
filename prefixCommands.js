@@ -5,20 +5,29 @@ function help(message, arg) {
     .setColor(0x19EFF5)
     .setThumbnail('https://i.imgur.com/oO1SZAs.jpg')
     .addField('Normal Commands',
-              `/check_in
-              /rps
-              /set_birthday
-              /timer`,
-              true)
+    `/check_in
+    /roulette
+    /rps
+    /set_birthday
+    /timer`,
+    true)
     .addField('Info',
-              `| daily streaks, get 10 coins
-              | play rock paper scissors with someone
-              | birthday message on birthday
-              | set a timer`,
-              true)
+    `| daily streaks, get 100 coins
+    | play a round of roulette
+    | play rock paper scissors with someone
+    | birthday message on birthday
+    | set a timer`,
+    true)
     .addField('Playing Server Sounds',
               `Join a voice channel and send a ! followed by a space
-              and then corresponding emoji to text channel => ! :emoji:`);
+    and then corresponding emoji to text channel => ! :emoji:`)
+    .addField('How to play Roulette',
+    `Start a game by sending the 'roulette play' command and then
+    everyone has 30 seconds to place their bets by '/roulette bet'
+    You can only make **ONE** outside bet
+    **Outside** (categories) pays 1:1
+    **Double** (Only Green for now) pays 17:1
+    **Straight Up** (single) pays 35:1`);
     // .addField('RPG Commands',
     //           `/hero
     //           /dungeon

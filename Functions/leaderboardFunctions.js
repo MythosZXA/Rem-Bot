@@ -53,7 +53,7 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
   // get members with rps wins
   const Users = require('../Models/users')(sequelize, DataTypes);
   const { Op } = require('sequelize');
-  const guildMembers = await Users.findAll({
+  const guildUsers = await Users.findAll({
     where: { [Op.or]: [
       { rpsWins: { [Op.gt]: 0 } },
       { coins: { [Op.gt]: 0 } },
@@ -61,22 +61,28 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
     order: [[ 'coins', 'DESC' ]],
     raw: true,
   });
-  if (!guildMembers) return;                                          // no members with wins
+  if (!guildUsers) return;                                          // no members with wins
   // create leaderboard display
   let displayString =                                                 // leaderboard header
+    'Top 3 will get the Gamblig Addicts role\n\n' +
     'User'.padEnd(15) +
     'Coins'.padEnd(10) +
     'RPS Wins'.padEnd(10) +
     'Streaks'.padEnd(10) +
     '\n';
-  guildMembers.forEach(async (guildMember, index) => {                // add each user to display
-    const member = await guild.members.fetch(guildMember.userID);
+  guildUsers.forEach(async (guildUser, index) => {                // add each user to display
+    const guildMember = await guild.members.fetch(guildUser.userID);
     displayString += 
-      `${member.nickname}`.padEnd(15) +
-      `${guildMember.coins}`.padEnd(10)+
-      `${guildMember.rpsWins}`.padEnd(10) +
-      `${guildMember.streak}`.padEnd(10) +
+      `${guildMember.nickname}`.padEnd(15) +
+      `${guildUser.coins}`.padEnd(10)+
+      `${guildUser.rpsWins}`.padEnd(10) +
+      `${guildUser.streak}`.padEnd(10) +
       '\n';
+      if (index < 3) {
+        guildMember.roles.add('933834205991952467');
+      } else {
+        guildMember.roles.remove('933834205991952467');
+      }
   });
   // update leaderboard
   setTimeout(() => {
