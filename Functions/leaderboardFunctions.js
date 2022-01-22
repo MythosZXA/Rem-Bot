@@ -78,6 +78,7 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
       `${guildUser.rpsWins}`.padEnd(10) +
       `${guildUser.streak}`.padEnd(10) +
       '\n';
+      // give Gambling Addicts role to top 3 members
       if (index < 3) {
         guildMember.roles.add('933834205991952467');
       } else {

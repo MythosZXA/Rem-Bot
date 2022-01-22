@@ -41,9 +41,8 @@ function help(message, arg) {
 async function message(message, arg) {
   if (message.member.id !== '246034440340373504') return;
 
-  const guild = await message.client.guilds.fetch('773660297696772096');
   // if arg[2] is nickname
-  const user = (await guild.members.fetch()).find(guildMember => 
+  const user = (await message.guild.members.fetch()).find(guildMember => 
     guildMember.nickname?.toLowerCase() == arg[2].toLowerCase());
   // if arg[2] is text channel name
   const textChannel = (await guild.channels.fetch()).find(guildChannel =>
@@ -51,9 +50,9 @@ async function message(message, arg) {
   // send msg to destination
   const msgToSend = arg.join(' ').substring(14 + arg[2].length);
   if (user)
-    await user.send(msgToSend);
+    user.send(msgToSend);
   else if (textChannel)
-    await textChannel.send(msgToSend);
+    textChannel.send(msgToSend);
 }
 
 async function remind(message, arg) {
@@ -105,14 +104,14 @@ async function remind(message, arg) {
   }
 }
 
-async function test(message, arg, sequelize, DataTypes) {
+function test(message, arg, sequelize, DataTypes) {
   const emojiString = arg[2].split(':');
   console.log(emojiString);
 }
 
 async function update(message, arg, seqeulize, DataTypes) {
   const leaderboardFunctions = require('./Functions/leaderboardFunctions');
-  await leaderboardFunctions.updateRPSLeaderboard(message.client, seqeulize, DataTypes);
+  leaderboardFunctions.updateRPSLeaderboard(message.client, seqeulize, DataTypes);
 }
 
 module.exports = {

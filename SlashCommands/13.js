@@ -32,7 +32,7 @@ const cardTypes = [
   'S♠️', 'C♣️', 'D♦️', 'H♥️'
 ];
 let p1 = [], p2 = [], p3 = [], p4 = [];
-let p1Message, p2Message, p3Message, p4Message;
+let p1DeckMessage, p2DeckMessage, p3DeckMessage, p4DeckMessage;
 let playerMembers = [];
 let recentMessage;
 
@@ -75,13 +75,13 @@ async function execute(interaction) {
   for (let i = 0; i <= 2; i++) {
     const guildMember = guildMembers.find(guildMember => 
       guildMember.nickname?.toUpperCase() === playerNicknames[i].toUpperCase());
-    if (!guildMember) {
+    if (!guildMember) {                                             // member nickname found
       interaction.reply({
         content: 'I could not anyone with that nickname!',
         ephemeral: true,
       });
       return;
-    } else {
+    } else {                                                        // member nickname not found
       playerMembers.push(guildMember);
     }
   }
@@ -99,7 +99,7 @@ async function execute(interaction) {
     else if (p3.length < 13) p3.push(deckCopy.splice(cardIndex, 1)[0]);
     else if (p4.length < 13) p4.push(deckCopy.splice(cardIndex, 1)[0]);
   }
-  // sort players' decks
+  // sort players' decks in ascending order
   deckSort(p1);
   deckSort(p2);
   deckSort(p3);
@@ -109,15 +109,16 @@ async function execute(interaction) {
   const p2Channel = await interaction.guild.channels.fetch('933842030654795846');
   const p3Channel = await interaction.guild.channels.fetch('933842048530927726');
   const p4Channel = await interaction.guild.channels.fetch('933842062007218196');
-  p1Message = await p1Channel.send(p1.toString());
-  p2Message = await p2Channel.send(p2.toString());
-  p3Message = await p3Channel.send(p3.toString());
-  p4Message = await p4Channel.send(p4.toString());
+  p1DeckMessage = await p1Channel.send(p1.toString());
+  p2DeckMessage = await p2Channel.send(p2.toString());
+  p3DeckMessage = await p3Channel.send(p3.toString());
+  p4DeckMessage = await p4Channel.send(p4.toString());
   // send confirmation message
-  interaction.reply({
-    content: 'Game started!',
-    ephemeral: true,
-  });
+  interaction.reply(
+    'Started a game of 13 with ' +
+    `${playerMembers[0].nickname}, ${playerMembers[1].nickname}, ` +
+    `${playerMembers[2].nickname}, ${playerMembers[3].nickname}`
+  );
 }
 
 function deckSort(playerCards) {
@@ -153,6 +154,7 @@ function deckSort(playerCards) {
 }
 
 async function play(interaction) {
+  // check if this member is a player
   if (!playerMembers.find(member => member === interaction.member)) {
     interaction.reply({
       content: 'You are not a player in the current game!',
@@ -160,51 +162,90 @@ async function play(interaction) {
     });
     return;
   }
-
-  const tableChannel = await interaction.guild.channels.fetch('933842239505969252');
+  // get player's 13 info
   const playerMemberIndex = playerMembers.findIndex(member => member === interaction.member);
   let playerDeck, playerMessage;
   switch(playerMemberIndex) {
     case 0:
       playerDeck = p1;
-      playerMessage = p1Message;
+      playerMessage = p1DeckMessage;
       break;
     case 1:
       playerDeck = p2;
-      playerMessage = p2Message;
+      playerMessage = p2DeckMessage;
       break;
     case 2:
       playerDeck = p3;
-      playerMessage = p3Message;
+      playerMessage = p3DeckMessage;
       break;
     case 3:
       playerDeck = p4;
-      playerMessage = p4Message;
+      playerMessage = p4DeckMessage;
       break;
   }
-  let playArray = [];
-  const playIndices = interaction.options._hoistedOptions[0].value.split(',');
+  // determine which cards to play
+  const revertDeck = [...playerDeck];                                           // save current deck in case of undo
+  let playArray = [];                                                           // represents cards being played
+  const playIndices = interaction.options._hoistedOptions[0].value.split(',');  // card locations in deck
+  // transfer cards from player deck to play deck
   for (let i = 0; i < playIndices.length; i++) {
     let cardIndex = parseInt(playIndices[i]);
     cardIndex -= i;
     playArray.push(playerDeck.splice(cardIndex, 1)[0]);
   }
+  // play the cards by sending it to table
+  const tableChannel = await interaction.guild.channels.fetch('933842239505969252');
+  recentMessage.edit({ components: [] });                                       // remove undo button from last message
   recentMessage = await tableChannel.send({
     content: `${interaction.member.nickname}: ${playArray.toString()}`,
     components: [actionRow],
   });
+  // attach 13 related data to message
   recentMessage.buttonType = '13';
   recentMessage.originalMember = interaction.member;
-  if (playerDeck.length == 0) {
-    playerMessage.edit('You won!');
+  recentMessage.revertDeck = revertDeck;
+  // check post-play condition
+  if (playerDeck.length == 0) {                                                 // no more cards, win
+    playerMessage.edit('No more cards, you won!');
+    interaction.reply('You won');
+    interaction.deleteReply();
     tableChannel.send(`${interaction.member.nickname} won!`);
-  } else {
-    playerMessage.edit(playerDeck.toString());
+  } else {                                                                      // more cards, keep going
+    playerMessage.edit(playerDeck.toString());                                  // remove played cards from hand
+    interaction.reply('Played');
+    interaction.deleteReply();
   }
 }
 
 function undo(interaction) {
-  
+  // get player's 13 info
+  const playerMemberIndex = playerMembers.findIndex(member => member === interaction.member);
+  let playerDeck, playerMessage;
+  switch(playerMemberIndex) {
+    case 0:
+      p1 = interaction.message.revertDeck;
+      playerDeck = p1;
+      playerMessage = p1DeckMessage;
+      break;
+    case 1:
+      p2 = interaction.message.revertDeck;
+      playerDeck = p2;
+      playerMessage = p2DeckMessage;
+      break;
+    case 2:
+      p3 = interaction.message.revertDeck;
+      playerDeck = p3;
+      playerMessage = p3DeckMessage;
+      break;
+    case 3:
+      p4 = interaction.message.revertDeck;
+      playerDeck = p4;
+      playerMessage = p4DeckMessage;
+      break;
+  }
+  // undo last played cards
+  interaction.message.delete();                           // remove the played cards from table
+  playerMessage.edit(playerDeck.toString());              // put back the cards to player's hand
 }
 
 function cancel(interaction) {
@@ -229,11 +270,17 @@ function cancel(interaction) {
   playerMembers[1].roles.remove('934200300313640980');
   playerMembers[2].roles.remove('934200341875015741');
   playerMembers[3].roles.remove('934200390696722532');
-  p1 = [];
-  p2 = [];
-  p3 = [];
-  p4 = [];
   playerMembers = [];
+  const tableChannel = await interaction.guild.channels.fetch('933842239505969252');
+  tableChannel.bulkDelete(80);
+  p1DeckMessage.delete();
+  p2DeckMessage.delete();
+  p3DeckMessage.delete();
+  p4DeckMessage.delete();
+  p1DeckMessage = undefined, p2DeckMessage = undefined, p3DeckMessage = undefined, p4DeckMessage = undefined;
+  p1 = [], p2 = [], p3 = [], p4 = [];
+  recentMessage = undefined;
+  // send confirmation message
   interaction.reply({
     content: 'Current game canceled',
     ephemeral: true,

@@ -41,7 +41,7 @@ async function execute(interaction, sequelize, DataTypes) {
     content: 'ping',
     embeds: [gameEmbed],
   });
-  // attach roulette related data to the message
+  // attach roulette related data to message
   gameMessage = await interaction.fetchReply();
   gameMessage.originalMember = interaction.member;
   gameMessage.players = '';
@@ -151,7 +151,7 @@ function bet(interaction) {
   });
 }
 
-function roll(interaction, sequelize, DataTypes) {
+async function roll(interaction, sequelize, DataTypes) {
   // required models for this game
   const Users = require('../Models/users')(sequelize, DataTypes);
   let roll = Math.floor(Math.random() * 38);
@@ -167,7 +167,10 @@ function roll(interaction, sequelize, DataTypes) {
   ];
   // check each bets to see if it won
   let resultsField = '';
-  gameMessage.playerBets.forEach(async playerBet => {
+  for await (const playerBet of gameMessage.playerBets) {
+
+  
+  // await gameMessage.playerBets.forEach(async playerBet => {
     let resultCoin = playerBet.betAmount;
     let win = false;
     switch(playerBet.bet) {
@@ -209,24 +212,26 @@ function roll(interaction, sequelize, DataTypes) {
     }
     if (win) {
       resultsField += `${playerBet.member.nickname} won ${resultCoin} coins with a ${playerBet.bet} bet!\n`;
-      Users.increment(
+      await Users.increment(
         { coins: sequelize.literal(+resultCoin) },
         { where: { userID: playerBet.member.id } }
       );
     } else {
       resultsField += `${playerBet.member.nickname} lost ${resultCoin} coins with a ${playerBet.bet} bet\n`;
-      Users.increment(
+      await Users.increment(
         { coins : sequelize.literal(-resultCoin) },
         { where: { userID: playerBet.member.id } }
       );
     }
-  });
-  if (roll === 37) roll = '00'
+  // });
+  };
+  if (roll === 37) roll = '00';
   gameEmbed.setDescription(`The roll is... **${roll}**!!!`)
   gameEmbed.setFields([{ name: 'Results', value: resultsField }]);
   gameEmbed.setImage('');
   gameMessage.edit({ embeds: [gameEmbed] });
-  await require('../Functions/leaderboardFunctions').updateRPSLeaderboard(interaction.client, sequelize, DataTypes);
+  const leaderboardFunctions = require('../Functions/leaderboardFunctions');
+  leaderboardFunctions.updateRPSLeaderboard(interaction.client, sequelize, DataTypes);
   gameMessage = undefined;
   timer = 30;
 }
