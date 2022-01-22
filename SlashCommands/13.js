@@ -248,7 +248,7 @@ function undo(interaction) {
   playerMessage.edit(playerDeck.toString());              // put back the cards to player's hand
 }
 
-function cancel(interaction) {
+async function cancel(interaction) {
   // if there are no players, exit
   if (playerMembers.length === 0) {
     interaction.reply({
