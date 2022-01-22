@@ -1,8 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
-const { message } = require("../prefixCommands");
 
-let gameMessage;
+let gameMessage, timer = 30;
 const gameEmbed = new MessageEmbed()
   .setColor(0x19EFF5)
   .setImage('https://i.imgur.com/SdNtESm.jpg');
@@ -11,25 +10,34 @@ async function execute(interaction, sequelize, DataTypes) {
   // check if this is the bet subcommand
   const subcommandName = interaction.options._subcommand;
   if (subcommandName === 'bet') {
-    await bet(interaction);
+    bet(interaction);
+    return;
+  }
+  // check if command is sent in general channel
+  if (interaction.member.id != '246034440340373504' && interaction.channelId != '773660297696772100') {
+    interaction.reply({
+      content: 'Please play Roulette in the general channel',
+      ephemeral: true,
+    });
     return;
   }
   // check if there is an active routlette game
   if (gameMessage) {
-    await interaction.reply({
+    interaction.reply({
       content: 'There is already an active Roulette game!',
       ephemeral: true,
     });
     return;
   }
-  // initiate game by sending game message
+  
+  // send confirmation message
   gameEmbed
     .setDescription(
       `${interaction.member.nickname} would like to play a game of Roulette!
       Place your bets if you would to play.
-      I will roll in 30 seconds.`)
-    .addField('Players', 'None');
-  await interaction.reply({
+      I will roll in ${timer} seconds.`)
+    .setFields([{ name: 'Players', value: 'None' }]);
+  interaction.reply({
     content: 'ping',
     embeds: [gameEmbed],
   });
@@ -38,24 +46,36 @@ async function execute(interaction, sequelize, DataTypes) {
   gameMessage.originalMember = interaction.member;
   gameMessage.players = '';
   gameMessage.playerBets = [];
+  // create a timer for roll countdown
+  const refreshIntervalID = setInterval(async () => {
+    timer -= 5;
+    gameEmbed.setDescription(
+      `${interaction.member.nickname} would like to play a game of Roulette!
+      Place your bets if you would to play.
+      I will roll in ${timer} seconds.`);
+    gameMessage.edit({ embeds: [gameEmbed] });
+  }, 1000 * 5);
   // proceed with game after 30 seconds
   setTimeout(async () => {
+    clearInterval(refreshIntervalID);
+    // don't roll if there are no players, exit
     if (gameEmbed.fields[0].value === 'None') {
-      await gameMessage.edit({
+      gameMessage.edit({
         content: 'No players',
         embeds: [],
       });
       return;
     }
-    await roll(interaction, sequelize, DataTypes);
+    roll(interaction, sequelize, DataTypes);
   }, 1000 * 30);
+  
   
 }
 
-async function bet(interaction) {
+function bet(interaction) {
   // check if there is an active routlette game
   if (!gameMessage) {
-    await interaction.reply({
+    interaction.reply({
       content: 'There isn\'t an active Roulette game',
       ephemeral: true,
     });
@@ -65,7 +85,7 @@ async function bet(interaction) {
   const betAmount = interaction.options._hoistedOptions[0].value;
   if (betAmount < 0) {
     const remdisappointed = interaction.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
-    await interaction.reply({
+    interaction.reply({
       content: `No betting negative values ${remdisappointed}`,
       ephemeral: true,
     });
@@ -73,21 +93,21 @@ async function bet(interaction) {
   }
   // check if the player has already made an outside bet
   const interactionMember = interaction.member;
+  const betType = interaction.options._hoistedOptions[1].value;
   if (gameMessage.playerBets.find(playerBet => 
-    (playerBet.member === interactionMember && playerBet.outside === true))) {
-    await interaction.reply({
+    (betType != 'Straight Up' && playerBet.member === interactionMember && playerBet.outside === true))) {
+    interaction.reply({
       content: 'You have already made an outside bet!',
       ephemeral: true,
     });
     return;
   }
   // add player bets to game message
-  const betType = interaction.options._hoistedOptions[1].value;
   let playerBet;
   if (betType === 'Straight Up') {
     // check if a value was provided for a straight up bet
     if (!interaction.options._hoistedOptions[2]) {
-      await interaction.reply({
+      interaction.reply({
         content: 'You did not enter a value for a straight up bet',
         ephemeral: true,
       });
@@ -97,7 +117,7 @@ async function bet(interaction) {
     const straightUpValue = interaction.options._hoistedOptions[2].value;
     const straightUpValueInt = parseInt(straightUpValue);
     if ((straightUpValueInt < 0 || straightUpValueInt > 36) && straightUpValue !== '00') {
-      await interaction.reply({
+      interaction.reply({
         content: 'Invalid straight up value',
         ephemeral: true,
       });
@@ -123,18 +143,18 @@ async function bet(interaction) {
     gameMessage.players += `${interactionMember.nickname}\n`;
   }
   gameEmbed.setFields([{ name: 'Players', value: gameMessage.players }]);
-  await gameMessage.edit({ embeds: [gameEmbed] });
+  gameMessage.edit({ embeds: [gameEmbed] });
   // send confirmation message
-  await interaction.reply({
+  interaction.reply({
     content: 'Bet placed!',
     ephemeral : true,
   });
 }
 
-async function roll(interaction, sequelize, DataTypes) {
+function roll(interaction, sequelize, DataTypes) {
   // required models for this game
   const Users = require('../Models/users')(sequelize, DataTypes);
-  const roll = Math.floor(Math.random() * 38);
+  let roll = Math.floor(Math.random() * 38);
   const reds = [
     1, 3, 5, 7, 9, 12,
     14, 16, 18, 19, 21, 23,
@@ -175,7 +195,8 @@ async function roll(interaction, sequelize, DataTypes) {
           resultCoin *= 17;
         }
         break;
-      case 'Straight Up':
+      case '\d':
+      case '\d\d':
         if (roll === 37 && playerBet.bet === '00') {
           win = true;
           resultCoin *= 35;
@@ -188,13 +209,13 @@ async function roll(interaction, sequelize, DataTypes) {
     }
     if (win) {
       resultsField += `${playerBet.member.nickname} won ${resultCoin} coins with a ${playerBet.bet} bet!\n`;
-      await Users.increment(
+      Users.increment(
         { coins: sequelize.literal(+resultCoin) },
         { where: { userID: playerBet.member.id } }
       );
     } else {
       resultsField += `${playerBet.member.nickname} lost ${resultCoin} coins with a ${playerBet.bet} bet\n`;
-      await Users.increment(
+      Users.increment(
         { coins : sequelize.literal(-resultCoin) },
         { where: { userID: playerBet.member.id } }
       );
@@ -204,9 +225,10 @@ async function roll(interaction, sequelize, DataTypes) {
   gameEmbed.setDescription(`The roll is... **${roll}**!!!`)
   gameEmbed.setFields([{ name: 'Results', value: resultsField }]);
   gameEmbed.setImage('');
-  await gameMessage.edit({ embeds: [gameEmbed] });
+  gameMessage.edit({ embeds: [gameEmbed] });
   await require('../Functions/leaderboardFunctions').updateRPSLeaderboard(interaction.client, sequelize, DataTypes);
   gameMessage = undefined;
+  timer = 30;
 }
 
 module.exports = {
@@ -214,7 +236,7 @@ module.exports = {
     .setName('roulette')
     .setDescription('Play a game of Roulette')
     .addSubcommand(subcommand =>
-      subcommand.setName('play')
+      subcommand.setName('start')
       .setDescription('Start a game of Roulette'))
     .addSubcommand(subcommand =>
       subcommand.setName('bet')

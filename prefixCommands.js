@@ -6,6 +6,7 @@ function help(message, arg) {
     .setThumbnail('https://i.imgur.com/oO1SZAs.jpg')
     .addField('Normal Commands',
     `/check_in
+    / pay
     /roulette
     /rps
     /set_birthday
@@ -13,6 +14,7 @@ function help(message, arg) {
     true)
     .addField('Info',
     `| daily streaks, get 100 coins
+    | give someone coins
     | play a round of roulette
     | play rock paper scissors with someone
     | birthday message on birthday
@@ -22,7 +24,7 @@ function help(message, arg) {
               `Join a voice channel and send a ! followed by a space
     and then corresponding emoji to text channel => ! :emoji:`)
     .addField('How to play Roulette',
-    `Start a game by sending the 'roulette play' command and then
+    `Start a game by sending the '/roulette start' command and then
     everyone has 30 seconds to place their bets by '/roulette bet'
     You can only make **ONE** outside bet
     **Outside** (categories) pays 1:1

@@ -33,8 +33,8 @@ async function execute(interaction, sequelize, DataTypes) {
   }
   // find guild member by nickname
   const opponentNickname = interaction.options.getString('nickname', true);
-  const opponentMember = (await (await interaction.client.guilds.fetch('773660297696772096')).members.fetch())
-    .find(guildMember => guildMember.nickname?.toUpperCase() === opponentNickname.toUpperCase());
+  const opponentMember = (await interaction.guild.members.fetch()).find(guildMember => 
+    guildMember.nickname?.toUpperCase() === opponentNickname.toUpperCase());
   if (!opponentMember) {                                      // no opponent, exit
     await interaction.reply({
       content: 'I could not find anyone with that nickname!',
@@ -168,7 +168,7 @@ async function play(interaction, sequelize, DataTypes) {
 }
 
 async function cancelGame(gameMessage) {
-  const opponentNickname = gameMessage.opponentMember.opponentNickname;
+  const opponentNickname = gameMessage.opponentMember.nickname;
   if (!gameMessage.content.includes('Results')) {
     await gameMessage.edit({
       content: `${opponentNickname} didn't want to play :(`,

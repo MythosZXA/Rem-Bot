@@ -61,16 +61,16 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
     order: [[ 'coins', 'DESC' ]],
     raw: true,
   });
-  if (!guildUsers) return;                                          // no members with wins
+  if (!guildUsers) return;                                            // no members with wins
   // create leaderboard display
   let displayString =                                                 // leaderboard header
-    'Top 3 will get the Gamblig Addicts role\n\n' +
+    'Top 3 will get the Gambling Addicts role\n\n' +
     'User'.padEnd(15) +
     'Coins'.padEnd(10) +
     'RPS Wins'.padEnd(10) +
     'Streaks'.padEnd(10) +
     '\n';
-  guildUsers.forEach(async (guildUser, index) => {                // add each user to display
+  await guildUsers.forEach(async (guildUser, index) => {              // add each user to display
     const guildMember = await guild.members.fetch(guildUser.userID);
     displayString += 
       `${guildMember.nickname}`.padEnd(15) +
@@ -85,12 +85,10 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
       }
   });
   // update leaderboard
-  setTimeout(() => {
-    rpsLeaderboardMessage.edit({                                      // update message
-      content: Formatters.codeBlock(displayString) 
-    });
-    console.log('RPS leaderboard updated');
-  }, 1000 * 3);
+  rpsLeaderboardMessage.edit({                                      // update message
+    content: Formatters.codeBlock(displayString) 
+  });
+  console.log('RPS leaderboard updated');
 }
 
 async function checkStreakCondition(rem, sequelize, DataTypes) {

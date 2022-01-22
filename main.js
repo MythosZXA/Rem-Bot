@@ -117,7 +117,7 @@ rem.on('messageCreate', async message => {
 rem.on('interactionCreate', async interaction => {
   const logChannel = await rem.channels.fetch('911494733828857866');
   if (interaction.isApplicationCommand()) {             // slash commands
-    await logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
+    // logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
     const command = rem.commands.get(interaction.commandName);
     if (!command) return;                               // if there isn't a file with the command name
 
@@ -138,7 +138,23 @@ rem.on('interactionCreate', async interaction => {
     const originalMember = interaction.message.originalMember;
     const buttonType = interaction.message.buttonType;
     const buttonName = interaction.customId;
-    switch(buttonType) {
+    switch (buttonType) {
+      case '13':                                        // 13 buttons
+        const thirteen = rem.commands.get('13');
+        // validate 13 button pressers
+        if (interactionMember !== originalMember) {
+          interaction.reply({
+            content: 'You cannot interact with this button',
+            ephemeral: true,
+          });
+          return;
+        }
+        switch (buttonName) {
+          case 'undo':
+            thirteen.undo(interaction);
+            break;
+        }
+        break;
       case 'dungeon':                                   // dungeon buttons
         const dungeon = rem.commands.get('dungeon');
         // validate dungeon button pressers
@@ -150,7 +166,7 @@ rem.on('interactionCreate', async interaction => {
           return;
         }
         // execute button
-        switch(buttonName) {
+        switch (buttonName) {
           case 'attack':
             await dungeon.battle(interaction, sequelize, Sequelize.DataTypes);
             break;
@@ -191,7 +207,7 @@ rem.on('interactionCreate', async interaction => {
           return;
         }
         // execute button
-        switch(buttonName) {
+        switch (buttonName) {
           case 'close':
             await interaction.message.edit({ content: 'deleted' });
             await interaction.message.delete();
@@ -210,13 +226,19 @@ rem.on('interactionCreate', async interaction => {
           return;
         }
         // execute buttons
-        switch(buttonName) {
+        switch (buttonName) {
           case 'rock':
           case 'paper':
           case 'scissors':
             await rps.play(interaction, sequelize, Sequelize.DataTypes);
             break;
           case 'decline':
+            if (interactionMember === originalMember) {
+              await interaction.reply({
+                content: 'You cannot decline your own game',
+                ephemeral: true,
+              });
+            }
             await rps.cancelGame(interaction.message);
             break;
         }

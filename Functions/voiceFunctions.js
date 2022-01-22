@@ -48,7 +48,7 @@ async function play(message, mp3Name) {
   //   }
   // });
 
-  audioResource.volume.setVolume(0.35);
+  audioResource.volume.setVolume(0.5);
   voiceConnection.audioPlayer.play(audioResource);
   await message.delete();
 }
