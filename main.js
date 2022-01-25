@@ -13,6 +13,7 @@ const rem = new Client({
   ],
   partials: ['CHANNEL']
 });
+let logChannel;
 // sql
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
@@ -38,7 +39,8 @@ rem.on('ready', async () => {
   // set up
   console.log('Rem is online.');
   // rem.user.setActivity('for /help', {type: 'WATCHING'});
-  await (await rem.guilds.fetch('773660297696772096')).members.fetch();
+  (await rem.guilds.fetch('773660297696772096')).members.fetch();                     // caches users for easier access
+  logChannel = await rem.channels.fetch('911494733828857866');
   
   // auto regen heroes health and mana
   // require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
@@ -46,15 +48,17 @@ rem.on('ready', async () => {
 
   // update leaderboards on startup
   const leaderboardFunctions = require('./Functions/leaderboardFunctions');
-  // await leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
-  await leaderboardFunctions.updateRPSLeaderboard(rem, sequelize, Sequelize.DataTypes);
+  // leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
+  leaderboardFunctions.updateRPSLeaderboard(rem, sequelize, Sequelize.DataTypes);
 
   // check for special days when tomorrow comes
   const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
   specialDaysFunctions.checkHoliday(rem);
   specialDaysFunctions.checkBirthday(rem, sequelize, Sequelize.DataTypes);
   // update on new day
-  await leaderboardFunctions.checkStreakCondition(rem, sequelize, Sequelize.DataTypes);
+  leaderboardFunctions.checkStreakCondition(rem, sequelize, Sequelize.DataTypes);
+
+  rem.commands.get('roulette').start(rem, sequelize, Sequelize.DataTypes);
 });
 
 // add user to database on join
@@ -63,7 +67,7 @@ rem.on('guildMemberAdd', async member => {
   const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
   try {
     // add userID and username to database
-    await Users.create({
+    Users.create({
       userID: member.id,
       username: member.user.tag,
     });
@@ -77,20 +81,19 @@ rem.on('guildMemberRemove', async member => {
   if (member.user.bot) return;
   const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
   try {
-    await Users.destroy({ where: { userID: member.id } });
+    Users.destroy({ where: { userID: member.id } });
   } catch(error) {
     console.log(error);
   }
 })
 
 // prefix commands
-rem.on('messageCreate', async message => {
+rem.on('messageCreate', message => {
   console.log(`${message.author.username}: ${message.content}`);
   if (message.author.bot) return;
   // log DMs
-  const logChannel = await rem.channels.fetch('911494733828857866');
   if (!message.inGuild() && message.author.id != '246034440340373504') 
-    await logChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`);
+    logChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`);
   // misc responses
   if (message.content.toLowerCase().includes('thanks rem')) {
     message.channel.send('You\'re welcome!');
@@ -115,7 +118,6 @@ rem.on('messageCreate', async message => {
 
 // interactions
 rem.on('interactionCreate', async interaction => {
-  const logChannel = await rem.channels.fetch('911494733828857866');
   if (interaction.isApplicationCommand()) {             // slash commands
     // logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
     const command = rem.commands.get(interaction.commandName);
@@ -123,10 +125,10 @@ rem.on('interactionCreate', async interaction => {
 
     // execute command, catch error if unsuccessful
     try {
-      await command.execute(interaction, sequelize, Sequelize.DataTypes);
+      command.execute(interaction, sequelize, Sequelize.DataTypes);
     } catch (error) {
       console.error(error);
-      await interaction.reply({ 
+      interaction.reply({ 
         content: 'There was an error while executing this command. Let Toan know!',
         ephemeral: true 
       });
@@ -200,7 +202,7 @@ rem.on('interactionCreate', async interaction => {
       case 'hero':                                      // hero buttons
         // validate dungeon button pressers
         if (interactionMember !== originalMember) {
-          await interaction.reply({                     // presser isn't the original member, exit
+          interaction.reply({                           // presser isn't the original member, exit
             content: 'You cannot interact with this button',
             ephemeral: true,
           });
@@ -209,8 +211,8 @@ rem.on('interactionCreate', async interaction => {
         // execute button
         switch (buttonName) {
           case 'close':
-            await interaction.message.edit({ content: 'deleted' });
-            await interaction.message.delete();
+            interaction.message.edit({ content: 'deleted' });
+            interaction.message.delete();
             break;
         }
         break;

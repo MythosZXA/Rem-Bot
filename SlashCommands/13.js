@@ -185,19 +185,26 @@ async function play(interaction) {
   }
   // determine which cards to play
   const revertDeck = [...playerDeck];                                           // save current deck in case of undo
-  let playArray = [];                                                           // represents cards being played
+  let playDeck = [];                                                            // represents cards being played
   const playIndices = interaction.options._hoistedOptions[0].value.split(',');  // card locations in deck
+  if (playIndices.length > playerDeck.length) {                                 // playing more cards than exists, exit
+    interaction.reply({
+      content: 'You do not have that many cards',
+      ephemeral: true,
+    });
+    return;
+  }
   // transfer cards from player deck to play deck
   for (let i = 0; i < playIndices.length; i++) {
     let cardIndex = parseInt(playIndices[i]);
     cardIndex -= i;
-    playArray.push(playerDeck.splice(cardIndex, 1)[0]);
+    playDeck.push(playerDeck.splice(cardIndex, 1)[0]);
   }
   // play the cards by sending it to table
   const tableChannel = await interaction.guild.channels.fetch('933842239505969252');
-  recentMessage.edit({ components: [] });                                       // remove undo button from last message
+  if (recentMessage) recentMessage.edit({ components: [] });                    // remove undo button from last message
   recentMessage = await tableChannel.send({
-    content: `${interaction.member.nickname}: ${playArray.toString()}`,
+    content: `${interaction.member.nickname}: ${playDeck.toString()}`,
     components: [actionRow],
   });
   // attach 13 related data to message

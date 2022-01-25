@@ -64,7 +64,8 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
   if (!guildUsers) return;                                            // no members with wins
   // create leaderboard display
   let displayString =                                                 // leaderboard header
-    'Top 3 will get the Gambling Addicts role\n\n' +
+    'Top 3 will get the Gambling Addicts role\n' +
+    'Gambling Addicts will receive 150 coins on check in\n\n' +
     'User'.padEnd(15) +
     'Coins'.padEnd(10) +
     'RPS Wins'.padEnd(10) +
