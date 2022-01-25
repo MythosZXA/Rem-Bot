@@ -1,9 +1,9 @@
 const { Formatters } = require('discord.js');
 
 function getSecsToMidnight() {
-  let nowString = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
-  let nowTime = new Date(nowString);
-  let midnight = new Date(nowTime).setHours(24, 0, 0, 0);
+  const nowString = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
+  const nowTime = new Date(nowString);
+  const midnight = new Date(nowTime).setHours(24, 0, 0, 0);
   return (midnight - nowTime) / 1000;
 }
 
@@ -24,13 +24,17 @@ async function updateHeroLeaderboard(rem, sequelize, DataTypes) {
     'Level'.padEnd(10) +
     'Credits'.padEnd(10) +
     '\n';
-  await heroes.forEach(async (hero, index) => {                     // add each hero to display
-    const member = await guild.members.fetch(hero.userID);
-    displayString += 
-      `${member.nickname}`.padEnd(15) +
-      `${hero.level}`.padEnd(10) +
-      `${hero.credits}`.padEnd(10) +
-      '\n';
+  await new Promise (resolve => {
+    if (heroes.length == 0) resolve();
+    heroes.forEach(async (hero, index) => {                         // add each hero to display
+      const member = await guild.members.fetch(hero.userID);
+      displayString += 
+        `${member.nickname}`.padEnd(15) +
+        `${hero.level}`.padEnd(10) +
+        `${hero.credits}`.padEnd(10) +
+        '\n';
+      if (index === heroes.length - 1) resolve();
+    });
   });
   // update leaderboard
   setTimeout(() => {
@@ -50,7 +54,7 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
   const guild = await rem.guilds.fetch('773660297696772096');
   const leaderboardChannel = await rem.channels.fetch('921925078541824052');
   const rpsLeaderboardMessage = await leaderboardChannel.messages.fetch('932326839408533554');
-  // get members with rps wins
+  // get members with coins or rps wins
   const Users = require('../Models/users')(sequelize, DataTypes);
   const { Op } = require('sequelize');
   const guildUsers = await Users.findAll({
@@ -71,21 +75,26 @@ async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
     'RPS Wins'.padEnd(10) +
     'Streaks'.padEnd(10) +
     '\n';
-  await guildUsers.forEach(async (guildUser, index) => {              // add each user to display
-    const guildMember = await guild.members.fetch(guildUser.userID);
-    displayString += 
-      `${guildMember.nickname}`.padEnd(15) +
-      `${guildUser.coins}`.padEnd(10)+
-      `${guildUser.rpsWins}`.padEnd(10) +
-      `${guildUser.streak}`.padEnd(10) +
-      '\n';
-      // give Gambling Addicts role to top 3 members
-      if (index < 3) {
-        guildMember.roles.add('933834205991952467');
-      } else {
-        guildMember.roles.remove('933834205991952467');
-      }
+  await new Promise (resolve => {
+    if (guildUsers.length === 0) resolve();
+    guildUsers.forEach(async (guildUser, index) => {                  // add each user to display
+      const guildMember = await guild.members.fetch(guildUser.userID);
+      displayString += 
+        `${guildMember.nickname}`.padEnd(15) +
+        `${guildUser.coins}`.padEnd(10)+
+        `${guildUser.rpsWins}`.padEnd(10) +
+        `${guildUser.streak}`.padEnd(10) +
+        '\n';
+        // give Gambling Addicts role to top 3 members
+        if (index < 3) {
+          guildMember.roles.add('933834205991952467');
+        } else {
+          guildMember.roles.remove('933834205991952467');
+        }
+      if (index === guildUsers.length - 1) resolve();
+    });
   });
+  
   // update leaderboard
   rpsLeaderboardMessage.edit({                                      // update message
     content: Formatters.codeBlock(displayString) 

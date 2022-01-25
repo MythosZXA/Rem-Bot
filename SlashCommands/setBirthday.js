@@ -16,16 +16,14 @@ async function execute(interaction, sequelize, DataTypes) {
     if (!birthdayFunctions.validateFormat(interaction, birthdayString)) { // if birthday is invalid
       return;
     }
-
     // set or update in database
     const Users = require('../Models/users')(sequelize, DataTypes);
-    await Users.update(
+    Users.update(
       { birthday: birthdayString},
       { where: { userID: interaction.user.id } }
     );
-
-    // reply to interation
-    await interaction.reply({
+    // send confirmation message
+    interaction.reply({
       content: 'Birthday set!',
       ephemeral: true,
     });

@@ -14,6 +14,8 @@ const rem = new Client({
   partials: ['CHANNEL']
 });
 let logChannel;
+const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
+const prefixCommands = require('./prefixCommands.js');
 // sql
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
@@ -22,6 +24,7 @@ const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
 	logging: false,
 });
 const Hero = require('./Models/hero')(sequelize, Sequelize.DataTypes);
+const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
@@ -39,7 +42,7 @@ rem.on('ready', async () => {
   // set up
   console.log('Rem is online.');
   // rem.user.setActivity('for /help', {type: 'WATCHING'});
-  (await rem.guilds.fetch('773660297696772096')).members.fetch();                     // caches users for easier access
+  (await rem.guilds.fetch('773660297696772096')).members.fetch();                 // caches users for easier access
   logChannel = await rem.channels.fetch('911494733828857866');
   
   // auto regen heroes health and mana
@@ -52,7 +55,6 @@ rem.on('ready', async () => {
   leaderboardFunctions.updateRPSLeaderboard(rem, sequelize, Sequelize.DataTypes);
 
   // check for special days when tomorrow comes
-  const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
   specialDaysFunctions.checkHoliday(rem);
   specialDaysFunctions.checkBirthday(rem, sequelize, Sequelize.DataTypes);
   // update on new day
@@ -62,9 +64,8 @@ rem.on('ready', async () => {
 });
 
 // add user to database on join
-rem.on('guildMemberAdd', async member => {
-  if (member.user.bot) return;
-  const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
+rem.on('guildMemberAdd', member => {
+  if (member.user.bot) return;                                                    // bot joined, exit
   try {
     // add userID and username to database
     Users.create({
@@ -78,9 +79,9 @@ rem.on('guildMemberAdd', async member => {
 
 // remove user from database on leave
 rem.on('guildMemberRemove', async member => {
-  if (member.user.bot) return;
-  const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
+  if (member.user.bot) return;                                                    // bot left, exit
   try {
+    // delete from database
     Users.destroy({ where: { userID: member.id } });
   } catch(error) {
     console.log(error);
@@ -112,7 +113,6 @@ rem.on('messageCreate', message => {
   }
   // check if message is a prefix command
   if (arg[0].toLowerCase() != 'rem,') return;
-  const prefixCommands = require('./prefixCommands.js');
   prefixCommands[arg[1].toLowerCase()]?.(message, arg, sequelize, Sequelize.DataTypes);
 });
 
@@ -122,7 +122,6 @@ rem.on('interactionCreate', async interaction => {
     // logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
     const command = rem.commands.get(interaction.commandName);
     if (!command) return;                               // if there isn't a file with the command name
-
     // execute command, catch error if unsuccessful
     try {
       command.execute(interaction, sequelize, Sequelize.DataTypes);
@@ -161,7 +160,7 @@ rem.on('interactionCreate', async interaction => {
         const dungeon = rem.commands.get('dungeon');
         // validate dungeon button pressers
         if (interactionMember !== originalMember) {
-          await interaction.reply({                     // presser isn't the original member, exit
+          interaction.reply({                           // presser isn't the original member, exit
             content: 'You cannot interact with this button',
             ephemeral: true,
           });
@@ -170,7 +169,7 @@ rem.on('interactionCreate', async interaction => {
         // execute button
         switch (buttonName) {
           case 'attack':
-            await dungeon.battle(interaction, sequelize, Sequelize.DataTypes);
+            dungeon.battle(interaction, sequelize, Sequelize.DataTypes);
             break;
           case 'shieldBash':
           case 'tripleStrike':
@@ -184,7 +183,7 @@ rem.on('interactionCreate', async interaction => {
             break;
           case 'nextStage':
             interaction.message.currentStage++;
-            await dungeon.execute(interaction, sequelize, Sequelize.DataTypes);
+            dungeon.execute(interaction, sequelize, Sequelize.DataTypes);
             break;
           case 'leave':
             const { status } = await Hero.findOne({
@@ -192,10 +191,11 @@ rem.on('interactionCreate', async interaction => {
               where: { userID: originalMember.id },
               raw: true,
             });
+            // hero left dungeon, no longer busy
             if (status === 'Busy') {
-              await Hero.update({ status: 'Good' }, { where: { userID: originalMember.id } });
+              Hero.update({ status: 'Good' }, { where: { userID: originalMember.id } });
             }
-            await interaction.message.delete();
+            interaction.message.delete();
             break;
         }
         break;
@@ -221,7 +221,7 @@ rem.on('interactionCreate', async interaction => {
         // validate rps button pressers
         const opponentMember = interaction.message.opponentMember;
         if (interactionMember !== originalMember && interactionMember !== opponentMember) {
-          await interaction.reply({                     // presser isn't a participant, exit
+          interaction.reply({                            // presser isn't a participant, exit
             content: 'You are not the opponent of this game',
             ephemeral: true,
           });
@@ -232,16 +232,16 @@ rem.on('interactionCreate', async interaction => {
           case 'rock':
           case 'paper':
           case 'scissors':
-            await rps.play(interaction, sequelize, Sequelize.DataTypes);
+            rps.play(interaction, sequelize, Sequelize.DataTypes);
             break;
           case 'decline':
             if (interactionMember === originalMember) {
-              await interaction.reply({
+              interaction.reply({
                 content: 'You cannot decline your own game',
                 ephemeral: true,
               });
             }
-            await rps.cancelGame(interaction.message);
+            rps.cancelGame(interaction.message);
             break;
         }
         break;

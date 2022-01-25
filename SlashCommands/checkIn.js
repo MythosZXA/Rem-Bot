@@ -12,14 +12,14 @@ async function execute(interaction, sequelize, DataTypes) {
       ephemeral: true,
     });
   } else {                                                  // user haven't checked in
-    User.increment(                                         // increase streak & coins
+    await User.increment(                                   // increase streak & coins
       { streak: +1 , coins: +100 },
       { where: { userID: interactionMember.id } },
     );
     // check if this member is top 3 gamblers
     const hasRole = interactionMember.roles.cache.find(role => role.name === 'Gambling Addicts');
     if (hasRole) {
-      User.increment(                                       // give gambling addicts 50 more coins
+      await User.increment(                                 // give gambling addicts 50 more coins
         { coins: +50 },
         { where: { userID: interactionMember.id } },
       )

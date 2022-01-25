@@ -9,11 +9,11 @@ const {
 } = require('@discordjs/voice');
 const fs = require('fs');
 
-async function join(message) {
+function join(message) {
   // check if member is in a voice channel
   if (!message.member.voice.channelId) {
-    await message.channel.send('Please join a voice channel first');
-    await message.delete();
+    message.channel.send('Please join a voice channel first');
+    message.delete();
     return false;
   }
   // rem joins voice channel
@@ -29,8 +29,8 @@ async function join(message) {
   return true;
 }
 
-async function play(message, mp3Name) {
-  if (!(await join(message))) return;
+function play(message, mp3Name) {
+  if (!join(message)) return;
 
   const voiceConnection = getVoiceConnection(message.guildId);
   const audioResource = createAudioResource(`./mp3/${mp3Name}.mp3`, { inlineVolume: true });
@@ -50,7 +50,7 @@ async function play(message, mp3Name) {
 
   audioResource.volume.setVolume(0.5);
   voiceConnection.audioPlayer.play(audioResource);
-  await message.delete();
+  message.delete();
 }
 
 module.exports = {

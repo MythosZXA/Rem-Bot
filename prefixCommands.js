@@ -7,7 +7,7 @@ function help(message, arg) {
     .addField('Normal Commands',
     `/check_in
     / pay
-    /roulette
+    /roulette bet
     /rps
     /set_birthday
     /timer`,
@@ -15,7 +15,7 @@ function help(message, arg) {
     .addField('Info',
     `| daily streaks, get 100 coins
     | give someone coins
-    | play a round of roulette
+    | place bets on the next round of #roulette
     | play rock paper scissors with someone
     | birthday message on birthday
     | set a timer`,
@@ -98,34 +98,7 @@ async function remind(message, arg) {
 }
 
 async function test(message, arg, sequelize, DataTypes) {
-  const rouletteInfoEmbed = new MessageEmbed()
-  .setColor(0x19EFF5)
-  .setTitle('How to play Roulette')
-  .setDescription(
-    `**You are trying to guess the number that is going to be rolled**
-    There are 38 numbers: **1-36**, **0**, and **00**
-    You have multiple ways to place a bet:
-    **Outside** bets pay is varied by the bet you make 
-    => **1 to 1** bets  covers a little less than half of the board
-    ===> **1-18** | **Even** | **Red** | **Black** | **Odd** | **19-36**
-    => **2 to 1** covers a little less than 1/3 of the board
-    ===> **1st 12** | **2nd 12** | **3rd 12** | **1st Col** | **2nd Col** | **3rd Col**
-    **Inside** bets pay is varied by the bet you make
-    => **Line** bets pay **5:1**, covering 6 in-order numbers (10-15)
-    => **Corner** bets pay **8:1**, covering 4 adj numbers (23,24,26,27)
-    => **Street** bets pay **11:1**, covering 3 in-order numbers (4,5,6)
-    => **Split** bets pay **17:1**, covering 2 adj numbers (10,13 or 10,11)
-    => **Straight Up** bets pay **35:1**, covering 1 number`)
-  .setImage('https://i.imgur.com/SdNtESm.jpg');
-const rouletteEmbed = new MessageEmbed()
-.setColor(0x19EFF5)
-  .setTitle('Roulette')
-  .setDescription('I will roll a number every 30 minutes')
-  .addField('Last roll results', 'No players', true)
-  .addField('Next roll players', 'No players', true);
-const channel = message.channel;
-const rouletteMessage = await channel.messages.fetch('934925025834831942');
-rouletteMessage.edit({ embeds: [rouletteInfoEmbed, rouletteEmbed]});
+  
 }
 
 async function update(message, arg, seqeulize, DataTypes) {

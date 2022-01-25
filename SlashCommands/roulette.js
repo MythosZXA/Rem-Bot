@@ -94,7 +94,7 @@ async function execute(interaction, sequelize, DataTypes) {
     let regex;
     switch (betType) {
       case 'Line':
-        regex = new RegExp('^[1-9]{1,2},[1-9]{1,2},[1-9]{1,2},[0-9]{1,2},[0-9]{1,2},[0-9]{1,2}$')
+        regex = new RegExp('^[0-9]{1,2},[0-9]{1,2},[0-9]{1,2},[0-9]{1,2},[0-9]{1,2},[0-9]{1,2}$')
         break;
       case 'Corner':
         regex = new RegExp('^[0-9]{1,2},[0-9]{1,2},[0-9]{1,2},[0-9]{1,2}$')
@@ -151,18 +151,33 @@ async function execute(interaction, sequelize, DataTypes) {
 }
 
 async function start(rem, sequelize, DataTypes) {
+  // save roulette message for future reference
   const rouletteChannel = await rem.channels.cache.find(channel => channel.name === 'roulette');
   rouletteMessage = await rouletteChannel.messages.fetch('934925025834831942');
+  // get current time for time stamp
   const startupTime = new Date();
   const minutesUntil30 = 30 - (startupTime.getMinutes() % 30);
   const secondsUntilMinute = 60 - startupTime.getSeconds();
+  // change the next roll field
+  const rouletteEmbed = rouletteMessage.embeds[1];
+  let nextRollHour, nextRollMinute;
+  if (startupTime.getMinutes() >= 30) {
+    nextRollHour = (startupTime.getHours() % 12) + 1;
+    nextRollMinute = '00';
+  } else {
+    nextRollHour = startupTime.getHours();
+    nextRollMinute = 30;
+  }
+  rouletteEmbed.spliceFields(
+    1, 1, { name: `${nextRollHour}:${nextRollMinute} Players`, value: 'No players', inline: true });
+  rouletteMessage.edit({ embeds: [rouletteInfoEmbed, rouletteEmbed] });
   // roll at the next 30 minute mark and then roll every 30 minutes
   setTimeout(() => {
     roll(rem, sequelize, DataTypes);
     setInterval(() => {
       roll(rem, sequelize, DataTypes);
     }, 1000 * 60 * 30);
-  }, (1000 * 60 * (minutesUntil30 - 1)) + (1000 * secondsUntilMinute));
+  }, (1000 * 60 * (minutesUntil30 - 1) + (1000 * secondsUntilMinute)));
 }
 
 async function roll(rem, sequelize, DataTypes) {
@@ -174,7 +189,7 @@ async function roll(rem, sequelize, DataTypes) {
   let resultsField = '';
   await new Promise(resolve => {
     if (playerBets.length === 0) resolve();
-    playerBets.forEach((playerBet, index) => {
+    playerBets.forEach(async (playerBet, index) => {
       let resultCoin = playerBet.betAmount;
       let win = false;
       if (playerBet.outside) {                                          // outside bet type
@@ -235,41 +250,33 @@ async function roll(rem, sequelize, DataTypes) {
             break;
         }
       } else {                                                          // inside bet type
-        const betValues = playerBet.bet.includes(',') ? playerBet.bet.split(',') : playerBet.bet;
-        switch (playerBet.bet) {
-          case '\d,\d,\d,\d,\d,\d':                                     // line bet
-          case '\d,\d,\d,\d\d,\d\d,\d\d':
-          case '\d\d,\d\d,\d\d,\d\d,\d\d,\d\d':
+        const betValues = playerBet.bet.includes(',') ? playerBet.bet.split(',') : [playerBet.bet];
+        switch (betValues.length) {
+          case 6:                                                       // line bet
             if (betValues.find(value => value == rollNumber)) {
               win = true;
               resultCoin *= 5;
             }
             break;
-          case '\d,\d,\d,\d':                                           // corner bet
-          case '\d,\d,\d\d,\d\d':
-          case '\d\d,\d\d,\d\d,\d\d':
+          case 4:                                                       // corner bet
             if (betValues.find(value => value == rollNumber)) {
               win = true;
               resultCoin *= 8;
             }
             break;
-          case '\d,\d,\d':                                              // street bet
-          case '\d\d,\d\d,\d\d':
+          case 3:                                                       // street bet
             if (betValues.find(value => value == rollNumber)) {
               win = true;
               resultCoin *= 11;
             }
             break;
-          case '\d,\d':                                                 // split bet
-          case '\d,\d\d':
-          case '\d\d,\d\d':
+          case 2:                                                       // split bet
             if (betValues.find(value => value == rollNumber)) {
               win = true;
-              resultCoin *= 11;
+              resultCoin *= 17;
             }
             break;
-          case '\d':                                                    // straight up bet
-          case '\d\d':
+          case 1:                                                       // straight up bet
             if (rollNumber == playerBet.bet) {
               win = true;
               resultCoin *= 35;
@@ -278,12 +285,13 @@ async function roll(rem, sequelize, DataTypes) {
               resultCoin *= 35;
               break;
             }
+            break;
         }
       }
       // update data according to win or loss
       resultsField += `${playerBet.member.nickname} ${win ? 'won' : 'lost'} ` +
         `${resultCoin} coins with a ${playerBet.bet} bet!\n`;
-      Users.increment(
+      await Users.increment(
         { coins: sequelize.literal(win ? +resultCoin : -resultCoin) },
         { where: { userID: playerBet.member.id } }
       );
@@ -293,7 +301,7 @@ async function roll(rem, sequelize, DataTypes) {
   });
   // get current time for time stamp
   const currentRollTime = new Date();
-  const currentHour = currentRollTime.getHours() % 12;
+  let currentHour = currentRollTime.getHours() % 12;
   if (currentHour === 0) currentHour = 12;
   const currentMinute = currentRollTime.getMinutes();
   // output results by editing embed
@@ -303,11 +311,12 @@ async function roll(rem, sequelize, DataTypes) {
   if (reds.find(number => number === rollNumber)) color = 'Red';
   else if (blacks.find(number => number === rollNumber)) color = 'Black';
   rouletteEmbed.setFields([                                               // update roulette embed display
-    { name: `${currentHour}:${currentMinute} Results: ${color ? color : '\b'} ${rollNumber}`,
+    { name: `${currentHour}:${currentMinute == 0 ? '00' : currentMinute} Results: ` +
+            `${color ? color : '\b'} ${rollNumber}`,
       value: `${resultsField.length === 0 ? 'No players' : resultsField}`,
       inline: true
     },
-    { name: `${currentMinute === 0 ? currentHour : currentHour + 1}:` +
+    { name: `${currentMinute === 0 ? currentHour : (currentHour === 12 ? 1 : currentHour + 1)}:` +
             `${currentMinute === 0 ? currentMinute + 30: 0} Players`,
       value: 'No players',
       inline: true
