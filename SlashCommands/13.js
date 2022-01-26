@@ -39,12 +39,13 @@ let recentMessage;
 async function execute(interaction) {
   // check if this is the play or cancel subcommand
   const subcommandName = interaction.options._subcommand;
-  if (subcommandName === 'play') {
-    play(interaction);
-    return;
-  } else if (subcommandName === 'cancel') {
-    cancel(interaction);
-    return;
+  switch (subcommandName) {
+    case 'play':
+      play(interaction);
+      return;
+    case 'cancel':
+      cancel(interaction);
+      return;
   }
   // check if the command is sent in table channel
   if (interaction.channelId !== '933842239505969252') {
@@ -109,10 +110,10 @@ async function execute(interaction) {
   const p2Channel = await interaction.guild.channels.fetch('933842030654795846');
   const p3Channel = await interaction.guild.channels.fetch('933842048530927726');
   const p4Channel = await interaction.guild.channels.fetch('933842062007218196');
-  p1DeckMessage = await p1Channel.send(p1.toString());
-  p2DeckMessage = await p2Channel.send(p2.toString());
-  p3DeckMessage = await p3Channel.send(p3.toString());
-  p4DeckMessage = await p4Channel.send(p4.toString());
+  p1DeckMessage = await p1Channel.send(p1.join('\n'));
+  p2DeckMessage = await p2Channel.send(p2.join('\n'));
+  p3DeckMessage = await p3Channel.send(p3.join('\n'));
+  p4DeckMessage = await p4Channel.send(p4.join('\n'));
   // send confirmation message
   interaction.reply(
     'Started a game of 13 with ' +
@@ -184,12 +185,18 @@ async function play(interaction) {
       break;
   }
   // determine which cards to play
-  const revertDeck = [...playerDeck];                                           // save current deck in case of undo
-  let playDeck = [];                                                            // represents cards being played
-  const playIndices = interaction.options._hoistedOptions[0].value.split(',');  // card locations in deck
-  if (playIndices.length > playerDeck.length) {                                 // playing more cards than exists, exit
+  const revertDeck = [...playerDeck];                                             // save current deck in case of undo
+  let playDeck = [];                                                              // represents cards being played
+  const playIndices = interaction.options._hoistedOptions[0].value.split(',');    // card locations in deck
+  if (playIndices.length > playerDeck.length) {                                   // playing more cards than exists, exit
     interaction.reply({
       content: 'You do not have that many cards',
+      ephemeral: true,
+    });
+    return;
+  } else if (playIndices.find(playIndex => playIndex > playerDeck.length - 1)) {  // playing an out of bounds card, exit
+    interaction.reply({
+      content: 'A card position is out of bounds!',
       ephemeral: true,
     });
     return;
@@ -202,9 +209,9 @@ async function play(interaction) {
   }
   // play the cards by sending it to table
   const tableChannel = await interaction.guild.channels.fetch('933842239505969252');
-  if (recentMessage) recentMessage.edit({ components: [] });                    // remove undo button from last message
+  if (recentMessage) recentMessage.edit({ components: [] });                      // remove undo button from last message
   recentMessage = await tableChannel.send({
-    content: `${interaction.member.nickname}: ${playDeck.toString()}`,
+    content: `p${playerMemberIndex + 1} ${interaction.member.nickname}: ${playDeck.join(',')}`,
     components: [actionRow],
   });
   // attach 13 related data to message
@@ -212,13 +219,13 @@ async function play(interaction) {
   recentMessage.originalMember = interaction.member;
   recentMessage.revertDeck = revertDeck;
   // check post-play condition
-  if (playerDeck.length == 0) {                                                 // no more cards, win
+  if (playerDeck.length == 0) {                                                   // no more cards, win
     playerMessage.edit('No more cards, you won!');
     interaction.reply('You won');
     interaction.deleteReply();
     tableChannel.send(`${interaction.member.nickname} won!`);
-  } else {                                                                      // more cards, keep going
-    playerMessage.edit(playerDeck.toString());                                  // remove played cards from hand
+  } else {                                                                        // more cards, keep going
+    playerMessage.edit(playerDeck.join('\n'));                                    // remove played cards from hand
     interaction.reply('Played');
     interaction.deleteReply();
   }
@@ -252,7 +259,7 @@ function undo(interaction) {
   }
   // undo last played cards
   interaction.message.delete();                           // remove the played cards from table
-  playerMessage.edit(playerDeck.toString());              // put back the cards to player's hand
+  playerMessage.edit(playerDeck.join('\n'));              // put back the cards to player's hand
 }
 
 async function cancel(interaction) {

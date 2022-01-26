@@ -26,12 +26,12 @@ function checkBirthday(rem, sequelize, DataTypes) {
       // if it's user's birthday
       if (userMonth == currentMonth && userDate == currentDate) {
         const server = await rem.guilds.fetch('773660297696772096');
-        const bdMember = server.members.fetch(guildUser.userID);
+        const bdMember = await server.members.fetch(guildUser.userID);
         // send birthday message
         const picture = new MessageAttachment('https://i.imgur.com/7IqikPC.jpg');
         const generalChannel = await rem.channels.fetch('773660297696772100');
         generalChannel.send({
-          content: `Happy Birthday ${bdMember}!!!`,
+          content: `🎉🎉Happy Birthday ${bdMember}!!!🎉🎉`,
           files: [picture]
         });
       }

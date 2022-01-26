@@ -165,7 +165,8 @@ async function start(rem, sequelize, DataTypes) {
     nextRollHour = (startupTime.getHours() % 12) + 1;
     nextRollMinute = '00';
   } else {
-    nextRollHour = startupTime.getHours();
+    nextRollHour = startupTime.getHours() % 12;
+    if (nextRollHour === 0) nextRollHour = 12;
     nextRollMinute = 30;
   }
   rouletteEmbed.spliceFields(
@@ -312,12 +313,12 @@ async function roll(rem, sequelize, DataTypes) {
   else if (blacks.find(number => number === rollNumber)) color = 'Black';
   rouletteEmbed.setFields([                                               // update roulette embed display
     { name: `${currentHour}:${currentMinute == 0 ? '00' : currentMinute} Results: ` +
-            `${color ? color : '\b'} ${rollNumber}`,
+            `${color ? color : ''} ${rollNumber}`,
       value: `${resultsField.length === 0 ? 'No players' : resultsField}`,
       inline: true
     },
     { name: `${currentMinute === 0 ? currentHour : (currentHour === 12 ? 1 : currentHour + 1)}:` +
-            `${currentMinute === 0 ? currentMinute + 30: 0} Players`,
+            `${currentMinute === 0 ? currentMinute + 30: '00'} Players`,
       value: 'No players',
       inline: true
     },
