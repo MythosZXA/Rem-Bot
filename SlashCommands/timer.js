@@ -10,27 +10,26 @@ async function execute(interaction) {
   // duration validation
   const remdisappointed = interaction.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
   if (hrs == null && mins == null) {
-    await interaction.reply({
+    interaction.reply({
       content: 'Please enter some values',
       ephemeral: true,
     });
   } else if (duration == 0) {
-    await interaction.reply({
+    interaction.reply({
       content: `Why are you even setting a timer ${remdisappointed}`,
       ephemeral: true,
     });
   } else {
     // confirmation message
-    await interaction.reply({
+    interaction.reply({
       content: 'I will let you know when time is up!',
       ephemeral: true,
     });
     // save info required to send msg later
     const user = interaction.user;
-    const textChannel = interaction.channel;
     // set timer
     setTimeout(() => {
-      textChannel.send(`${user} Time is up!`);
+      user.send(`${user} Time is up!`);
     }, 1000 * 60 * duration);
   }
 }

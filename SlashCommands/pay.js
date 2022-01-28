@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
 async function execute(interaction, sequelize, DataTypes) {
   // required models for transaction
@@ -14,39 +15,43 @@ async function execute(interaction, sequelize, DataTypes) {
     attributes: ['coins'],
     raw: true,
   });
-  if (wantedMember == null) {                               // inputed nickname doesn't exist
-    await interaction.reply({
+  if (wantedMember == null) {                               // inputed nickname doesn't exist, exit
+    interaction.reply({
       content:'No user with that nickname!',
       ephemeral: true,
     });
     return;
-  } else if (interaction.user.id == wantedMember.id) {      // same person
+  } else if (interaction.user.id == wantedMember.id) {      // same person, exit
     const remDisappointed = await interaction.guild.emojis.fetch('892913382607425566');
-    await interaction.reply({
+    interaction.reply({
       content: `You cannot give coins to yourself! ${remDisappointed}`,
       ephemeral: true,
-    })
-  } else if (amount <= 0) {                                 // inputed amount is not positive
-    await interaction.reply({
+    });
+    return;
+  } else if (amount <= 0) {                                 // inputed amount is negative, exit
+    interaction.reply({
       content: 'Invalid amount',
       ephemeral: true,
     });
-  } else if (coins < amount) {                              // payer doesn't have enough money
-    await interaction.reply({
+    return;
+  } else if (coins < amount) {                              // payer doesn't have enough money, exit
+    interaction.reply({
       content: 'You don\'t have enough coins',
       ephemeral: true,
     });
-  } else {                                                  // transaction possible
-    await Users.increment(                                  // reduce payer coins
-      { coins: -amount },
-      { where: { userID: interaction.user.id } },
-    );
-    await Users.increment(                                  // increase receiver coins
-      { coins: +amount },
-      { where: { userID: wantedMember.id } },
-    );
-    await interaction.reply(`You paid ${wantedMember} ${amount} coins`);
+    return;
   }
+  // execute transaction
+  await Users.increment(                                    // reduce payer coins
+    { coins: -amount },
+    { where: { userID: interaction.user.id } },
+  );
+  await Users.increment(                                    // increase receiver coins
+    { coins: +amount },
+    { where: { userID: wantedMember.id } },
+  );
+  interaction.reply(`You paid ${wantedMember} ${amount} coins`);
+  leaderboardFunctions.updateRPSLeaderboard(interaction.client, sequelize, DataTypes);
 }
 
 module.exports = {

@@ -15,7 +15,7 @@ async function execute(interaction) {
     });
     message.delete();
   } catch(error) {
-    await interaction.reply({
+    interaction.reply({
       content: 'I can only clear between 1-100 messages that are not older than 2 weeks',
       ephemeral: true,
     });

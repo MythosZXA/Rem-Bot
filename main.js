@@ -14,6 +14,7 @@ const rem = new Client({
   partials: ['CHANNEL']
 });
 let logChannel;
+const leaderboardFunctions = require('./Functions/leaderboardFunctions');
 const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
 const prefixCommands = require('./prefixCommands.js');
 // sql
@@ -50,7 +51,6 @@ rem.on('ready', async () => {
   // require('./Functions/heroFunctions').recoverMana(sequelize, Sequelize.DataTypes);
 
   // update leaderboards on startup
-  const leaderboardFunctions = require('./Functions/leaderboardFunctions');
   // leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
   leaderboardFunctions.updateRPSLeaderboard(rem, sequelize, Sequelize.DataTypes);
 

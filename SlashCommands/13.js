@@ -237,9 +237,9 @@ function undo(interaction) {
   let playerDeck, playerMessage;
   switch(playerMemberIndex) {
     case 0:
-      p1 = interaction.message.revertDeck;
-      playerDeck = p1;
-      playerMessage = p1DeckMessage;
+      p1 = interaction.message.revertDeck;                // revert deck back to prior-play
+      playerDeck = p1;                                    // deck to display after undo
+      playerMessage = p1DeckMessage;                      // message displaying the deck
       break;
     case 1:
       p2 = interaction.message.revertDeck;
@@ -259,6 +259,7 @@ function undo(interaction) {
   }
   // undo last played cards
   interaction.message.delete();                           // remove the played cards from table
+  recentMessage = undefined;                              // recent message deleted
   playerMessage.edit(playerDeck.join('\n'));              // put back the cards to player's hand
 }
 
