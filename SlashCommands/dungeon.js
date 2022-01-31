@@ -21,6 +21,7 @@ const noSkillButton = new MessageButton()
   .setStyle('SECONDARY');
 
 async function execute(interaction, sequelize, DataTypes) {
+  return;
   // required models for battle
   const Hero = require('../Models/hero')(sequelize, DataTypes);
   const Dungeon = require('../Models/dungeons')(sequelize, DataTypes);

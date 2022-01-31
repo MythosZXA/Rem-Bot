@@ -1,12 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define('hero', {
+  return sequelize.define('heroes', {
     userID: {
       type: DataTypes.STRING,
       primaryKey: true,
     },
     class: {
       type: DataTypes.STRING,
-      defaultValue: 'Knight',
+      defaultValue: 'Adventurer',
       allowNull: false,
     },
     level: {
@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     crit_rate: {
       type: DataTypes.INTEGER,
-      defaultValue: 15,
+      defaultValue: 10,
       allowNull: false,
     },
     crit_damage: {
@@ -77,6 +77,5 @@ module.exports = (sequelize, DataTypes) => {
   },
   {
     timestamps: false,
-    freezeTableName: true
   });
 }

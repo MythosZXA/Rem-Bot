@@ -226,7 +226,7 @@ async function play(interaction) {
     tableChannel.send(`${interaction.member.nickname} won!`);
   } else {                                                                        // more cards, keep going
     playerMessage.edit(playerDeck.join('\n'));                                    // remove played cards from hand
-    interaction.reply('Played');
+    await interaction.reply('Played');
     interaction.deleteReply();
   }
 }

@@ -8,7 +8,7 @@ async function execute(interaction) {
   if (hrs) duration += hrs * 60;
   if (mins) duration += mins;
   // duration validation
-  const remdisappointed = interaction.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
+  const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
   if (hrs == null && mins == null) {
     interaction.reply({
       content: 'Please enter some values',
@@ -16,7 +16,7 @@ async function execute(interaction) {
     });
   } else if (duration == 0) {
     interaction.reply({
-      content: `Why are you even setting a timer ${remdisappointed}`,
+      content: `Why are you even setting a timer ${remjudge}`,
       ephemeral: true,
     });
   } else {

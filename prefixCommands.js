@@ -104,9 +104,9 @@ async function test(message, arg, sequelize, DataTypes) {
   console.log(await response.json());
 }
 
-async function update(message, arg, seqeulize, DataTypes) {
+async function update(message, arg, sequelize, DataTypes) {
   const leaderboardFunctions = require('./Functions/leaderboardFunctions');
-  leaderboardFunctions.updateRPSLeaderboard(message.client, seqeulize, DataTypes);
+  leaderboardFunctions.updateRPSLeaderboard(message.client, sequelize, DataTypes);
 }
 
 module.exports = {

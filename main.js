@@ -24,7 +24,7 @@ const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
 	dialect: 'mysql',
 	logging: false,
 });
-const Hero = require('./Models/hero')(sequelize, Sequelize.DataTypes);
+const Heroes = require('./Models/heroes')(sequelize, Sequelize.DataTypes);
 const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
 // set commands
 const fs = require('fs');
@@ -45,7 +45,6 @@ rem.on('ready', async () => {
   // rem.user.setActivity('for /help', {type: 'WATCHING'});
   (await rem.guilds.fetch('773660297696772096')).members.fetch();                 // caches users for easier access
   logChannel = await rem.channels.fetch('911494733828857866');
-  
   // auto regen heroes health and mana
   // require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
   // require('./Functions/heroFunctions').recoverMana(sequelize, Sequelize.DataTypes);
@@ -141,7 +140,7 @@ rem.on('interactionCreate', async interaction => {
     const buttonName = interaction.customId;
     switch (buttonType) {
       case '13':                                        // 13 buttons
-        const thirteen = rem.commands.get('13');
+        const thirteenCmds = rem.commands.get('13');
         // validate 13 button pressers
         if (interactionMember !== originalMember) {
           interaction.reply({
@@ -152,7 +151,7 @@ rem.on('interactionCreate', async interaction => {
         }
         switch (buttonName) {
           case 'undo':
-            thirteen.undo(interaction);
+            thirteenCmds.undo(interaction);
             break;
         }
         break;
@@ -186,20 +185,21 @@ rem.on('interactionCreate', async interaction => {
             dungeon.execute(interaction, sequelize, Sequelize.DataTypes);
             break;
           case 'leave':
-            const { status } = await Hero.findOne({
+            const { status } = await Heroes.findOne({
               attributes: ['status'],
               where: { userID: originalMember.id },
               raw: true,
             });
             // hero left dungeon, no longer busy
             if (status === 'Busy') {
-              Hero.update({ status: 'Good' }, { where: { userID: originalMember.id } });
+              Heroes.update({ status: 'Good' }, { where: { userID: originalMember.id } });
             }
             interaction.message.delete();
             break;
         }
         break;
       case 'hero':                                      // hero buttons
+        const heroCmds = rem.commands.get('hero');
         // validate dungeon button pressers
         if (interactionMember !== originalMember) {
           interaction.reply({                           // presser isn't the original member, exit
@@ -210,18 +210,33 @@ rem.on('interactionCreate', async interaction => {
         }
         // execute button
         switch (buttonName) {
+          case 'explore':
+            heroCmds.explore(interaction, sequelize, Sequelize.DataTypes);
+            break;
+          case 'travel':
+            heroCmds.travel(interaction);
+            break;
+          case 'move':
+            heroCmds.move(interaction, sequelize, Sequelize.DataTypes);
+            break;
           case 'close':
-            interaction.message.edit({ content: 'deleted' });
+            await interaction.message.edit({ content: 'deleted' });
             interaction.message.delete();
+            break;
+          case 'back':
+            interaction.update({
+              embeds: [interaction.message.heroEmbed],
+              components: [interaction.message.actionRow],
+            });
             break;
         }
         break;
       case 'rps':                                       // rock-paper-scissors buttons
-        const rps = rem.commands.get('rps');
+        const rpsCmds = rem.commands.get('rps');
         // validate rps button pressers
         const opponentMember = interaction.message.opponentMember;
         if (interactionMember !== originalMember && interactionMember !== opponentMember) {
-          interaction.reply({                            // presser isn't a participant, exit
+          interaction.reply({                           // presser isn't a participant, exit
             content: 'You are not the opponent of this game',
             ephemeral: true,
           });
@@ -232,7 +247,7 @@ rem.on('interactionCreate', async interaction => {
           case 'rock':
           case 'paper':
           case 'scissors':
-            rps.play(interaction, sequelize, Sequelize.DataTypes);
+            rpsCmds.play(interaction, sequelize, Sequelize.DataTypes);
             break;
           case 'decline':
             if (interactionMember === originalMember) {
@@ -241,7 +256,7 @@ rem.on('interactionCreate', async interaction => {
                 ephemeral: true,
               });
             }
-            rps.cancelGame(interaction.message);
+            rpsCmds.cancelGame(interaction.message);
             break;
         }
         break;

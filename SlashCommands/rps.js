@@ -24,9 +24,9 @@ async function execute(interaction, sequelize, DataTypes) {
   // validate bet value
   const betAmount = interaction.options.getInteger('coins', true);
   if (betAmount < 0) {
-    const remdisappointed = interaction.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
+    const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
     await interaction.reply({
-      content: `No betting negative values ${remdisappointed}`,
+      content: `No betting negative values ${remjudge}`,
       ephemeral: true,
     });
     return;

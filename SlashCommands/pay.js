@@ -22,9 +22,9 @@ async function execute(interaction, sequelize, DataTypes) {
     });
     return;
   } else if (interaction.user.id == wantedMember.id) {      // same person, exit
-    const remDisappointed = await interaction.guild.emojis.fetch('892913382607425566');
+    const remjudge = await interaction.guild.emojis.fetch('892913382607425566');
     interaction.reply({
-      content: `You cannot give coins to yourself! ${remDisappointed}`,
+      content: `You cannot give coins to yourself! ${remjudge}`,
       ephemeral: true,
     });
     return;

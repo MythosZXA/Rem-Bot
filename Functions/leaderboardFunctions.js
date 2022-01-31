@@ -13,7 +13,7 @@ async function updateHeroLeaderboard(rem, sequelize, DataTypes) {
   const leaderboardChannel = await rem.channels.fetch('921925078541824052');
   const heroLeaderboardMessage = await leaderboardChannel.messages.fetch('923023729255141397');
   // get heroes of members
-  const Hero = require('../Models/hero')(sequelize, DataTypes);
+  const Hero = require('../Models/heroes')(sequelize, DataTypes);
   const heroes = await Hero.findAll({                               // get all heroes in DB
     order: [[ 'level', 'DESC' ]],
     raw: true,

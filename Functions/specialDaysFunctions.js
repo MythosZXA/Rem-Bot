@@ -43,7 +43,7 @@ function checkBirthday(rem, sequelize, DataTypes) {
 }
 
 function validateFormat(interaction, birthdayString) {
-  const remdisappointed = interaction.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
+  const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
   // parse input
   const birthdayFormat = birthdayString.split('-');
   const userYear = parseInt(birthdayFormat[0]);
@@ -57,13 +57,13 @@ function validateFormat(interaction, birthdayString) {
     ((userYear == currentYear) && (userMonth > currentMonth)) ||
     ((userYear == currentYear) && (userMonth > currentMonth) && (userDate > currentDate))) {
     interaction.reply({
-      content: `No time travellers allowed! ${remdisappointed}`,
+      content: `No time travellers allowed! ${remjudge}`,
       ephemeral: true,
     });
     return false;
   } else if (userYear < (currentYear - 100)) {
     interaction.reply({
-      content: `No immortals allowed! ${remdisappointed}`,
+      content: `No immortals allowed! ${remjudge}`,
       ephemeral: true,
     });
     return false;
@@ -71,19 +71,19 @@ function validateFormat(interaction, birthdayString) {
   // validate month
   if (userMonth == 0) {                              // zero-th month, exit
     interaction.reply({
-      content: `What is month 0?! ${remdisappointed}`,
+      content: `What is month 0?! ${remjudge}`,
       ephemeral: true,
     });
     return false;
   } else if (userMonth < 0) {                        // negative month, exit
     interaction.reply({
-      content: `Months can\'t be negative! ${remdisappointed}`,
+      content: `Months can\'t be negative! ${remjudge}`,
       ephemeral: true,
     });
     return false;
   } else if (userMonth > 12) {                       // more than 12 month, exit
     interaction.reply({
-      content: `There aren\'t more than 12 months! ${remdisappointed}`,
+      content: `There aren\'t more than 12 months! ${remjudge}`,
       ephemeral: true,
     });
     return false;
@@ -91,19 +91,19 @@ function validateFormat(interaction, birthdayString) {
   // validate date
   if (userDate == 0) {                               // zero-th date, exit
     interaction.reply({
-      content: `What is day 0?! ${remdisappointed}`,
+      content: `What is day 0?! ${remjudge}`,
       ephemeral: true,
     });
     return false;
   } else if(userDate < 0) {                          // negative date, exit
     interaction.reply({
-      content: `Days cannot be negative! ${remdisappointed}`,
+      content: `Days cannot be negative! ${remjudge}`,
       ephemeral: true,
     });
     return false;
   } else if (userDate > 31) {                        // more than 31 day, exit
     interaction.reply({
-      content: `There aren\'t more than 31 days! ${remdisappointed}`,
+      content: `There aren\'t more than 31 days! ${remjudge}`,
       ephemeral: true,
     });
     return false;
@@ -112,20 +112,20 @@ function validateFormat(interaction, birthdayString) {
                                 userMonth == 9 ||
                                 userMonth == 11)) {  // non-31 day months, exit
     interaction.reply({
-      content: `There aren\'t 31 days in that month! ${remdisappointed}`,
+      content: `There aren\'t 31 days in that month! ${remjudge}`,
       ephemeral: true,
     });
     return false;
   } else if (userDate > 29 && userMonth == 2) {      // more than 29 day in Feb, exit
     interaction.reply({
-      content: `There aren\'t that many days in February! ${remdisappointed}`,
+      content: `There aren\'t that many days in February! ${remjudge}`,
       ephemeral: true,
     });
     return false;
   } else if (userDate == 29 && userMonth == 2) {     // 29 Feb days on specific years
     if ((year % 4) != 0) {                           // wrong year, exit
       interaction.reply({
-        content: `February doesn\'t have 29 days that year! ${remdisappointed}`,
+        content: `February doesn\'t have 29 days that year! ${remjudge}`,
         ephemeral: true,
       });
       return false;

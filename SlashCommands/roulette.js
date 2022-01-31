@@ -10,14 +10,14 @@ const rouletteInfoEmbed = new MessageEmbed()
     There are 38 numbers: **1-36**, **0**, and **00**
     You have multiple ways to place a bet:
     **Outside** bets pay is varied by the bet you make 
-    => **1 to 1** bets  covers a little less than half of the board
+    => **1 to 1** bets covers a little less than half of the board
     ===> **1-18** | **Even** | **Red** | **Black** | **Odd** | **19-36**
-    => **2 to 1** covers a little less than 1/3 of the board
+    => **2 to 1** bets covers a little less than 1/3 of the board
     ===> **1st 12** | **2nd 12** | **3rd 12** | **1st Col** | **2nd Col** | **3rd Col**
     **Inside** bets pay is varied by the bet you make
-    => **Line** bets pay **5:1**, covering 6 in-order numbers (10-15)
+    => **Line** bets pay **5:1**, covering 2 rows (10-15)
     => **Corner** bets pay **8:1**, covering 4 adj numbers (23,24,26,27)
-    => **Street** bets pay **11:1**, covering 3 in-order numbers (4,5,6)
+    => **Street** bets pay **11:1**, covering 1 row (4,5,6)
     => **Split** bets pay **17:1**, covering 2 adj numbers (10,13 or 10,11)
     => **Straight Up** bets pay **35:1**, covering 1 number`)
   .setImage('https://i.imgur.com/SdNtESm.jpg');
@@ -46,10 +46,10 @@ async function execute(interaction, sequelize, DataTypes) {
   // validate bet value
   const guildUser = await Users.findOne({ where: { userID: interaction.member.id }, raw: true });
   const betAmount = interaction.options._hoistedOptions[0].value;
-  const remdisappointed = interaction.client.emojis.cache.find(emoji => emoji.name === 'remdisappointed');
+  const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
   if (guildUser.coins < 0) {                                      // in debt, exit
     interaction.reply({
-      content: `You are in debt ${remdisappointed}`,
+      content: `You are in debt ${remjudge}`,
       ephemeral: true,
     });
     return;
@@ -61,7 +61,7 @@ async function execute(interaction, sequelize, DataTypes) {
     return;
   } else if (betAmount < 0) {                                     // negative bet, exit
     interaction.reply({
-      content: `No betting negative values ${remdisappointed}`,
+      content: `No betting negative values ${remjudge}`,
       ephemeral: true,
     });
     return;
