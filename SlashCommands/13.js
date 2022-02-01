@@ -221,7 +221,7 @@ async function play(interaction) {
   // check post-play condition
   if (playerDeck.length == 0) {                                                   // no more cards, win
     playerMessage.edit('No more cards, you won!');
-    interaction.reply('You won');
+    await interaction.reply('You won');
     interaction.deleteReply();
     tableChannel.send(`${interaction.member.nickname} won!`);
   } else {                                                                        // more cards, keep going

@@ -6,7 +6,7 @@ function help(message, arg) {
     .setThumbnail('https://i.imgur.com/oO1SZAs.jpg')
     .addField('Normal Commands',
     `/check_in
-    / pay
+    /pay
     /roulette bet
     /rps
     /set_birthday

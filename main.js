@@ -216,18 +216,22 @@ rem.on('interactionCreate', async interaction => {
           case 'travel':
             heroCmds.travel(interaction);
             break;
-          case 'move':
-            heroCmds.move(interaction, sequelize, Sequelize.DataTypes);
-            break;
           case 'close':
             await interaction.message.edit({ content: 'deleted' });
             interaction.message.delete();
+            break;
+          case 'attack':
+            const monster = interaction.message.monster;
+            heroCmds.simulateBattle(interaction, monster, sequelize, Sequelize.DataTypes);
             break;
           case 'back':
             interaction.update({
               embeds: [interaction.message.heroEmbed],
               components: [interaction.message.actionRow],
             });
+            break;
+          case 'move':
+            heroCmds.move(interaction, sequelize, Sequelize.DataTypes);
             break;
         }
         break;
