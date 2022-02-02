@@ -33,7 +33,7 @@ async function execute(interaction, sequelize, DataTypes) {
       `${hasRole ? '150' : '100'} coins`,
       ephemeral: true,
     });
-    leaderboardFunctions.updateRPSLeaderboard(interaction.client, sequelize, DataTypes);
+    leaderboardFunctions.updateGamblingLeaderboard(interaction.client, sequelize, DataTypes);
   }
 }
 

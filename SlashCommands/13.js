@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageButton, MessageActionRow } = require("discord.js");
+const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
 const undoButton = new MessageButton()
   .setCustomId('undo')
@@ -31,24 +32,26 @@ const faceCards = [
 const cardTypes = [
   'S♠️', 'C♣️', 'D♦️', 'H♥️'
 ];
+let tableChannel;
 let p1 = [], p2 = [], p3 = [], p4 = [];
 let p1DeckMessage, p2DeckMessage, p3DeckMessage, p4DeckMessage;
-let playerMembers = [];
-let recentMessage;
+let playerMembers = [], placement = [];
+let recentMessage, moneyPool;
 
-async function execute(interaction) {
+async function execute(interaction, sequelize, DataTypes) {
+  tableChannel = await interaction.guild.channels.fetch('933842239505969252');
   // check if this is the play or cancel subcommand
   const subcommandName = interaction.options._subcommand;
   switch (subcommandName) {
     case 'play':
-      play(interaction);
+      play(interaction, sequelize, DataTypes);
       return;
     case 'cancel':
       cancel(interaction);
       return;
   }
   // check if the command is sent in table channel
-  if (interaction.channelId !== '933842239505969252') {
+  if (interaction.channelId !== '933842239505969252') {             // not correct channel, exit
     interaction.reply({
       content: 'Please play 13 in the table channel',
       ephemeral: true,
@@ -56,36 +59,17 @@ async function execute(interaction) {
     return;
   }
   // check if there is an active 13 game
-  if (playerMembers.length !== 0) {
+  if (playerMembers.length !== 0) {                                 // ongoing game, exit
     interaction.reply({
       content: 'There is an ongoing game. Please try again later',
       ephemeral: true,
     });
     return;
   }
-  // add game requester as player
-  const interactionMember = interaction.member;
-  playerMembers.push(interactionMember);
-  // get invited players' nicknames
-  let playerNicknames = [];
-  for (let i = 0; i <= 2; i++) {
-    playerNicknames.push(interaction.options._hoistedOptions[i].value);
-  }
-  const guildMembers = await interaction.guild.members.fetch();
-  // validate nicknames
-  for (let i = 0; i <= 2; i++) {
-    const guildMember = guildMembers.find(guildMember => 
-      guildMember.nickname?.toUpperCase() === playerNicknames[i].toUpperCase());
-    if (!guildMember) {                                             // member nickname found
-      interaction.reply({
-        content: 'I could not anyone with that nickname!',
-        ephemeral: true,
-      });
-      return;
-    } else {                                                        // member nickname not found
-      playerMembers.push(guildMember);
-    }
-  }
+  // check if inputted nicknames are valid players
+  if (!(await validatePlayers(interaction))) return;                // invalid players, exit
+  // check if this game has bets
+  if (!(await betSetup(interaction, sequelize, DataTypes))) return; // bet setup failed, exit
   // give roles/assign channels
   playerMembers[0].roles.add('934200192020910170');
   playerMembers[1].roles.add('934200300313640980');
@@ -122,6 +106,89 @@ async function execute(interaction) {
   );
 }
 
+async function validatePlayers(interaction) {
+  // add game requester as player
+  const interactionMember = interaction.member;
+  playerMembers.push(interactionMember);
+  // get invited players' nicknames
+  let playerNicknames = [];
+  for (let i = 0; i <= 2; i++) {
+    playerNicknames.push(interaction.options._hoistedOptions[i].value);
+  }
+  const guildMembers = await interaction.guild.members.fetch();
+  // validate nicknames
+  for (let i = 0; i <= 2; i++) {
+    const guildMember = guildMembers.find(guildMember => 
+      guildMember.nickname?.toLowerCase() === playerNicknames[i].toLowerCase());
+    if (guildMember) {                                              // valid nickname, add player
+      playerMembers.push(guildMember);
+    } else {                                                        // invalid nickname, exit
+      interaction.reply({
+        content: 'I could not anyone with that nickname!',
+        ephemeral: true,
+      });
+      return false;
+    }
+  }
+  return true;
+}
+
+async function betSetup(interaction, sequelize, DataTypes) {
+  // required models for this function
+  const Users = require('../Models/users')(sequelize, DataTypes);
+  // check if this is a bet game
+  const betGame = interaction.options._hoistedOptions[3].value;
+  if (!betGame) return true;                                        // no bets, exit (normal game)
+  // check if players have enough coins
+  let moneyPlayers = [], sufficientCoins = true;
+  await new Promise (resolve => {
+    if (playerMembers.length === 0) resolve();
+    playerMembers.forEach(async (member, index) => {
+      const userID = member.id;
+      const guildUser = await Users.findOne({ where: { userID: userID }, raw: true });
+      if (guildUser.coins < 50) {                                   // insufficient coins, exit
+        interaction.reply({
+          content: 'Someone doesn\'t have enough coins!',
+          ephemeral: true,
+        });
+        sufficientCoins = false;
+      }
+      // add player if not duplicate
+      const duplicate = moneyPlayers.find(player => player?.userID === guildUser.userID);
+      if (!duplicate) moneyPlayers.push(guildUser);
+      if (index === playerMembers.length - 1) resolve();
+    });
+  });
+  if (!sufficientCoins) {
+    playerMembers = [];
+    return false;
+  }
+  // check if there are more than 1 bets
+  if (moneyPlayers.length === 1) {                                  // 1 bet, exit
+    const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
+    interaction.reply({
+      content: `You cannot bet with yourself ${remjudge}`,
+      ephemeral: true,
+    });
+    return false;
+  }
+  // deduct coins from players
+  await new Promise (resolve => {
+    if (moneyPlayers.length === 0) resolve();
+    moneyPlayers.forEach(async (guildUser, index) => {
+      const userID = guildUser.userID;
+      await Users.increment(
+        { coins: -50 },
+        { where: { userID: userID } },
+      );
+      if (index === moneyPlayers.length - 1) resolve();
+    });
+  });
+  moneyPool = moneyPlayers.length * 50;
+  leaderboardFunctions.updateGamblingLeaderboard(interaction.client, sequelize, DataTypes);
+  return true;
+}
+
 function deckSort(playerCards) {
   // sort 3-10 cards
   for (let i = 3; i <= 10; i++) {
@@ -154,7 +221,7 @@ function deckSort(playerCards) {
   }
 }
 
-async function play(interaction) {
+async function play(interaction, sequelize, DataTypes) {
   // check if this member is a player
   if (!playerMembers.find(member => member === interaction.member)) {
     interaction.reply({
@@ -208,7 +275,6 @@ async function play(interaction) {
     playDeck.push(playerDeck.splice(cardIndex, 1)[0]);
   }
   // play the cards by sending it to table
-  const tableChannel = await interaction.guild.channels.fetch('933842239505969252');
   if (recentMessage) recentMessage.edit({ components: [] });                      // remove undo button from last message
   recentMessage = await tableChannel.send({
     content: `p${playerMemberIndex + 1} ${interaction.member.nickname}: ${playDeck.join(',')}`,
@@ -220,15 +286,56 @@ async function play(interaction) {
   recentMessage.revertDeck = revertDeck;
   // check post-play condition
   if (playerDeck.length == 0) {                                                   // no more cards, win
-    playerMessage.edit('No more cards, you won!');
-    await interaction.reply('You won');
-    interaction.deleteReply();
-    tableChannel.send(`${interaction.member.nickname} won!`);
+    playerMessage.edit('No more cards');
+    placement.push(interaction.member);
+    simulateWin(interaction, sequelize, DataTypes);
   } else {                                                                        // more cards, keep going
     playerMessage.edit(playerDeck.join('\n'));                                    // remove played cards from hand
     await interaction.reply('Played');
     interaction.deleteReply();
   }
+}
+
+async function simulateWin(interaction, sequelize, DataTypes) {
+  // required models for this function
+  const Users = require('../Models/users')(sequelize, DataTypes);
+  // distribute coins
+  const userID = interaction.user.id;
+  const memberNickname = interaction.member?.nickname;
+  let placementString = '';
+  const playerPlacement = placement.findIndex(member => member === interaction.member);
+  switch (playerPlacement) {
+    case 0:
+      await Users.increment(
+        { coins: +(moneyPool * .7) },
+        { where: { userID: userID } },
+      );
+      placementString = `You came in 1st place, winning ${moneyPool * .7} coins`;
+      tableChannel.send(`${memberNickname} won 1st place!`);
+      break;
+    case 1:
+      await Users.increment(
+        { coins: +(moneyPool * .3) },
+        { where: { userID: userID } },
+      );
+      placementString = `You came in 2nd place, winning ${moneyPool * .3} coins`;
+      tableChannel.send(`${memberNickname} won 2nd place!`);
+      break;
+    case 2:
+      placementString = 'You came in 3rd place';
+      tableChannel.send(`${memberNickname} won 3rd place`);
+      break;
+    case 3:
+      placementString = 'You came in last place';
+      tableChannel.send(`${memberNickname} placed last`);
+      break;
+  }
+  // send confirmation message
+  interaction.reply({
+    content: placementString,
+    ephemeral: true,
+  });
+  leaderboardFunctions.updateGamblingLeaderboard(interaction.client, sequelize, DataTypes);
 }
 
 function undo(interaction) {
@@ -281,20 +388,20 @@ async function cancel(interaction) {
     return;
   }
   // cancel game by removing roles and resetting variables
-  playerMembers[0].roles.remove('934200192020910170');
-  playerMembers[1].roles.remove('934200300313640980');
-  playerMembers[2].roles.remove('934200341875015741');
-  playerMembers[3].roles.remove('934200390696722532');
-  playerMembers = [];
   const tableChannel = await interaction.guild.channels.fetch('933842239505969252');
   tableChannel.bulkDelete(80);
   p1DeckMessage.delete();
   p2DeckMessage.delete();
   p3DeckMessage.delete();
   p4DeckMessage.delete();
-  p1DeckMessage = undefined, p2DeckMessage = undefined, p3DeckMessage = undefined, p4DeckMessage = undefined;
   p1 = [], p2 = [], p3 = [], p4 = [];
-  recentMessage = undefined;
+  p1DeckMessage = undefined, p2DeckMessage = undefined, p3DeckMessage = undefined, p4DeckMessage = undefined;
+  playerMembers[0].roles.remove('934200192020910170');
+  playerMembers[1].roles.remove('934200300313640980');
+  playerMembers[2].roles.remove('934200341875015741');
+  playerMembers[3].roles.remove('934200390696722532');
+  playerMembers = [], placement = [];
+  recentMessage = undefined, moneyPool = undefined;
   // send confirmation message
   interaction.reply({
     content: 'Current game canceled',
@@ -320,19 +427,22 @@ module.exports = {
       .addStringOption(option =>
         option.setName('player4_nickname')
         .setDescription('The nickname of the fourth player')
+        .setRequired(true))
+      .addBooleanOption(option =>
+        option.setName('bet_game')
+        .setDescription('Are players pooling their coins into this game?')
         .setRequired(true)))
     .addSubcommand(subcommand =>
       subcommand.setName('play')
       .setDescription('Play cards in your hand')
       .addStringOption(option =>
         option.setName('cards')
-        .setDescription('The cards you want to play separated by commas => 1,3,4,6,9 (ASCENDING)')
+        .setDescription('The cards you want to play separated by commas => 0,3,4,6,9 (ASCENDING)')
         .setRequired(true)))
     .addSubcommand(subcommand =>
       subcommand.setName('cancel')
       .setDescription('Cancel existing game')),
   execute,
-  deckSort,
   play,
   undo,
   cancel,

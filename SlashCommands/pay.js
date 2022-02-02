@@ -51,7 +51,7 @@ async function execute(interaction, sequelize, DataTypes) {
     { where: { userID: wantedMember.id } },
   );
   interaction.reply(`You paid ${wantedMember} ${amount} coins`);
-  leaderboardFunctions.updateRPSLeaderboard(interaction.client, sequelize, DataTypes);
+  leaderboardFunctions.updateGamblingLeaderboard(interaction.client, sequelize, DataTypes);
 }
 
 module.exports = {

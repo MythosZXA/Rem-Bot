@@ -328,7 +328,7 @@ async function roll(rem, sequelize, DataTypes) {
   playerBets = [];
   playerNicknames = '';
   // update leaderboard
-  leaderboardFunctions.updateRPSLeaderboard(rem, sequelize, DataTypes);
+  leaderboardFunctions.updateGamblingLeaderboard(rem, sequelize, DataTypes);
 }
 
 module.exports = {

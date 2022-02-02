@@ -163,7 +163,7 @@ async function play(interaction, sequelize, DataTypes) {
     }
     // update leaderboard
     const leaderboardFunctions = require('../Functions/leaderboardFunctions');
-    await leaderboardFunctions.updateRPSLeaderboard(interaction.client, sequelize, DataTypes);
+    leaderboardFunctions.updateGamblingLeaderboard(interaction.client, sequelize, DataTypes);
   }
 }
 

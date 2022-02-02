@@ -45,13 +45,13 @@ rem.on('ready', async () => {
   // rem.user.setActivity('for /help', {type: 'WATCHING'});
   (await rem.guilds.fetch('773660297696772096')).members.fetch();                 // caches users for easier access
   logChannel = await rem.channels.fetch('911494733828857866');
-  // auto regen heroes health and mana
+  // auto regen heroes' health and mana
   // require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
   // require('./Functions/heroFunctions').recoverMana(sequelize, Sequelize.DataTypes);
 
   // update leaderboards on startup
   // leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
-  leaderboardFunctions.updateRPSLeaderboard(rem, sequelize, Sequelize.DataTypes);
+  leaderboardFunctions.updateGamblingLeaderboard(rem, sequelize, Sequelize.DataTypes);
 
   // check for special days when tomorrow comes
   specialDaysFunctions.checkHoliday(rem);

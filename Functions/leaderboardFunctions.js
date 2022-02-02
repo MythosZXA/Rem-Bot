@@ -49,7 +49,7 @@ async function updateHeroLeaderboard(rem, sequelize, DataTypes) {
   }, (1000 * getSecsToMidnight()) + (1000 * 5));
 }
 
-async function updateRPSLeaderboard(rem, sequelize, DataTypes) {
+async function updateGamblingLeaderboard(rem, sequelize, DataTypes) {
   // fetch leaderboard message to update
   const guild = await rem.guilds.fetch('773660297696772096');
   const leaderboardChannel = await rem.channels.fetch('921925078541824052');
@@ -115,13 +115,13 @@ async function checkStreakCondition(rem, sequelize, DataTypes) {
       { checkedIn: 'false' },
       { where: { checkedIn: 'true' } },
     );
-    updateRPSLeaderboard(rem, sequelize, DataTypes);                    // update leaderboard
+    updateGamblingLeaderboard(rem, sequelize, DataTypes);                    // update leaderboard
   }, 1000 * secsToMidnight);
 }
 
 module.exports = {
   getSecsToMidnight,
   updateHeroLeaderboard,
-  updateRPSLeaderboard,
+  updateGamblingLeaderboard,
   checkStreakCondition,
 };
