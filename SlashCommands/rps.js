@@ -1,5 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
+const { Users } = require('../sequelize');
+const { Op } = require('sequelize');
+const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
 const rockButton = new MessageButton()
   .setCustomId('rock')
@@ -20,7 +23,7 @@ const declineButton = new MessageButton()
 const rpsChoices = new MessageActionRow()
   .setComponents([rockButton, paperButton, scissorsButton, declineButton]);
 
-async function execute(interaction, sequelize, DataTypes) {
+async function execute(interaction) {
   // validate bet value
   const betAmount = interaction.options.getInteger('coins', true);
   if (betAmount < 0) {
@@ -43,8 +46,6 @@ async function execute(interaction, sequelize, DataTypes) {
     return;
   }
   // check to see if both parties has enough coins
-  const Users = require('../Models/users')(sequelize, DataTypes);
-  const { Op } = require('sequelize');
   const gameMembers = await Users.findAll({                   // get players of this game
     where: { userID: { [Op.or]: [interaction.member.id, opponentMember.id] } },
     raw: true,
@@ -77,11 +78,11 @@ async function execute(interaction, sequelize, DataTypes) {
   gameMessage.betAmount = betAmount;
   // update message if opponent didn't play in 10 mins
   setTimeout(async () => {
-    await cancelGame(gameMessage);
+    cancelGame(gameMessage);
   }, 1000 * 60 * 10);
 }
 
-async function play(interaction, sequelize, DataTypes) {
+async function play(interaction) {
   // determine winner
   const gameMessage = interaction.message;
   let requesterChoice = gameMessage.requesterChoice.toUpperCase();
@@ -135,42 +136,40 @@ async function play(interaction, sequelize, DataTypes) {
               `${opponentChoice}`,
               true);
   // update game message to display result
-  await interaction.update({
+  interaction.update({
     content: 'Results:',
     embeds: [displayEmbed],
     components: [],
   });
   // update data
-  const Users = require('../Models/users')(sequelize, DataTypes);
   if (winner) {
     // increase winner stats
     const betAmount = gameMessage.betAmount;
     await Users.increment(
-      { rpsWins: +1 , coins: sequelize.literal(+betAmount) },
+      { rpsWins: +1 , coins: +betAmount },
       { where: { userID: winner.id } },
     );
     // decrease loser stats
     if (winner == gameMessage.originalMember) {                                   // requester won
       await Users.increment(
-        { coins: sequelize.literal(-betAmount) },
+        { coins: -betAmount },
         { where: { userID: interaction.user.id } },
       );
     } else {                                                                      // requester lost
       await Users.increment(
-        { coins: sequelize.literal(-betAmount) },
+        { coins: -betAmount },
         { where: { userID: gameMessage.originalMember.id } },
       );
     }
     // update leaderboard
-    const leaderboardFunctions = require('../Functions/leaderboardFunctions');
-    leaderboardFunctions.updateGamblingLeaderboard(interaction.client, sequelize, DataTypes);
+    leaderboardFunctions.updateGamblingLeaderboard(interaction.client);
   }
 }
 
-async function cancelGame(gameMessage) {
+function cancelGame(gameMessage) {
   const opponentNickname = gameMessage.opponentMember.nickname;
   if (!gameMessage.content.includes('Results')) {
-    await gameMessage.edit({
+    gameMessage.edit({
       content: `${opponentNickname} didn't want to play :(`,
       components: [],
     });

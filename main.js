@@ -13,19 +13,11 @@ const rem = new Client({
   ],
   partials: ['CHANNEL']
 });
-let logChannel;
 const leaderboardFunctions = require('./Functions/leaderboardFunctions');
 const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
 const prefixCommands = require('./prefixCommands.js');
 // sql
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize('rem', 'root', process.env.sqlPassword, {
-	host: 'localhost',
-	dialect: 'mysql',
-	logging: false,
-});
-const Heroes = require('./Models/heroes')(sequelize, Sequelize.DataTypes);
-const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
+const { Heroes, Users } = require('./sequelize');
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
@@ -37,6 +29,8 @@ for (const file of commandFiles) {
   rem.commands.set(command.data.name, command);
 }
 
+let logChannel;
+
 // start up
 rem.login(process.env.token);
 rem.on('ready', async () => {
@@ -46,20 +40,20 @@ rem.on('ready', async () => {
   (await rem.guilds.fetch('773660297696772096')).members.fetch();                 // caches users for easier access
   logChannel = await rem.channels.fetch('911494733828857866');
   // auto regen heroes' health and mana
-  // require('./Functions/heroFunctions').recoverHealth(sequelize, Sequelize.DataTypes);
-  // require('./Functions/heroFunctions').recoverMana(sequelize, Sequelize.DataTypes);
+  require('./Functions/heroFunctions').recoverHealth();
+  require('./Functions/heroFunctions').recoverMana();
 
   // update leaderboards on startup
   // leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
-  leaderboardFunctions.updateGamblingLeaderboard(rem, sequelize, Sequelize.DataTypes);
+  leaderboardFunctions.updateGamblingLeaderboard(rem);
 
   // check for special days when tomorrow comes
   specialDaysFunctions.checkHoliday(rem);
-  specialDaysFunctions.checkBirthday(rem, sequelize, Sequelize.DataTypes);
+  specialDaysFunctions.checkBirthday(rem);
   // update on new day
-  leaderboardFunctions.checkStreakCondition(rem, sequelize, Sequelize.DataTypes);
+  leaderboardFunctions.checkStreakCondition(rem);
 
-  rem.commands.get('roulette').start(rem, sequelize, Sequelize.DataTypes);
+  rem.commands.get('roulette').start(rem);
 });
 
 // add user to database on join
@@ -123,7 +117,7 @@ rem.on('interactionCreate', async interaction => {
     if (!command) return;                               // if there isn't a file with the command name
     // execute command, catch error if unsuccessful
     try {
-      command.execute(interaction, sequelize, Sequelize.DataTypes);
+      command.execute(interaction);
     } catch (error) {
       console.error(error);
       interaction.reply({ 
@@ -251,14 +245,15 @@ rem.on('interactionCreate', async interaction => {
           case 'rock':
           case 'paper':
           case 'scissors':
-            rpsCmds.play(interaction, sequelize, Sequelize.DataTypes);
+            rpsCmds.play(interaction);
             break;
           case 'decline':
-            if (interactionMember === originalMember) {
+            if (interactionMember === originalMember) { // presser is requester, exit
               interaction.reply({
                 content: 'You cannot decline your own game',
                 ephemeral: true,
               });
+              return;
             }
             rpsCmds.cancelGame(interaction.message);
             break;

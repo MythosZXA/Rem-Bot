@@ -1,12 +1,14 @@
+const { sequelize, CompletedQuests, Heroes, Quests } = require('../sequelize');
 const { Op } = require('sequelize');
 
-async function recoverHealth(sequelize, DataTypes) {
-  const Heroes = require('../Models/heroes')(sequelize, DataTypes);
+function recoverHealth() {
   setInterval(() => {
+    // recover the health of heroes that aren't max
     Heroes.increment(
       { health: +1 },
       { where: { health: { [Op.lt]: sequelize.col('max_health') } } },
     );
+    // update the status of recovering heroes at max health
     Heroes.update(
       { status: 'Good' },
       { where: { status: 'Recovering', health: { [Op.eq]: sequelize.col('max_health') } } }
@@ -14,8 +16,8 @@ async function recoverHealth(sequelize, DataTypes) {
   }, 1000 * 5);
 }
 
-async function recoverMana(sequelize, DataTypes) {
-  const Heroes = require('../Models/heroes')(sequelize, DataTypes);
+function recoverMana() {
+  // recover the mana of heroes that aren't max
   setInterval(() => {
     Heroes.increment(
       { mana: +1 },
@@ -34,10 +36,7 @@ async function getArea(area) {
   return areaField;
 }
 
-async function getQuests(userID, location, sequelize, DataTypes) {
-  // required models for this function
-  const Quests = require('../Models/quests')(sequelize, DataTypes);
-  const CompletedQuests = require('../Models/completed_quests')(sequelize, DataTypes);
+async function getQuests(userID, location) {
   // get available quest in this location
   const availableQuests = (await Quests.findAll({
     attributes: ['name'],

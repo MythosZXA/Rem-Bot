@@ -1,40 +1,39 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { Users } = require('../sequelize');
+const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
-async function execute(interaction, sequelize, DataTypes) {
-  // required models for check in
-  const User = require('../Models/users')(sequelize, DataTypes);
-  const leaderboardFunctions = require('../Functions/leaderboardFunctions');
-  const interactionMember = interaction.member;
-  const guildUser = await User.findOne({ where: { userID: interaction.user.id }, raw: true });
-  if (guildUser.checkedIn == 'true') {                      // user already checked in
-    interaction.reply({                                     // notify user
+async function execute(interaction) {
+  const userID = interaction.user.id;
+  const guildUser = await Users.findOne({ where: { userID: userID }, raw: true });
+  if (guildUser.checkedIn == 'true') {                      // user already checked in, exit
+    interaction.reply({
       content: 'You have already checked in today',
       ephemeral: true,
     });
-  } else {                                                  // user haven't checked in
-    await User.increment(                                   // increase streak & coins
-      { streak: +1 , coins: +100 },
-      { where: { userID: interactionMember.id } },
-    );
-    // check if this member is top 3 gamblers
-    const hasRole = interactionMember.roles.cache.find(role => role.name === 'Gambling Addicts');
-    if (hasRole) {
-      await User.increment(                                 // give gambling addicts 50 more coins
-        { coins: +50 },
-        { where: { userID: interactionMember.id } },
-      )
-    }
-    User.update(                                            // set check in to be true
-      { checkedIn: 'true' },
-      { where: { userID: interactionMember.id } },
-    );
-    interaction.reply({                                     // confirmation message
-      content: 'You have checked in for the day & received ' +
-      `${hasRole ? '150' : '100'} coins`,
-      ephemeral: true,
-    });
-    leaderboardFunctions.updateGamblingLeaderboard(interaction.client, sequelize, DataTypes);
+    return;
   }
+  await Users.increment(                                    // increase streak & coins
+    { streak: +1 , coins: +100 },
+    { where: { userID: userID } },
+  );
+  // check if this member is top 3 gamblers
+  const hasRole = interaction.member.roles.cache.find(role => role.name === 'Gambling Addicts');
+  if (hasRole) {
+    await Users.increment(                                  // give gambling addicts 50 more coins
+      { coins: +50 },
+      { where: { userID: userID } },
+    );
+  }
+  Users.update(                                             // set check in to be true
+    { checkedIn: 'true' },
+    { where: { userID: userID } },
+  );
+  interaction.reply({                                       // confirmation message
+    content: 'You have checked in for the day & received ' +
+    `${hasRole ? '150' : '100'} coins`,
+    ephemeral: true,
+  });
+  leaderboardFunctions.updateGamblingLeaderboard(interaction.client);
 }
 
 module.exports = {

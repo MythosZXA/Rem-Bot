@@ -1,7 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
-const heroFunctions = require('../Functions/heroFunctions');
+const { Areas, Equip, Heroes, Monsters } = require('../sequelize');
 const rpgMap = require('../rpgMap');
+const heroFunctions = require('../Functions/heroFunctions');
 
 const exploreButton = new MessageButton()
   .setCustomId('explore')
@@ -10,7 +11,11 @@ const exploreButton = new MessageButton()
 const travelButton = new MessageButton()
   .setCustomId('travel')
   .setLabel('Travel')
-  .setStyle('SECONDARY')
+  .setStyle('SECONDARY');
+const questButton = new MessageButton()
+  .setCustomId('quest')
+  .setLabel('Quest')
+  .setStyle('SUCCESS');
 const closeButton = new MessageButton()
   .setCustomId('close')
   .setLabel('Close')
@@ -28,11 +33,7 @@ const backButton = new MessageButton()
   .setLabel('Back')
   .setStyle('SECONDARY'); 
 
-async function execute(interaction, sequelize, DataTypes) {
-  // required models for this function
-  const Equip = require('../Models/equip')(sequelize, DataTypes);
-  const Areas = require('../Models/areas')(sequelize, DataTypes)
-  const Heroes = require('../Models/heroes')(sequelize, DataTypes);
+async function execute(interaction) {
   // get hero data
   const userID = interaction.user.id;
   const [hero, created] = await Heroes.findOrCreate({ where: { userID: userID }, raw: true });
@@ -61,7 +62,7 @@ async function execute(interaction, sequelize, DataTypes) {
   const area = await Areas.findAll({ where: { name: hero.location}, raw: true });
   const entityField = await heroFunctions.getArea(area);
   // create quest display field
-  const availableQuestsField = await heroFunctions.getQuests(userID, hero.location, sequelize, DataTypes);
+  const availableQuestsField = await heroFunctions.getQuests(userID, hero.location);
   // create hero display using embed
   const heroEmbed = new MessageEmbed()
     .setTitle('Hero')
@@ -104,9 +105,7 @@ async function execute(interaction, sequelize, DataTypes) {
   }, 1000 * 60 * 10);
 }
 
-async function explore(interaction, sequelize, DataTypes) {
-  // required models for this function
-  const Areas = require('../Models/areas')(sequelize, DataTypes);
+async function explore(interaction) {
   // determine which type of location the hero is in
   const heroLocation = interaction.message.hero?.location;
   const area = await Areas.findAll({ where: { name: heroLocation }, raw: true });
@@ -122,15 +121,12 @@ async function explore(interaction, sequelize, DataTypes) {
       const entities = (await heroFunctions.getArea(area)).split('\n');
       entities.pop();                                   // remove trailing empty index
       const encounterID = Math.floor(Math.random() * entities.length);
-      encounterEntity(interaction, entities[encounterID], sequelize, DataTypes);
+      encounterEntity(interaction, entities[encounterID]);
       break;
   }
 }
 
-async function encounterEntity(interaction, entityName, sequelize, DataTypes) {
-  // required models for this function
-  const Heroes = require('../Models/heroes')(sequelize, DataTypes);
-  const Monsters = require('../Models/monsters')(sequelize, DataTypes);
+async function encounterEntity(interaction, entityName) {
   // get info to create display embed
   const userID = interaction.user.id;
   const hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
@@ -157,18 +153,16 @@ function createBattleEmbed(hero, monster, battleMessages) {
   return battleEmbed;
 }
 
-async function simulateBattle(interaction, monster, sequelize, DataTypes) {
-  // required models for this function
-  const Heroes = require('../Models/heroes')(sequelize, DataTypes);
+async function simulateBattle(interaction, monster) {
   // get info for battle
   const userID = interaction.user.id;
   let hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
   interaction.message.battleMessages = '';
   // simulate battle
   simulateAttack(interaction, hero, monster);
-  if (await checkVictory(interaction, monster, sequelize, DataTypes)) return;
-  await simulateBeingHit(interaction, monster, sequelize, DataTypes);
-  if (await checkDefeat(interaction, monster, sequelize, DataTypes)) return;
+  if (await checkVictory(interaction, monster)) return;
+  await simulateBeingHit(interaction, monster);
+  if (await checkDefeat(interaction, monster)) return;
   // no victory or defeat, update battle status
   // create display embed
   hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
@@ -197,9 +191,7 @@ function simulateAttack(interaction, hero, monster) {
   interaction.message.battleMessages += battleMessages;
 }
 
-async function checkVictory(interaction, monster, sequelize, DataTypes) {
-  // required models for this function
-  const Heroes = require('../Models/heroes')(sequelize, DataTypes);
+async function checkVictory(interaction, monster) {
   // check if monster has been defeated
   if (monster.health <= 0) {                                  // monster defeated
     monster.health = 0;                                       // prevent display of negative health
@@ -211,7 +203,7 @@ async function checkVictory(interaction, monster, sequelize, DataTypes) {
     let battleMessages = '';
     battleMessages += `Defeated ${monster.name}, gaining ` +
       `${monster.exp} exp and ${monster.credits} credits!\n`;
-    await checkLevelUp(interaction, sequelize, DataTypes);
+    await checkLevelUp(interaction);
     // create display embed
     const hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
     interaction.message.battleMessages += battleMessages;
@@ -226,9 +218,7 @@ async function checkVictory(interaction, monster, sequelize, DataTypes) {
   }
 }
 
-async function checkLevelUp(interaction, sequelize, DataTypes) {
-  // required models for this function
-  const Heroes = require('../Models/heroes')(sequelize, DataTypes);
+async function checkLevelUp(interaction) {
   // get hero that is being checked
   const userID = interaction.user.id;
   const hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
@@ -245,9 +235,7 @@ async function checkLevelUp(interaction, sequelize, DataTypes) {
   }
 }
 
-async function simulateBeingHit(interaction, monster, sequelize, DataTypes) {
-  // required models for this function
-  const Heroes = require('../Models/heroes')(sequelize, DataTypes);
+async function simulateBeingHit(interaction, monster) {
   // get info to simulate
   const userID = interaction.user.id;
   const hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
@@ -261,9 +249,7 @@ async function simulateBeingHit(interaction, monster, sequelize, DataTypes) {
   interaction.message.battleMessages += battleMessages;
 }
 
-async function checkDefeat(interaction, monster, sequelize, DataTypes) {
-  // required models for this function
-  const Heroes = require('../Models/heroes')(sequelize, DataTypes);
+async function checkDefeat(interaction, monster) {
   // get info to check hero's defeat
   const userID = interaction.user.id;
   let hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
@@ -313,9 +299,12 @@ function travel(interaction) {
   });
 }
 
-function move(interaction, sequelize, DataTypes) {
+function quest(interaction) {
   // required models for this function
-  const Heroes = require('../Models/heroes')(sequelize, DataTypes);
+
+}
+
+function move(interaction) {
   // update message to confirm hero's traveling
   const destinationName = interaction.component.label;
   const displayEmbed = new MessageEmbed()

@@ -1,9 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { Users } = require('../sequelize');
 const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
-async function execute(interaction, sequelize, DataTypes) {
-  // required models for transaction
-  const Users = require('../Models/users')(sequelize, DataTypes);
+async function execute(interaction) {
   // required data for transaction
   const nickname = interaction.options.getString('name');
   const amount = interaction.options.getInteger('amount');
@@ -51,7 +50,7 @@ async function execute(interaction, sequelize, DataTypes) {
     { where: { userID: wantedMember.id } },
   );
   interaction.reply(`You paid ${wantedMember} ${amount} coins`);
-  leaderboardFunctions.updateGamblingLeaderboard(interaction.client, sequelize, DataTypes);
+  leaderboardFunctions.updateGamblingLeaderboard(interaction.client);
 }
 
 module.exports = {

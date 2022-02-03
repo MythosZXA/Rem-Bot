@@ -1,6 +1,7 @@
 const { Formatters } = require('discord.js');
+const { Users } = require('../sequelize');
 
-function getSecsToMidnight() {
+function secsToMidnight() {
   const nowString = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
   const nowTime = new Date(nowString);
   const midnight = new Date(nowTime).setHours(24, 0, 0, 0);
@@ -46,16 +47,15 @@ async function updateHeroLeaderboard(rem, sequelize, DataTypes) {
   // update at midnight
   setTimeout(() => {                                                // update again tomorrow
     updateHeroLeaderboard(rem, sequelize, DataTypes);
-  }, (1000 * getSecsToMidnight()) + (1000 * 5));
+  }, (1000 * secsToMidnight()) + (1000 * 5));
 }
 
-async function updateGamblingLeaderboard(rem, sequelize, DataTypes) {
+async function updateGamblingLeaderboard(rem) {
   // fetch leaderboard message to update
   const guild = await rem.guilds.fetch('773660297696772096');
   const leaderboardChannel = await rem.channels.fetch('921925078541824052');
   const rpsLeaderboardMessage = await leaderboardChannel.messages.fetch('932326839408533554');
   // get members with coins or rps wins
-  const Users = require('../Models/users')(sequelize, DataTypes);
   const { Op } = require('sequelize');
   const guildUsers = await Users.findAll({
     where: { [Op.or]: [
@@ -96,31 +96,29 @@ async function updateGamblingLeaderboard(rem, sequelize, DataTypes) {
   });
   
   // update leaderboard
-  rpsLeaderboardMessage.edit({                                      // update message
+  rpsLeaderboardMessage.edit({                                        // update message
     content: Formatters.codeBlock(displayString) 
   });
   console.log('RPS leaderboard updated');
 }
 
-async function checkStreakCondition(rem, sequelize, DataTypes) {
+async function checkStreakCondition(rem) {
   // update at midnight
-  const secsToMidnight = getSecsToMidnight();
   setTimeout(async () => {
-    const Users = require('../Models/users')(sequelize, DataTypes);
-    await Users.update(                                                 // reset streak for non check ins
+    await Users.update(                                               // reset streak for non check ins
       { streak: 0 },
       { where: { checkedIn: 'false' } },
     );
-    await Users.update(                                                 // reset check in
+    await Users.update(                                               // reset check in
       { checkedIn: 'false' },
       { where: { checkedIn: 'true' } },
     );
-    updateGamblingLeaderboard(rem, sequelize, DataTypes);                    // update leaderboard
-  }, 1000 * secsToMidnight);
+    updateGamblingLeaderboard(rem);             // update leaderboard
+  }, 1000 * secsToMidnight());
 }
 
 module.exports = {
-  getSecsToMidnight,
+  secsToMidnight,
   updateHeroLeaderboard,
   updateGamblingLeaderboard,
   checkStreakCondition,

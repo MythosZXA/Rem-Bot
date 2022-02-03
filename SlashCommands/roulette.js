@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
+const { Users } = require('../sequelize');
 const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
 const rouletteInfoEmbed = new MessageEmbed()
@@ -40,9 +41,7 @@ const blacks = [
 ];
 let rouletteMessage, playerBets = [], playerNicknames = '';
 
-async function execute(interaction, sequelize, DataTypes) {
-  // required models for this bet
-  const Users = require('../Models/users')(sequelize, DataTypes);
+async function execute(interaction) {
   // validate bet value
   const guildUser = await Users.findOne({ where: { userID: interaction.member.id }, raw: true });
   const betAmount = interaction.options._hoistedOptions[0].value;
@@ -150,7 +149,7 @@ async function execute(interaction, sequelize, DataTypes) {
   });
 }
 
-async function start(rem, sequelize, DataTypes) {
+async function start(rem) {
   // save roulette message for future reference
   const rouletteChannel = await rem.channels.cache.find(channel => channel.name === 'roulette');
   rouletteMessage = await rouletteChannel.messages.fetch('934925025834831942');
@@ -174,16 +173,14 @@ async function start(rem, sequelize, DataTypes) {
   rouletteMessage.edit({ embeds: [rouletteInfoEmbed, rouletteEmbed] });
   // roll at the next 30 minute mark and then roll every 30 minutes
   setTimeout(() => {
-    roll(rem, sequelize, DataTypes);
+    roll(rem);
     setInterval(() => {
-      roll(rem, sequelize, DataTypes);
+      roll(rem);
     }, 1000 * 60 * 30);
   }, (1000 * 60 * (minutesUntil30 - 1) + (1000 * secondsUntilMinute)));
 }
 
-async function roll(rem, sequelize, DataTypes) {
-  // required models for this game
-  const Users = require('../Models/users')(sequelize, DataTypes);
+async function roll(rem) {
   // simulate rolling the ball
   let rollNumber = Math.floor(Math.random() * 38);
   // check each bets to see if it won
@@ -238,13 +235,13 @@ async function roll(rem, sequelize, DataTypes) {
             }
             break;
           case '2nd Col':
-            if (rollNumber % 3 === 0) {
+            if (rollNumber % 3 === 2) {
               win = true;
               resultCoin *= 2;
             }
             break;
           case '3rd Col':
-            if (rollNumber % 3 === 2) {
+            if (rollNumber % 3 === 0) {
               win = true;
               resultCoin *= 2;
             }
@@ -293,7 +290,7 @@ async function roll(rem, sequelize, DataTypes) {
       resultsField += `${playerBet.member.nickname} ${win ? 'won' : 'lost'} ` +
         `${resultCoin} coins with a ${playerBet.bet} bet!\n`;
       await Users.increment(
-        { coins: sequelize.literal(win ? +resultCoin : -resultCoin) },
+        { coins: (win ? +resultCoin : -resultCoin) },
         { where: { userID: playerBet.member.id } }
       );
       
@@ -328,7 +325,7 @@ async function roll(rem, sequelize, DataTypes) {
   playerBets = [];
   playerNicknames = '';
   // update leaderboard
-  leaderboardFunctions.updateGamblingLeaderboard(rem, sequelize, DataTypes);
+  leaderboardFunctions.updateGamblingLeaderboard(rem);
 }
 
 module.exports = {
@@ -355,6 +352,9 @@ module.exports = {
         .addChoice('1st 12', '1st 12')
         .addChoice('2nd 12', '2nd 12')
         .addChoice('3rd 12', '3rd 12')
+        .addChoice('1st Col', '1st Col')
+        .addChoice('2nd Col', '2nd Col')
+        .addChoice('3rd Col', '3rd Col')
         .addChoice('Line', 'Line')
         .addChoice('Corner', 'Corner')
         .addChoice('Street', 'Street')

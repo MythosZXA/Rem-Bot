@@ -1,19 +1,20 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
-async function execute(interaction) {
+function execute(interaction) {
   if (interaction.user.id != '246034440340373504') {
-    await interaction.reply({
+    interaction.reply({
       content: 'You do not have permission to use this command',
       ephemeral: true,
     });
+    return;
   }
   try {
-    await interaction.channel.bulkDelete(interaction.options.getNumber('amount', true));
-    const message = await interaction.reply({
+    const deleteAmount = interaction.options.getNumber('amount', true);
+    interaction.channel.bulkDelete(deleteAmount);
+    interaction.reply({
       content: 'Deleted',
       fetchReply: true,
-    });
-    message.delete();
+    }).then(message => message.delete());
   } catch(error) {
     interaction.reply({
       content: 'I can only clear between 1-100 messages that are not older than 2 weeks',
