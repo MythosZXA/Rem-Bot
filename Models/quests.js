@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
 			defaultValue: 0,
       allowNull: false,
 		},
-    coins: {
+    credits: {
 			type: DataTypes.INTEGER,
 			defaultValue: 0,
       allowNull: false,

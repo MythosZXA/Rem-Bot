@@ -1,4 +1,4 @@
-const { sequelize, CompletedQuests, Heroes, Quests } = require('../sequelize');
+const { sequelize, Areas, CompletedQuests, Heroes, Quests } = require('../sequelize');
 const { Op } = require('sequelize');
 
 function recoverHealth() {
@@ -26,38 +26,84 @@ function recoverMana() {
   }, 1000 * 3);
 }
 
-async function getArea(area) {
-  // get the area the hero is in & create area display field
-  let areaField = '';
-  if (area[0].type === 'Field') {             // field type area, add monsters
-    area.forEach(area => areaField += `${area.monster}\n`);
+function createOverviewField(hero) {
+  return {
+    name: 'Overview',
+    value: 
+      `LV: ${hero.level}
+      ${hero.status}
+      ✳️ ${hero.exp}
+      🪙 ${hero.credits}`,
+    inline: true,
   }
-  if (areaField === '') areaField = 'None';
-  return areaField;
 }
 
-async function getQuests(userID, location) {
+function createStatsField(hero) {
+  return {
+    name: 'Stats',
+    value:
+      `💟 ${hero.health}
+      💠 ${hero.mana}
+      ⚔️ ${hero.strength}
+      🛡️ ${hero.defense}
+      💥 ${hero.crit_rate}%`,
+    inline: true,
+  }
+}
+
+async function createAreaField(hero) {
+  // get info to create field
+  const userID = hero.userID;
+  const area = await Areas.findAll({ where: { name: hero.location }, raw: true });
+  const finishedQuests = await CompletedQuests.findAll({
+    where: { userID: userID },
+    raw: true,
+  });
+  // create area value field
+  let entityField = '';
+  if (area[0].type === 'Field') {                           // field-type area, add entities
+    area.forEach(area => {
+      if (finishedQuests.find(quest => quest.name === area.entity)) return;
+      entityField += `${area.entity}\n`
+    });
+  }
+  if (entityField === '') entityField = 'None';
+  // return area field
+  return {
+    name: `${hero.location} (${area[0].type})`,
+    value: entityField,
+    inline: true,
+  }
+}
+
+async function createQuestField(hero) {
+  const userID = hero.userID;
   // get available quest in this location
   const availableQuests = (await Quests.findAll({
     attributes: ['name'],
-    where: { location: location },
+    where: { location: hero.location },
     raw: true,
   })).map(model => model.name);
   // get quests completed by hero in this location
   const finishedQuests = (await CompletedQuests.findAll({
     attributes: ['name'],
-    where: { userID: userID, location: location},
+    where: { userID: userID, location: hero.location},
     raw: true,
   })).map(model => model.name);
   // create a field to display uncompleted quests
-  let questField = '';
-  availableQuests.forEach(availableQuest => {                 // add uncompleted quests to display string
+  let uncompletedField = '';
+  availableQuests.forEach(availableQuest => {               // add uncompleted quests to display string
     if (!finishedQuests.find(finishedQuest => finishedQuest === availableQuest)) {
-      questField += `${availableQuest}\n`;
+      uncompletedField += `${availableQuest}\n`;
     }
   });
-  if (questField === '') questField = 'None';               // no quest available
-  return questField;
+  if (uncompletedField === '') uncompletedField = 'None';   // no quest available
+  // return quest field
+  return {
+    name: 'Quests',
+    value: uncompletedField,
+    inline: true,
+  }
 }
 
 async function updateClass(interaction, Heroes, Equip) {
@@ -120,7 +166,9 @@ async function updateClass(interaction, Heroes, Equip) {
 module.exports= {
   recoverHealth,
   recoverMana,
-  getArea,
-  getQuests,
+  createOverviewField,
+  createStatsField,
+  createAreaField,
+  createQuestField,
   updateClass,
 };

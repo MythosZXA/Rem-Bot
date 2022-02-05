@@ -106,7 +106,7 @@ rem.on('messageCreate', message => {
   }
   // check if message is a prefix command
   if (arg[0].toLowerCase() != 'rem,') return;
-  prefixCommands[arg[1].toLowerCase()]?.(message, arg, sequelize, Sequelize.DataTypes);
+  prefixCommands[arg[1].toLowerCase()]?.(message, arg);
 });
 
 // interactions
@@ -202,21 +202,23 @@ rem.on('interactionCreate', async interaction => {
           });
           return;
         }
-        // execute button
+        // execute button     
         switch (buttonName) {
           case 'explore':
-            heroCmds.explore(interaction, sequelize, Sequelize.DataTypes);
+            heroCmds.explore(interaction);
+            break;
+          case 'quest':
+            heroCmds.quest(interaction);
             break;
           case 'travel':
             heroCmds.travel(interaction);
             break;
           case 'close':
-            await interaction.message.edit({ content: 'deleted' });
-            interaction.message.delete();
+            interaction.message.edit('deleted').then(message => message.delete());
             break;
           case 'attack':
             const monster = interaction.message.monster;
-            heroCmds.simulateBattle(interaction, monster, sequelize, Sequelize.DataTypes);
+            heroCmds.simulateBattle(interaction, monster);
             break;
           case 'back':
             interaction.update({
@@ -224,8 +226,9 @@ rem.on('interactionCreate', async interaction => {
               components: [interaction.message.actionRow],
             });
             break;
+          case 'escort':
           case 'move':
-            heroCmds.move(interaction, sequelize, Sequelize.DataTypes);
+            heroCmds.move(interaction);
             break;
         }
         break;
@@ -233,7 +236,7 @@ rem.on('interactionCreate', async interaction => {
         const rpsCmds = rem.commands.get('rps');
         // validate rps button pressers
         const opponentMember = interaction.message.opponentMember;
-        if (interactionMember !== originalMember && interactionMember !== opponentMember) {
+        if (interactionMember !== originalMember || interactionMember !== opponentMember) {
           interaction.reply({                           // presser isn't a participant, exit
             content: 'You are not the opponent of this game',
             ephemeral: true,
@@ -248,6 +251,7 @@ rem.on('interactionCreate', async interaction => {
             rpsCmds.play(interaction);
             break;
           case 'decline':
+            // validate rps button pressers
             if (interactionMember === originalMember) { // presser is requester, exit
               interaction.reply({
                 content: 'You cannot decline your own game',
@@ -255,6 +259,7 @@ rem.on('interactionCreate', async interaction => {
               });
               return;
             }
+            // opponent cancels
             rpsCmds.cancelGame(interaction.message);
             break;
         }

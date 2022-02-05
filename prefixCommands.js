@@ -97,7 +97,7 @@ async function remind(message, arg) {
   }
 }
 
-async function test(message, arg, sequelize, DataTypes) {
+async function test(message, arg) {
   if (message.author.id != '246034440340373504') return;
   const fetch = require('node-fetch');
   const response = await fetch('https://api.mozambiquehe.re/bridge?version=5&platform=PC&player=MythosZXA&auth=SAcVuZxKhiib5PP0OK7E');

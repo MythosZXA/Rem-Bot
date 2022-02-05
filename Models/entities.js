@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define('monsters', {
-    monsterID: {
+  return sequelize.define('entities', {
+    entityID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
@@ -11,31 +11,24 @@ module.exports = (sequelize, DataTypes) => {
     },
     health: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     strength: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     defense: {
       type: DataTypes.INTEGER,
-      defaultValue: 0,
-      allowNull: false,
     },
     drops: {
       type: DataTypes.STRING,
     },
     exp: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     credits: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     collection: {
       type: DataTypes.STRING,
-      allowNull: false,
     }
   },
   {

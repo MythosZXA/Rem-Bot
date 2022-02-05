@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
-const { Areas, Equip, Heroes, Monsters } = require('../sequelize');
+const { Areas, CompletedQuests, Entities, Equip, Heroes, Quests } = require('../sequelize');
 const rpgMap = require('../rpgMap');
 const heroFunctions = require('../Functions/heroFunctions');
 
@@ -8,14 +8,14 @@ const exploreButton = new MessageButton()
   .setCustomId('explore')
   .setLabel('Explore Area')
   .setStyle('SUCCESS');
-const travelButton = new MessageButton()
-  .setCustomId('travel')
-  .setLabel('Travel')
-  .setStyle('SECONDARY');
 const questButton = new MessageButton()
   .setCustomId('quest')
   .setLabel('Quest')
   .setStyle('SUCCESS');
+const travelButton = new MessageButton()
+  .setCustomId('travel')
+  .setLabel('Travel')
+  .setStyle('SECONDARY');
 const closeButton = new MessageButton()
   .setCustomId('close')
   .setLabel('Close')
@@ -23,6 +23,10 @@ const closeButton = new MessageButton()
 const attackButton = new MessageButton()
   .setCustomId('attack')
   .setLabel('Attack')
+  .setStyle('SUCCESS');
+const escortButton = new MessageButton()
+  .setCustomId('escort')
+  .setLabel('Escort')
   .setStyle('SUCCESS');
 const leaveButton = new MessageButton()
   .setCustomId('close')
@@ -58,35 +62,21 @@ async function execute(interaction) {
     `Legs:       ${legs?.name ? legs.name : ''}\n` +
     `Gloves:     ${gloves?.name ? gloves.name : ''}\n` +
     `Shoes:      ${shoes?.name ? shoes.name : ''}\n`;
-  // create area display field
-  const area = await Areas.findAll({ where: { name: hero.location}, raw: true });
-  const entityField = await heroFunctions.getArea(area);
-  // create quest display field
-  const availableQuestsField = await heroFunctions.getQuests(userID, hero.location);
   // create hero display using embed
   const heroEmbed = new MessageEmbed()
     .setTitle('Hero')
     .setDescription(`${hero.class}`)
-    .addField('Overview',
-    `LV: ${hero.level}
-    ${hero.status}
-    ✳️ ${hero.exp}
-    🪙 ${hero.credits}`,
-    true)
-    .addField('Stats',
-    `💟 ${hero.health}
-    💠 ${hero.mana}
-    ⚔️ ${hero.strength}
-    🛡️ ${hero.defense}
-    💥 ${hero.crit_rate}%`,
-    true)
-    .addField('Equipment', equipValueField, true)
-    .addField('\u200B', '\u200B')
-    .addField(`${hero.location} (${area[0].type})`, entityField, true)
-    .addField('Quests', availableQuestsField, true);
+    .addFields(
+      heroFunctions.createOverviewField(hero),
+      heroFunctions.createStatsField(hero),
+      { name: 'Equipment', value: equipValueField, inline: true },
+      { name: '\u200B', value: '\u200B' },
+      await heroFunctions.createAreaField(hero),
+      await heroFunctions.createQuestField(hero),
+    );
   // create action row
   const actionRow = new MessageActionRow()
-    .addComponents(exploreButton, travelButton, closeButton);
+    .addComponents(exploreButton, questButton, travelButton, closeButton);
   // send display
   const heroMessage = await interaction.reply({
     embeds: [heroEmbed],
@@ -107,21 +97,24 @@ async function execute(interaction) {
 
 async function explore(interaction) {
   // determine which type of location the hero is in
-  const heroLocation = interaction.message.hero?.location;
-  const area = await Areas.findAll({ where: { name: heroLocation }, raw: true });
+  const hero = interaction.message.hero;
+  const area = await Areas.findAll({ where: { name: hero.location }, raw: true });
   // explore based on location
-  const exploreEmbed = new MessageEmbed();
-  const actionRow = new MessageActionRow().addComponents(backButton);
   switch (area[0].type) {
     case 'Town':
-      exploreEmbed.setTitle('You took a stroll around the town');
+      const exploreEmbed = new MessageEmbed()
+        .setTitle('You took a stroll around the town');
+      const actionRow = new MessageActionRow().addComponents(backButton);
       interaction.update({ embeds: [exploreEmbed], components: [actionRow] });
       break;
     case 'Field':
-      const entities = (await heroFunctions.getArea(area)).split('\n');
-      entities.pop();                                   // remove trailing empty index
-      const encounterID = Math.floor(Math.random() * entities.length);
-      encounterEntity(interaction, entities[encounterID]);
+      // get entities in field
+      const areaField = await heroFunctions.createAreaField(hero);
+      const monsters = areaField.value.split('\n');
+      monsters.pop();                                   // remove trailing empty index
+      // determine which entity to encounter
+      const encounterID = Math.floor(Math.random() * monsters.length);
+      encounterEntity(interaction, monsters[encounterID]);
       break;
   }
 }
@@ -130,16 +123,33 @@ async function encounterEntity(interaction, entityName) {
   // get info to create display embed
   const userID = interaction.user.id;
   const hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
-  const monster = await Monsters.findOne({ where: { name: entityName }, raw: true });
-  // create display embed
-  const battleEmbed = createBattleEmbed(hero, monster);
-  // create action row
-  const actionRow = new MessageActionRow()
-    .addComponents(attackButton, leaveButton);
-  // update message to display encounter
-  interaction.update({ embeds: [battleEmbed], components: [actionRow] });
-  // attach info to message if hero enters battle
-  interaction.message.monster = monster;
+  const entity = await Entities.findOne({ where: { name: entityName }, raw: true });
+  // create display embed & action row depending on npc or monster
+  if (!entity.health) {                                 // npc
+    // create display embed
+    const encounterEmbed = new MessageEmbed()
+      .setTitle(entity.name)
+      .setDescription(entity.collection);
+    // create action row
+    const actionRow = new MessageActionRow()
+      .addComponents(escortButton, leaveButton);
+    // update message to display encounter
+    interaction.update({ embeds: [encounterEmbed], components: [actionRow] });
+    // attach info to message if hero interacts with npc
+    interaction.message.npc = entity;
+    interaction.message.destination = entity.drops;
+  } else {                                              // monster
+    // create display embed
+    const battleEmbed = createBattleEmbed(hero, entity);
+    // create action row
+    const actionRow = new MessageActionRow()
+      .addComponents(attackButton, leaveButton);
+    // update message to display encounter
+    interaction.update({ embeds: [battleEmbed], components: [actionRow] });
+    // attach info to message if hero enters battle
+    interaction.message.monster = entity;
+  }
+  
 }
 
 function createBattleEmbed(hero, monster, battleMessages) {
@@ -276,6 +286,36 @@ async function checkDefeat(interaction, monster) {
   }
 }
 
+async function quest(interaction) {
+  // get quests in area
+  const availableQuests = interaction.message.embeds[0].fields[5].value.split('\n');
+  // create a display embed for quests
+  const questEmbed = new MessageEmbed()
+    .setTitle('Available Quests')
+  if (availableQuests.includes('None')) {                     // no quests
+    questEmbed.setDescription('No available quest in this area');
+  } else {                                                    // add each quest to embed
+    await new Promise(resolve => {
+      if (availableQuests.length === 0) resolve();
+      availableQuests.forEach(async (availableQuest, index) => {
+        const { description } = await Quests.findOne({ where: { name: availableQuest }, raw: true });
+        questEmbed.addField(availableQuest, ` - ${description}`);
+        if (index === availableQuests.length - 1) resolve();
+      });
+    });
+  }
+  
+  
+  // create action row
+  const actionRow = new MessageActionRow()
+    .addComponents(backButton);
+  // update message to display quests
+  interaction.update({
+    embeds: [questEmbed],
+    components: [actionRow],
+  });
+}
+
 function travel(interaction) {
   // get the adjacent areas to the hero's location
   const hero = interaction.message.hero;
@@ -299,28 +339,38 @@ function travel(interaction) {
   });
 }
 
-function quest(interaction) {
-  // required models for this function
-
-}
-
 function move(interaction) {
-  // update message to confirm hero's traveling
-  const destinationName = interaction.component.label;
+  // determine if hero is travelling or escorting
+  const escorting = interaction.message.npc;
+  const destinationName = (escorting ? interaction.message.destination : interaction.component.label);
   const displayEmbed = new MessageEmbed()
-    .setDescription(`Your hero started traveling to ${destinationName} and will arrive in 1 minute`);
+    .setDescription(`${escorting ? 'Escorting' : 'Traveling'} to ${destinationName}...`);
+  // update message to confirm hero's departure
   interaction.update({ embeds: [displayEmbed], components: [] });
   // update message on destination arrival
-  setTimeout(() => {
+  setTimeout(async () => {
     // update hero's location data
     const userID = interaction.user.id;
     Heroes.update(
       { location: destinationName },
       { where: { userID: userID } },
     );
-    // update message to confirm hero's arrival
+    // create display embed and action row
     displayEmbed.setDescription(`Your hero has arrived at ${destinationName}`);
     const actionRow = new MessageActionRow().addComponents(closeButton);
+    // update hero's stats if completing an escort
+    if (escorting) {
+      const escortQuest = await Quests.findOne({ where: { name: escorting.name }, raw: true });
+      Heroes.increment(
+        { exp: +escortQuest.exp, credits: +escortQuest.credits },
+        { where: { userID: userID } },
+      );
+      displayEmbed.setDescription(`Escort to ${destinationName} complete, ` +
+        `gaining ${escortQuest.exp} exp and ${escortQuest.credits} credits`);
+      // set quest as complete
+      CompletedQuests.upsert({ userID: userID, name: escorting.name, location: destinationName });
+    }
+    // update message to confirm hero's arrival
     interaction.message.edit({ embeds: [displayEmbed], components: [actionRow] });
   }, 1000 * 60);
 }
@@ -333,6 +383,7 @@ module.exports = {
   explore,
   encounterEntity,
   simulateBattle,
+  quest,
   travel,
   move,
 };
