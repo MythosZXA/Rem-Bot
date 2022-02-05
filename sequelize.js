@@ -12,6 +12,7 @@ const CompletedQuests = require('./Models/completed_quests')(sequelize, Sequeliz
 const Entities = require('./Models/entities')(sequelize, Sequelize.DataTypes);
 const Equip = require('./Models/equip')(sequelize, Sequelize.DataTypes);
 const Heroes = require('./Models/heroes')(sequelize, Sequelize.DataTypes);
+const Inventories = require('./Models/inventories')(sequelize, Sequelize.DataTypes);
 const Quests = require('./Models/quests')(sequelize, Sequelize.DataTypes);
 const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
 
@@ -22,6 +23,7 @@ module.exports = {
   Entities,
   Equip,
   Heroes,
+  Inventories,
   Quests,
   Users,
 };

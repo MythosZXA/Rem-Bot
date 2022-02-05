@@ -216,14 +216,18 @@ rem.on('interactionCreate', async interaction => {
           case 'close':
             interaction.message.edit('deleted').then(message => message.delete());
             break;
+          case 'inventory':
+            heroCmds.inventory(interaction);
+            break;
           case 'attack':
             const monster = interaction.message.monster;
             heroCmds.simulateBattle(interaction, monster);
             break;
           case 'back':
             interaction.update({
+              content: '\u200B',
               embeds: [interaction.message.heroEmbed],
-              components: [interaction.message.actionRow],
+              components: [interaction.message.actionRow, interaction.message.actionRow2],
             });
             break;
           case 'escort':

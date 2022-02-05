@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-	return sequelize.define('inventory', {
+	return sequelize.define('inventories', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -32,6 +32,5 @@ module.exports = (sequelize, DataTypes) => {
 	}, 
   {
 		timestamps: false,
-    freezeTableName: true
 	});
 };

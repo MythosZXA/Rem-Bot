@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
-const { Areas, CompletedQuests, Entities, Equip, Heroes, Quests } = require('../sequelize');
+const { MessageEmbed, MessageButton, MessageActionRow, Formatters } = require("discord.js");
+const { Areas, CompletedQuests, Entities, Equip, Heroes, Inventories, Quests } = require('../sequelize');
 const rpgMap = require('../rpgMap');
 const heroFunctions = require('../Functions/heroFunctions');
 
@@ -20,6 +20,10 @@ const closeButton = new MessageButton()
   .setCustomId('close')
   .setLabel('Close')
   .setStyle('DANGER');
+const inventoryButton = new MessageButton()
+  .setCustomId('inventory')
+  .setLabel('Inventory')
+  .setStyle('SECONDARY');
 const attackButton = new MessageButton()
   .setCustomId('attack')
   .setLabel('Attack')
@@ -77,10 +81,12 @@ async function execute(interaction) {
   // create action row
   const actionRow = new MessageActionRow()
     .addComponents(exploreButton, questButton, travelButton, closeButton);
+  const actionRow2 = new MessageActionRow()
+    .addComponents(inventoryButton);
   // send display
   const heroMessage = await interaction.reply({
     embeds: [heroEmbed],
-    components: [actionRow],
+    components: [actionRow, actionRow2],
     fetchReply: true,
   });
   // attach hero related data to the message
@@ -89,6 +95,7 @@ async function execute(interaction) {
   heroMessage.hero = hero;
   heroMessage.heroEmbed = heroEmbed;
   heroMessage.actionRow = actionRow;
+  heroMessage.actionRow2 = actionRow2;
   // delete message after 10 mins
   setTimeout(async () => {
     if (heroMessage.content !== 'deleted') heroMessage.delete();
@@ -140,7 +147,7 @@ async function encounterEntity(interaction, entityName) {
     interaction.message.destination = entity.drops;
   } else {                                              // monster
     // create display embed
-    const battleEmbed = createBattleEmbed(hero, entity);
+    const battleEmbed = heroFunctions.createBattleEmbed(hero, entity);
     // create action row
     const actionRow = new MessageActionRow()
       .addComponents(attackButton, leaveButton);
@@ -150,17 +157,6 @@ async function encounterEntity(interaction, entityName) {
     interaction.message.monster = entity;
   }
   
-}
-
-function createBattleEmbed(hero, monster, battleMessages) {
-  const battleEmbed = new MessageEmbed()
-    .setColor('RED')
-    .setTitle(`You encountered a ${monster.name}`)
-    .addField('Hero', `💟 ${hero.health}\n💠 ${hero.mana}`, true)
-    .addField('🆚', '---\n---', true)
-    .addField(monster.name, `💟 ${monster.health}`, true);
-  if (battleMessages) battleEmbed.addField('Messages', battleMessages);
-  return battleEmbed;
 }
 
 async function simulateBattle(interaction, monster) {
@@ -177,7 +173,7 @@ async function simulateBattle(interaction, monster) {
   // create display embed
   hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
   const battleMessages = interaction.message.battleMessages;
-  const battleEmbed = createBattleEmbed(hero, monster, battleMessages);
+  const battleEmbed = heroFunctions.createBattleEmbed(hero, monster, battleMessages);
   // create action row
   const actionRow = new MessageActionRow().addComponents(attackButton, leaveButton);
   // update message to confirm battle exchange
@@ -217,7 +213,7 @@ async function checkVictory(interaction, monster) {
     // create display embed
     const hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
     interaction.message.battleMessages += battleMessages;
-    const battleEmbed = createBattleEmbed(hero, monster, battleMessages);
+    const battleEmbed = heroFunctions.createBattleEmbed(hero, monster, battleMessages);
     // create action row
     const actionRow = new MessageActionRow().addComponents(closeButton);
     // update message to confirm hero's victory
@@ -275,7 +271,7 @@ async function checkDefeat(interaction, monster) {
     // create display embed
     hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
     battleMessages = interaction.mesage.battleMessages;
-    const battleEmbed = createBattleEmbed(hero, monster, battleMessages);
+    const battleEmbed = heroFunctions.createBattleEmbed(hero, monster, battleMessages);
     // create action row
     const actionRow = new MessageActionRow().addComponents(closeButton);
     // update message to confirm hero's defeat
@@ -375,6 +371,31 @@ function move(interaction) {
   }, 1000 * 60);
 }
 
+async function inventory(interaction) {
+  // get hero inventory
+  const items = await Inventories.findAll({
+    where: { userID: interaction.user.id },
+    order: [ ['type', 'ASC'] ],
+    raw: true,
+  });
+  // create inventory display using code block
+  const displayHeader = 'ID'.padEnd(5) + 'Type'.padEnd(12) + 'Name'.padEnd(20) + 'Amount';
+  const displayArray = items.map(item => 
+    `${item.id}`.padEnd(5) +
+    `${item.type}`.padEnd(12) +
+    `${item.name}`.padEnd(20) +
+    `${item.amount}`)
+    .join('\n');
+  // create action row
+  const actionRow = new MessageActionRow().addComponents(backButton);
+  // update message to confirm hero's inventory
+  interaction.update({
+    content: Formatters.codeBlock(`${displayHeader}\n${displayArray}`),
+    embeds: [],
+    components: [actionRow],
+  });
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('hero')
@@ -386,4 +407,5 @@ module.exports = {
   quest,
   travel,
   move,
+  inventory,
 };

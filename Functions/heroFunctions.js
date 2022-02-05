@@ -1,3 +1,4 @@
+const { MessageEmbed } = require('discord.js');
 const { sequelize, Areas, CompletedQuests, Heroes, Quests } = require('../sequelize');
 const { Op } = require('sequelize');
 
@@ -106,6 +107,17 @@ async function createQuestField(hero) {
   }
 }
 
+function createBattleEmbed(hero, monster, battleMessages) {
+  const battleEmbed = new MessageEmbed()
+    .setColor('RED')
+    .setTitle(`You encountered a ${monster.name}`)
+    .addField('Hero', `💟 ${hero.health}\n💠 ${hero.mana}`, true)
+    .addField('🆚', '---\n---', true)
+    .addField(monster.name, `💟 ${monster.health}`, true);
+  if (battleMessages) battleEmbed.addField('Messages', battleMessages);
+  return battleEmbed;
+}
+
 async function updateClass(interaction, Heroes, Equip) {
   try {
     const { name : primaryWeapon } = await Equip.findOne({           // get primary weapon
@@ -170,5 +182,6 @@ module.exports= {
   createStatsField,
   createAreaField,
   createQuestField,
+  createBattleEmbed,
   updateClass,
 };
