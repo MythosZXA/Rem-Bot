@@ -69,7 +69,7 @@ async function updateGamblingLeaderboard(rem) {
   // create leaderboard display
   let displayString =                                                 // leaderboard header
     'Top 3 will get the Gambling Addicts role\n' +
-    'Gambling Addicts will receive 150 coins on check in\n\n' +
+    'Gambling Addicts will receive 50 additional coins on check in\n\n' +
     'User'.padEnd(15) +
     'Coins'.padEnd(10) +
     'RPS Wins'.padEnd(10) +
@@ -99,7 +99,7 @@ async function updateGamblingLeaderboard(rem) {
   rpsLeaderboardMessage.edit({                                        // update message
     content: Formatters.codeBlock(displayString) 
   });
-  console.log('RPS leaderboard updated');
+  console.log('Gambling leaderboard updated');
 }
 
 async function checkStreakCondition(rem) {

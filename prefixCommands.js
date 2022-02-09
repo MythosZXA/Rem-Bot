@@ -1,4 +1,7 @@
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
+const leaderboardFunctions = require('./Functions/leaderboardFunctions');
+const execSync = require('child_process').execSync;
+const { XMLHttpRequest } = require('xmlhttprequest');
 
 function help(message, arg) {
   const helpEmbed = new MessageEmbed()
@@ -31,8 +34,13 @@ function help(message, arg) {
   message.channel.send({ embeds: [helpEmbed] });
 }
 
+function lock(message) {
+  if (message.author.id != process.env.toan) return;
+  execSync('rundll32.exe user32.dll,LockWorkStation');
+}
+
 async function message(message, arg) {
-  if (message.member.id !== '246034440340373504') return;
+  if (message.member.id !== process.env.toan) return;
 
   // if arg[2] is nickname
   const user = (await message.guild.members.fetch()).find(guildMember => 
@@ -48,71 +56,51 @@ async function message(message, arg) {
     textChannel.send(msgToSend);
 }
 
-async function remind(message, arg) {
-  // validate format
-  if(arg[3] == null || !arg[arg.length - 2].toLowerCase().includes('in')) {
-    message.channel.send('Invalid format. Please try again');
-    return;
-  }
-  // create reminder string
-  let reminder = '';
-  for(let i = 3; i < (arg.length - 2); i++) {
-    reminder += arg[i] + ' ';
-  }
-  reminder.trim();
-  // validate & format timer
-  let timerFormat = arg[arg.length - 1].split(":");
-  if(timerFormat[0] < 0 || timerFormat[1] < 0 || timerFormat[2] < 0) {
-    message.channel.send("No negative time!");
-    return;
-  }
-  let hours = parseInt(timerFormat[0]);
-  let minutes = parseInt(timerFormat[1]);
-  let seconds = parseInt(timerFormat[2]);
-  let countdown = 1000 * ((hours * 60 * 60) + (minutes * 60) + seconds);
-  
-  // determine who to remind
-  if(arg[2] == 'me') {
-    // set reminder
-    setTimeout(() => {
-      message.channel.send(`${message.author}, ${reminder}`);
-    }, countdown);
-    message.channel.send('Okay!');
-  } else {
-    // get user by nickname in the server
-    let members = Array.from((await message.guild.members.fetch()).values());
-    let target = members.filter((user) => {
-      return user.nickname?.toLowerCase() == arg[2].toLowerCase();
-    })[0];
-    // validate user
-    if(target == undefined) {
-      message.channel.send(`I can't find anyone with the name ${arg[2]}`);
-      return;
-    }
-    // set reminder
-    setTimeout(() => {
-      message.channel.send(`${target}, ${message.member.nickname} reminds you ${reminder}`);
-    }, countdown);
-    message.channel.send('Okay!');
-  }
-}
-
 async function test(message, arg) {
-  if (message.author.id != '246034440340373504') return;
-  const fetch = require('node-fetch');
-  const response = await fetch('https://api.mozambiquehe.re/bridge?version=5&platform=PC&player=MythosZXA&auth=SAcVuZxKhiib5PP0OK7E');
-  console.log(await response.json());
+  if (message.author.id != process.env.toan) return;
+
+  // var xmlHttp = new XMLHttpRequest();
+  // xmlHttp.open( "GET", 'https://public-api.tracker.gg/v2/apex/standard/profile/5/MythosZXA', false ); // false for synchronous request
+  // xmlHttp.setRequestHeader('TRN-Api-Key', process.env.trackerKey);
+  // xmlHttp.send();
+  // const regexp = /"value":\d*/g
+  // const str = [...xmlHttp.responseText.matchAll(regexp)];
+  // message.channel.send(str[1][0].split(':')[1]);
+
+  const farmEmbed = new MessageEmbed()
+    .setColor('GREEN')
+    .setThumbnail('https://i.imgur.com/bZuenoY.png')
+    .setTitle('Banana Farm')
+    .setDescription('Increases your check in value')
+    .addFields(
+      { name: 'Base Farm', value: '**5000 Coins**\nIncreases check in value by 200'},
+      { name: 'Upgrades (Limit 5)', value: '**2500 Coins**\nIncreases check in value by 50'},
+    );
+  const upgradeButton = new MessageButton()
+    .setCustomId('upgrade')
+    .setLabel('Upgrade')
+    .setStyle('SUCCESS');
+  const buyButton = new MessageButton()
+    .setCustomId('buy')
+    .setLabel('Buy')
+    .setStyle('SUCCESS');
+  const actionRow = new MessageActionRow().addComponents(upgradeButton, buyButton);
+  message.channel.send({
+    embeds: [farmEmbed],
+    components: [actionRow],
+  }).then(nmessage =>{
+    nmessage.buttonType = 'shop';
+  });
 }
 
-async function update(message, arg, sequelize, DataTypes) {
-  const leaderboardFunctions = require('./Functions/leaderboardFunctions');
-  leaderboardFunctions.updateGamblingLeaderboard(message.client, sequelize, DataTypes);
+async function update(message, arg) {
+  leaderboardFunctions.updateGamblingLeaderboard(message.client);
 }
 
 module.exports = {
   help,
+  lock,
   message,
-  remind,
   test,
   update,
 };

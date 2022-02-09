@@ -3,7 +3,7 @@ const { MessageEmbed, MessageButton, MessageActionRow, Formatters } = require("d
 const { Areas, CompletedQuests, Entities, Equip, Heroes, Inventories, Quests } = require('../sequelize');
 const rpgMap = require('../rpgMap');
 const heroFunctions = require('../Functions/heroFunctions');
-
+// hero buttons
 const exploreButton = new MessageButton()
   .setCustomId('explore')
   .setLabel('Explore Area')
@@ -24,22 +24,24 @@ const inventoryButton = new MessageButton()
   .setCustomId('inventory')
   .setLabel('Inventory')
   .setStyle('SECONDARY');
+// monster encounter button
 const attackButton = new MessageButton()
   .setCustomId('attack')
   .setLabel('Attack')
-  .setStyle('SUCCESS');
-const escortButton = new MessageButton()
-  .setCustomId('escort')
-  .setLabel('Escort')
   .setStyle('SUCCESS');
 const leaveButton = new MessageButton()
   .setCustomId('close')
   .setLabel('Leave')
   .setStyle('DANGER'); 
+// escort quest button
+const escortButton = new MessageButton()
+  .setCustomId('escort')
+  .setLabel('Escort')
+  .setStyle('SUCCESS');
 const backButton = new MessageButton()
   .setCustomId('back')
   .setLabel('Back')
-  .setStyle('SECONDARY'); 
+  .setStyle('SECONDARY');
 
 async function execute(interaction) {
   // get hero data
@@ -48,7 +50,7 @@ async function execute(interaction) {
   const equipped = await Equip.findAll({
     where: { userID: userID },
     order: [ ['type', 'DESC'] ],
-    raw: true
+    raw: true,
   });
   // create equip display field
   const primary = equipped.find(primary => primary?.type == 'Primary');
@@ -107,21 +109,46 @@ async function explore(interaction) {
   const hero = interaction.message.hero;
   const area = await Areas.findAll({ where: { name: hero.location }, raw: true });
   // explore based on location
+  let areaField, actionRow = new MessageActionRow();
   switch (area[0].type) {
     case 'Town':
       const exploreEmbed = new MessageEmbed()
         .setTitle('You took a stroll around the town');
-      const actionRow = new MessageActionRow().addComponents(backButton);
+      actionRow.addComponents(backButton);
       interaction.update({ embeds: [exploreEmbed], components: [actionRow] });
       break;
     case 'Field':
       // get entities in field
-      const areaField = await heroFunctions.createAreaField(hero);
+      areaField = await heroFunctions.createAreaField(hero);
       const monsters = areaField.value.split('\n');
       monsters.pop();                                   // remove trailing empty index
       // determine which entity to encounter
       const encounterID = Math.floor(Math.random() * monsters.length);
       encounterEntity(interaction, monsters[encounterID]);
+      break;
+    case 'Resource':
+      // get entities in resource
+      areaField = await heroFunctions.createAreaField(hero);
+      const resources = areaField.value.split('\n');
+      resources.pop();                                  // remove trailing empty index
+      // create display embed
+      const displayEmbed = new MessageEmbed()
+        .setTitle('Harvestables')
+        .setDescription(resources.join('\n'));
+      // create buttons & action row for resource selection
+      resources.forEach((resource, index) => {
+        const button = new MessageButton()
+          .setCustomId(`resource${index + 1}`)
+          .setLabel(`${resource.split(' ')[0]}`)
+          .setStyle('SUCCESS');
+        actionRow.addComponents(button);
+      });
+      actionRow.addComponents(backButton);
+      // update message to confirm resource selection
+      interaction.update({
+        embeds: [displayEmbed],
+        components: [actionRow],
+      });
       break;
   }
 }
@@ -133,6 +160,11 @@ async function encounterEntity(interaction, entityName) {
   const entity = await Entities.findOne({ where: { name: entityName }, raw: true });
   // create display embed & action row depending on npc or monster
   if (!entity.health) {                                 // npc
+    // update status
+    Heroes.update(
+      { status: 'Conversing' },
+      { where: { userID: userID } },
+    );
     // create display embed
     const encounterEmbed = new MessageEmbed()
       .setTitle(entity.name)
@@ -146,6 +178,11 @@ async function encounterEntity(interaction, entityName) {
     interaction.message.npc = entity;
     interaction.message.destination = entity.drops;
   } else {                                              // monster
+    // update status
+    Heroes.update(
+      { status: 'In Battle' },
+      { where: { userID: userID } },
+    );
     // create display embed
     const battleEmbed = heroFunctions.createBattleEmbed(hero, entity);
     // create action row
@@ -321,14 +358,15 @@ function travel(interaction) {
     .setDescription(adjacentAreas.join('\n'));
   // create buttons & action row for area traversal
   const actionRow = new MessageActionRow();
-  adjacentAreas.forEach(area => {
+  adjacentAreas.forEach((area, index) => {
     const areaButton = new MessageButton()
-      .setCustomId('move')
+      .setCustomId(`move${index + 1}`)
       .setLabel(area)
       .setStyle('SUCCESS');
-    actionRow.addComponents(areaButton)
+    actionRow.addComponents(areaButton);
   });
   actionRow.addComponents(backButton);
+  // update message to confirm area traversal
   interaction.update({
     embeds: [displayEmbed],
     components: [actionRow],
@@ -348,7 +386,7 @@ function move(interaction) {
     // update hero's location data
     const userID = interaction.user.id;
     Heroes.update(
-      { location: destinationName },
+      { status: 'Good', location: destinationName },
       { where: { userID: userID } },
     );
     // create display embed and action row

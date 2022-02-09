@@ -27,6 +27,18 @@ function recoverMana() {
   }, 1000 * 3);
 }
 
+function checkStatus(interaction, status) {
+  if (status !== 'Good') {
+    interaction.reply({
+      content: `Your hero is currently ${status} and cannot perform this action right now`,
+      ephemeral: true,
+    });
+    return false;
+  } else {
+    return true;
+  }
+}
+
 function createOverviewField(hero) {
   return {
     name: 'Overview',
@@ -62,7 +74,7 @@ async function createAreaField(hero) {
   });
   // create area value field
   let entityField = '';
-  if (area[0].type === 'Field') {                           // field-type area, add entities
+  if (area[0].type !== 'Town') {                           // field-type area, add entities
     area.forEach(area => {
       if (finishedQuests.find(quest => quest.name === area.entity)) return;
       entityField += `${area.entity}\n`
@@ -178,6 +190,7 @@ async function updateClass(interaction, Heroes, Equip) {
 module.exports= {
   recoverHealth,
   recoverMana,
+  checkStatus,
   createOverviewField,
   createStatsField,
   createAreaField,

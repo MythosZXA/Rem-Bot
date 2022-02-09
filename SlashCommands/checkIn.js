@@ -3,6 +3,7 @@ const { Users } = require('../sequelize');
 const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
 async function execute(interaction) {
+  // check if member can check in
   const userID = interaction.user.id;
   const guildUser = await Users.findOne({ where: { userID: userID }, raw: true });
   if (guildUser.checkedIn == 'true') {                      // user already checked in, exit
@@ -12,6 +13,8 @@ async function execute(interaction) {
     });
     return;
   }
+  // increase stats
+  let totalDistribution = 100;
   await Users.increment(                                    // increase streak & coins
     { streak: +1 , coins: +100 },
     { where: { userID: userID } },
@@ -23,16 +26,28 @@ async function execute(interaction) {
       { coins: +50 },
       { where: { userID: userID } },
     );
+    totalDistribution += 50;
   }
+  // check if this member has a farm
+  const farmLevel = guildUser.farmLv;
+  if (farmLevel !== null) {                                 // give farmer owners more coins
+    await Users.increment(
+      { coins: +(200 + (farmLevel * 50))},
+      { where: { userID: userID } },
+    );
+    totalDistribution += 200 + (farmLevel * 50);
+  }
+  // update check in conditions
   Users.update(                                             // set check in to be true
     { checkedIn: 'true' },
     { where: { userID: userID } },
   );
+  // send confirmation message
   interaction.reply({                                       // confirmation message
-    content: 'You have checked in for the day & received ' +
-    `${hasRole ? '150' : '100'} coins`,
+    content: `You have checked in for the day & received ${totalDistribution} coins`,
     ephemeral: true,
   });
+  // update leaderboard
   leaderboardFunctions.updateGamblingLeaderboard(interaction.client);
 }
 

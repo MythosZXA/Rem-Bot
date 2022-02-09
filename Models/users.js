@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
       allowNull: false,
     },
+    farmLv: {
+      type: DataTypes.INTEGER,
+      defaultValue: null,
+    },
     rpsWins: {
       type: DataTypes.INTEGER,
       defaultValue: 0,

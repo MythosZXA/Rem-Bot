@@ -104,7 +104,7 @@ async function execute(interaction) {
     'Started a game of 13 with ' +
     `${playerMembers[0].nickname}, ${playerMembers[1].nickname}, ` +
     `${playerMembers[2].nickname}, ${playerMembers[3].nickname}\n` +
-    `${investedPlayerUsers.length > 0 ? 'I have collected 50 coins from everyone' : ''}`
+    `${investedPlayerUsers.length > 0 ? 'I have collected 150 coins from everyone' : ''}`
   );
 }
 
@@ -146,7 +146,7 @@ async function betSetup(interaction) {
     playerMembers.forEach(async (member, index) => {
       const userID = member.id;
       const guildUser = await Users.findOne({ where: { userID: userID }, raw: true });
-      if (guildUser.coins < 50) {                                   // flag insufficient coins
+      if (guildUser.coins < 150) {                                   // flag insufficient coins
         interaction.reply({
           content: 'Someone doesn\'t have enough coins!',
           ephemeral: true,
@@ -179,13 +179,13 @@ async function betSetup(interaction) {
     investedPlayerUsers.forEach(async (guildUser, index) => {
       const userID = guildUser.userID;
       await Users.increment(
-        { coins: -50 },
+        { coins: -150 },
         { where: { userID: userID } },
       );
       if (index === investedPlayerUsers.length - 1) resolve();
     });
   });
-  moneyPool = investedPlayerUsers.length * 50;
+  moneyPool = investedPlayerUsers.length * 150;
   leaderboardFunctions.updateGamblingLeaderboard(interaction.client);
   return true;
 }
@@ -397,7 +397,7 @@ function cancel(interaction) {
     investedPlayerUsers.forEach(guildUser => {
       const userID = guildUser.userID;
       Users.increment(
-        { coins: +50 },
+        { coins: +150 },
         { where: { userID: userID } },
       );
     });

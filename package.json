@@ -26,6 +26,7 @@
     "mysql2": "^2.3.3",
     "node-fetch": "^2.6.7",
     "node.js": "0.0.1-security",
-    "sequelize": "*"
+    "sequelize": "*",
+    "xmlhttprequest": "^1.8.0"
   }
 }

@@ -190,6 +190,7 @@ async function roll(rem) {
     playerBets.forEach(async (playerBet, index) => {
       let resultCoin = playerBet.betAmount;
       let win = false;
+      // determine win based on bet type
       if (playerBet.outside) {                                          // outside bet type
         switch(playerBet.bet) {
           case '1-18':
@@ -293,7 +294,7 @@ async function roll(rem) {
         { coins: (win ? +resultCoin : -resultCoin) },
         { where: { userID: playerBet.member.id } }
       );
-      
+      // resolve promise once all bets have been checked
       if (index === playerBets.length - 1) resolve();
     });
   });

@@ -13,6 +13,8 @@ const rem = new Client({
   ],
   partials: ['CHANNEL']
 });
+const heroFunctions = require('./Functions/heroFunctions');
+const shopFunctions = require('./Functions/shopFunctions');
 const leaderboardFunctions = require('./Functions/leaderboardFunctions');
 const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
 const prefixCommands = require('./prefixCommands.js');
@@ -39,6 +41,7 @@ rem.on('ready', async () => {
   // rem.user.setActivity('for /help', {type: 'WATCHING'});
   (await rem.guilds.fetch('773660297696772096')).members.fetch();                 // caches users for easier access
   logChannel = await rem.channels.fetch('911494733828857866');
+
   // auto regen heroes' health and mana
   require('./Functions/heroFunctions').recoverHealth();
   require('./Functions/heroFunctions').recoverMana();
@@ -46,19 +49,19 @@ rem.on('ready', async () => {
   // update leaderboards on startup
   // leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
   leaderboardFunctions.updateGamblingLeaderboard(rem);
-
   // check for special days when tomorrow comes
   specialDaysFunctions.checkHoliday(rem);
   specialDaysFunctions.checkBirthday(rem);
   // update on new day
   leaderboardFunctions.checkStreakCondition(rem);
 
+  shopFunctions.update(rem);
   rem.commands.get('roulette').start(rem);
 });
 
 // add user to database on join
 rem.on('guildMemberAdd', member => {
-  if (member.user.bot) return;                                                    // bot joined, exit
+  if (member.user.bot) return;                          // bot joined, exit
   try {
     // add userID and username to database
     Users.create({
@@ -72,7 +75,7 @@ rem.on('guildMemberAdd', member => {
 
 // remove user from database on leave
 rem.on('guildMemberRemove', async member => {
-  if (member.user.bot) return;                                                    // bot left, exit
+  if (member.user.bot) return;                          // bot left, exit
   try {
     // delete from database
     Users.destroy({ where: { userID: member.id } });
@@ -85,15 +88,14 @@ rem.on('guildMemberRemove', async member => {
 rem.on('messageCreate', message => {
   console.log(`${message.author.username}: ${message.content}`);
   if (message.author.bot) return;
-  // log DMs
-  if (!message.inGuild() && message.author.id != '246034440340373504') 
+  // log DMs to Rem
+  if (!message.inGuild() && message.author.id != process.env.toan) 
     logChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`);
   // misc responses
   if (message.content.toLowerCase().includes('thanks rem')) {
     message.channel.send('You\'re welcome!');
     return;
-  }
-  if (message.content.includes('🙁')) {
+  } else if (message.content.includes('🙁')) {
     message.react('🙁');
     return;
   }
@@ -128,6 +130,7 @@ rem.on('interactionCreate', async interaction => {
   } else if (interaction.isSelectMenu()) {              // select menu interactions
     
   } else if (interaction.isButton()) {                  // button interactions
+    const userID = interaction.user.id;
     const interactionMember = interaction.member;
     const originalMember = interaction.message.originalMember;
     const buttonType = interaction.message.buttonType;
@@ -202,9 +205,11 @@ rem.on('interactionCreate', async interaction => {
           });
           return;
         }
+        const { status } = await Heroes.findOne({ where: { userID: userID }, raw: true });
         // execute button     
         switch (buttonName) {
           case 'explore':
+            if (!heroFunctions.checkStatus(interaction, status)) return;
             heroCmds.explore(interaction);
             break;
           case 'quest':
@@ -214,14 +219,41 @@ rem.on('interactionCreate', async interaction => {
             heroCmds.travel(interaction);
             break;
           case 'close':
+            const buttonLabel = interaction.component.label;
+            if (buttonLabel === 'Leave' && status !== 'Good') {
+              Heroes.update(
+                { status: 'Good' },
+                { where: { userID: userID } },
+              );
+            }
             interaction.message.edit('deleted').then(message => message.delete());
             break;
           case 'inventory':
             heroCmds.inventory(interaction);
             break;
+          case 'resource1':
+          case 'resource2':
+            break;
           case 'attack':
             const monster = interaction.message.monster;
             heroCmds.simulateBattle(interaction, monster);
+            break;
+          case 'escort':
+            if (!heroFunctions.checkStatus(interaction, status)) return;
+            Heroes.update(
+              { status: 'Escorting'},
+              { where: { userID: userID } },
+            );
+            heroCmds.move(interaction);
+            break;
+          case 'move1':
+          case 'move2':
+            if (!heroFunctions.checkStatus(interaction, status)) return;
+            Heroes.update(
+              { status: 'Travelling'},
+              { where: { userID: userID } },
+            );
+            heroCmds.move(interaction);
             break;
           case 'back':
             interaction.update({
@@ -230,17 +262,13 @@ rem.on('interactionCreate', async interaction => {
               components: [interaction.message.actionRow, interaction.message.actionRow2],
             });
             break;
-          case 'escort':
-          case 'move':
-            heroCmds.move(interaction);
-            break;
         }
         break;
       case 'rps':                                       // rock-paper-scissors buttons
         const rpsCmds = rem.commands.get('rps');
         // validate rps button pressers
         const opponentMember = interaction.message.opponentMember;
-        if (interactionMember !== originalMember || interactionMember !== opponentMember) {
+        if (interactionMember !== opponentMember) {
           interaction.reply({                           // presser isn't a participant, exit
             content: 'You are not the opponent of this game',
             ephemeral: true,
@@ -255,16 +283,18 @@ rem.on('interactionCreate', async interaction => {
             rpsCmds.play(interaction);
             break;
           case 'decline':
-            // validate rps button pressers
-            if (interactionMember === originalMember) { // presser is requester, exit
-              interaction.reply({
-                content: 'You cannot decline your own game',
-                ephemeral: true,
-              });
-              return;
-            }
             // opponent cancels
             rpsCmds.cancelGame(interaction.message);
+            break;
+        }
+        break;
+      case 'shop':                                      // shop buttons
+        switch (buttonName) {
+          case 'upgrade':
+            shopFunctions.upgrade(interaction);
+            break;
+          case 'buy':
+            shopFunctions.buy(interaction);
             break;
         }
         break;
