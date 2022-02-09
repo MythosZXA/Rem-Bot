@@ -42,10 +42,22 @@ const blacks = [
 let rouletteMessage, playerBets = [], playerNicknames = '';
 
 async function execute(interaction) {
-  // validate bet value
+  // get info to check if user can make a bet
+  const interactionMember = interaction.member;
+  const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
   const guildUser = await Users.findOne({ where: { userID: interaction.member.id }, raw: true });
   const betAmount = interaction.options._hoistedOptions[0].value;
-  const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
+  const betType = interaction.options._hoistedOptions[1].value;
+  const isOutsideBet = outsideBets.find(bet => bet === betType);
+  let betTotal = 0;
+  await new Promise(resolve => {
+    if (playerBets.length === 0) resolve();
+    playerBets.forEach((playerBet, index) => {
+      betTotal += playerBet.betAmount;
+      if (index === playerBets.length - 1) resolve();
+    });
+  });
+  // check if user can make bet
   if (guildUser.coins < 0) {                                      // in debt, exit
     interaction.reply({
       content: `You are in debt ${remjudge}`,
@@ -64,13 +76,14 @@ async function execute(interaction) {
       ephemeral: true,
     });
     return;
-  }
-  // check if the player has already made an outside bet
-  const interactionMember = interaction.member;
-  const betType = interaction.options._hoistedOptions[1].value;
-  const isOutsideBet = outsideBets.find(bet => bet === betType);
-  if (playerBets.find(playerBet =>                                // multiple outside bets, exit
-    (isOutsideBet && playerBet.member === interactionMember && playerBet.outside))) {
+  } else if (betTotal > guildUser.coins) {                        // out of betting power, exit
+    interaction.reply({
+      content: 'You have used up all your betting power!',
+      ephemeral: true,
+    });
+    return;
+  } else if (playerBets.find(playerBet =>                         // multiple outside bets, exit
+  (isOutsideBet && playerBet.member === interactionMember && playerBet.outside))) {
     interaction.reply({
       content: 'You have already made an outside bet!',
       ephemeral: true,
@@ -141,7 +154,6 @@ async function execute(interaction) {
   }
   rouletteEmbed.fields[1].value = playerNicknames;
   rouletteMessage.edit({ embeds: [rouletteInfoEmbed, rouletteEmbed] });
-  
   // send confirmation message
   interaction.reply({
     content: 'Bet placed!',

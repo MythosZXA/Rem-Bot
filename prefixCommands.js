@@ -66,31 +66,6 @@ async function test(message, arg) {
   // const regexp = /"value":\d*/g
   // const str = [...xmlHttp.responseText.matchAll(regexp)];
   // message.channel.send(str[1][0].split(':')[1]);
-
-  const farmEmbed = new MessageEmbed()
-    .setColor('GREEN')
-    .setThumbnail('https://i.imgur.com/bZuenoY.png')
-    .setTitle('Banana Farm')
-    .setDescription('Increases your check in value')
-    .addFields(
-      { name: 'Base Farm', value: '**5000 Coins**\nIncreases check in value by 200'},
-      { name: 'Upgrades (Limit 5)', value: '**2500 Coins**\nIncreases check in value by 50'},
-    );
-  const upgradeButton = new MessageButton()
-    .setCustomId('upgrade')
-    .setLabel('Upgrade')
-    .setStyle('SUCCESS');
-  const buyButton = new MessageButton()
-    .setCustomId('buy')
-    .setLabel('Buy')
-    .setStyle('SUCCESS');
-  const actionRow = new MessageActionRow().addComponents(upgradeButton, buyButton);
-  message.channel.send({
-    embeds: [farmEmbed],
-    components: [actionRow],
-  }).then(nmessage =>{
-    nmessage.buttonType = 'shop';
-  });
 }
 
 async function update(message, arg) {
