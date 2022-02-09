@@ -49,7 +49,7 @@ async function execute(interaction) {
   const betAmount = interaction.options._hoistedOptions[0].value;
   const betType = interaction.options._hoistedOptions[1].value;
   const isOutsideBet = outsideBets.find(bet => bet === betType);
-  let betTotal = 0;
+  let betTotal = betAmount;
   await new Promise(resolve => {
     if (playerBets.length === 0) resolve();
     playerBets.forEach((playerBet, index) => {
@@ -152,7 +152,7 @@ async function execute(interaction) {
   if (!playerNicknames.includes(interactionMember.nickname)) {
     playerNicknames += `${interactionMember.nickname}\n`;         // add player to message if first bet
   }
-  rouletteEmbed.fields[1].value = playerNicknames;
+  rouletteEmbed.fields[2].value = playerNicknames;
   rouletteMessage.edit({ embeds: [rouletteInfoEmbed, rouletteEmbed] });
   // send confirmation message
   interaction.reply({
@@ -181,7 +181,7 @@ async function start(rem) {
     nextRollMinute = 30;
   }
   rouletteEmbed.spliceFields(
-    1, 1, { name: `${nextRollHour}:${nextRollMinute} Players`, value: 'No players', inline: true });
+    2, 1, { name: `${nextRollHour}:${nextRollMinute} Players`, value: 'No players', inline: true });
   rouletteMessage.edit({ embeds: [rouletteInfoEmbed, rouletteEmbed] });
   // roll at the next 30 minute mark and then roll every 30 minutes
   setTimeout(() => {
@@ -316,12 +316,21 @@ async function roll(rem) {
   if (currentHour === 0) currentHour = 12;
   const currentMinute = currentRollTime.getMinutes();
   // output results by editing embed
-  if (rollNumber === 37) rollNumber = '00';
+  if (rollNumber === 37) rollNumber = '00';                               // represent 37 as 00
   const rouletteEmbed = rouletteMessage.embeds[1];
+  const previousResults = rouletteEmbed.fields[0].value.split('\n');      // update previous results field
+  previousResults.shift();                                                // remove oldest result
+  const recentResult = rouletteEmbed.fields[1].name;
+  previousResults.push(recentResult);                                     // add newest result
   let color;                                                              // determine if red/black/colorless
   if (reds.find(number => number === rollNumber)) color = 'Red';
   else if (blacks.find(number => number === rollNumber)) color = 'Black';
   rouletteEmbed.setFields([                                               // update roulette embed display
+    {
+      name: 'Previous Rolls',
+      value: previousResults.join('\n'),
+      inline: true,
+    },
     { name: `${currentHour}:${currentMinute == 0 ? '00' : currentMinute} Results: ` +
             `${color ? color : ''} ${rollNumber}`,
       value: `${resultsField.length === 0 ? 'No players' : resultsField}`,
