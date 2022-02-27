@@ -1,31 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const { sequelize, Areas, CompletedQuests, Heroes, Quests } = require('../sequelize');
-const { Op } = require('sequelize');
-
-function recoverHealth() {
-  setInterval(() => {
-    // recover the health of heroes that aren't max
-    Heroes.increment(
-      { health: +1 },
-      { where: { health: { [Op.lt]: sequelize.col('max_health') } } },
-    );
-    // update the status of recovering heroes at max health
-    Heroes.update(
-      { status: 'Good' },
-      { where: { status: 'Recovering', health: { [Op.eq]: sequelize.col('max_health') } } }
-    );
-  }, 1000 * 5);
-}
-
-function recoverMana() {
-  // recover the mana of heroes that aren't max
-  setInterval(() => {
-    Heroes.increment(
-      { mana: +1 },
-      { where: { mana: { [Op.lt]: sequelize.col('max_mana') } } },
-    );
-  }, 1000 * 3);
-}
+const { Areas, CompletedQuests, Quests } = require('../sequelize');
 
 function checkStatus(interaction, status) {
   if (status !== 'Good') {
@@ -188,8 +162,6 @@ async function updateClass(interaction, Heroes, Equip) {
 }
 
 module.exports= {
-  recoverHealth,
-  recoverMana,
   checkStatus,
   createOverviewField,
   createStatsField,

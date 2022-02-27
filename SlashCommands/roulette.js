@@ -53,6 +53,10 @@ async function execute(interaction) {
   await new Promise(resolve => {
     if (playerBets.length === 0) resolve();
     playerBets.forEach((playerBet, index) => {
+      if (playerBet.member !== interactionMember) {
+        if (index === playerBets.length - 1) resolve();
+        return;
+      }
       betTotal += playerBet.betAmount;
       if (index === playerBets.length - 1) resolve();
     });
@@ -288,10 +292,10 @@ async function roll(rem) {
             }
             break;
           case 1:                                                       // straight up bet
-            if (rollNumber == playerBet.bet) {
+            if (rollNumber === 37 && playerBet.bet === '00') {          // 00 condition
               win = true;
               resultCoin *= 35;
-            } else if (rollNumber === 37 && playerBet.bet === '00') {   // 00 condition
+            } else if (rollNumber == playerBet.bet) {
               win = true;
               resultCoin *= 35;
               break;
@@ -316,16 +320,16 @@ async function roll(rem) {
   if (currentHour === 0) currentHour = 12;
   const currentMinute = currentRollTime.getMinutes();
   // output results by editing embed
-  if (rollNumber === 37) rollNumber = '00';                               // represent 37 as 00
+  if (rollNumber === 37) rollNumber = '00';                             // represent 37 as 00
   const rouletteEmbed = rouletteMessage.embeds[1];
-  const previousResults = rouletteEmbed.fields[0].value.split('\n');      // update previous results field
-  previousResults.shift();                                                // remove oldest result
+  const previousResults = rouletteEmbed.fields[0].value.split('\n');    // update previous results field
+  previousResults.shift();                                              // remove oldest result
   const recentResult = rouletteEmbed.fields[1].name;
-  previousResults.push(recentResult);                                     // add newest result
-  let color;                                                              // determine if red/black/colorless
+  previousResults.push(recentResult);                                   // add newest result
+  let color;                                                            // determine if red/black/colorless
   if (reds.find(number => number === rollNumber)) color = 'Red';
   else if (blacks.find(number => number === rollNumber)) color = 'Black';
-  rouletteEmbed.setFields([                                               // update roulette embed display
+  rouletteEmbed.setFields([                                             // update roulette embed display
     {
       name: 'Previous Rolls',
       value: previousResults.join('\n'),

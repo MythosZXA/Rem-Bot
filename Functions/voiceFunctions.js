@@ -1,5 +1,5 @@
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+const { MessageActionRow, MessageButton } = require('discord.js');
+const fs = require('fs');
 
 const { 
   joinVoiceChannel,
@@ -7,53 +7,71 @@ const {
   getVoiceConnection,
   createAudioResource 
 } = require('@discordjs/voice');
-const fs = require('fs');
+const refreshButton = new MessageButton()
+  .setCustomId('refresh')
+  .setLabel('Refresh')
+  .setStyle('SUCCESS');
 
-function join(message) {
-  // check if member is in a voice channel
-  if (!message.member.voice.channelId) {
-    message.channel.send('Please join a voice channel first');
-    message.delete();
-    return false;
-  }
+function join(interaction) {
   // rem joins voice channel
   const voiceConnection = joinVoiceChannel({
-    channelId: message.member.voice.channelId,
-    guildId: message.guildId,
-    adapterCreator: message.guild.voiceAdapterCreator,
+    channelId: interaction.member.voice.channelId,
+    guildId: interaction.guildId,
+    adapterCreator: interaction.guild.voiceAdapterCreator,
   });
   // create audio player
   const audioPlayer = createAudioPlayer();
   voiceConnection.subscribe(audioPlayer);
   voiceConnection.audioPlayer = audioPlayer;
-  return true;
 }
 
-function play(message, mp3Name) {
-  if (!join(message)) return;
-
-  const voiceConnection = getVoiceConnection(message.guildId);
-  const audioResource = createAudioResource(`./mp3/${mp3Name}.mp3`, { inlineVolume: true });
-
-  // const bucketParams = {
-  //   Bucket: 'rembot',
-  //   Key: 'mlghorns.opus',
-  //   ResponseContentDisposition: `attachment; filename='mlghorns.opus'`,
-  // };
-  // const url = s3.getSignedUrl('getObject', bucketParams);
-  // s3.getObject(bucketParams, function (error, data) {
-  //   if (error) console.log(error, err.stack);
-  //   else {
-      
-  //   }
-  // });
+function play(interaction) {
+  const soundName = interaction.component.label;
+  join(interaction);
+  const voiceConnection = getVoiceConnection(interaction.guildId);
+  const audioResource = createAudioResource(`./mp3/${soundName}.mp3`, { inlineVolume: true });
 
   audioResource.volume.setVolume(0.5);
   voiceConnection.audioPlayer.play(audioResource);
-  message.delete();
+  interaction.reply({
+    content: 'Playing',
+    fetchReply: true,
+  }).then(message => message.delete());
+}
+
+function refresh(interaction) {
+  // create buttons for each sound
+  const actionRows = [];
+  let actionRow = new MessageActionRow();
+  const soundFiles = fs.readdirSync('./mp3');
+  soundFiles.forEach((soundFile, index) => {
+    const soundName = soundFile.split('.');
+    const soundButton = new MessageButton()
+      .setCustomId(`sound${index}`)
+      .setLabel(soundName[0])
+      .setStyle('SECONDARY');
+    actionRow.addComponents(soundButton);
+    if ((index + 1) % 5 === 0) {                          // if 5th button of row, create new row
+      actionRows.push(actionRow);
+      actionRow = new MessageActionRow();
+    }
+    if (index === soundFiles.length - 1) {                // if last button, add refresh button
+      actionRow.addComponents(refreshButton);
+      actionRows.push(actionRow);
+    }
+  });
+  // update message to confirm refresh
+  interaction.update({ components: actionRows });
+}
+
+async function update(rem) {
+  const soundChannel = await rem.channels.fetch('945165144156172339');
+  const soundMessage = await soundChannel.messages.fetch('945521728443019344');
+  soundMessage.buttonType = 'sound';
 }
 
 module.exports = {
-  join,
   play,
+  refresh,
+  update,
 };

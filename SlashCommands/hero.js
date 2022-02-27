@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed, MessageButton, MessageActionRow, Formatters } = require("discord.js");
-const { Areas, CompletedQuests, Entities, Equip, Heroes, Inventories, Quests } = require('../sequelize');
+const { sequelize, Areas, CompletedQuests, Entities, Equip, Heroes, Inventories, Quests } = require('../sequelize');
 const rpgMap = require('../rpgMap');
 const heroFunctions = require('../Functions/heroFunctions');
 // hero buttons
@@ -101,6 +101,12 @@ async function execute(interaction) {
   // delete message after 10 mins
   setTimeout(async () => {
     if (heroMessage.content !== 'deleted') heroMessage.delete();
+    if (hero.status === 'In Battle') {
+      Heroes.update(
+        { status: 'Good' },
+        { where: { userID: userID } },
+      );
+    }
   }, 1000 * 60 * 10);
 }
 
@@ -153,6 +159,7 @@ async function explore(interaction) {
   }
 }
 
+// battle functions
 async function encounterEntity(interaction, entityName) {
   // get info to create display embed
   const userID = interaction.user.id;
@@ -222,8 +229,8 @@ function simulateAttack(interaction, hero, monster) {
   const simulateCrit = Math.random() * (100 - 1) + 1;         // determine if crit
   let finalDamage = hero.strength;
   if (simulateCrit <= hero.crit_rate) {                       // crit
-    finalDamage += (hero.strength +                           // regular dmg
-      (hero.strength * hero.crit_damage / 100)) *             // crit portion
+    finalDamage +=                                            // regular dmg
+      (hero.strength * hero.crit_damage / 100) *              // crit portion
       (1 - (monster.defense / 1000));                         // monster defense
     battleMessages += `Dealt ${finalDamage} crit damage!\n`;
   } else {                                                    // didn't crit
@@ -236,28 +243,28 @@ function simulateAttack(interaction, hero, monster) {
 
 async function checkVictory(interaction, monster) {
   // check if monster has been defeated
-  if (monster.health <= 0) {                                  // monster defeated
+  if (monster.health > 0) return false;                       // monster not defeated, exit
+  else {                                                      // monster defeated
     monster.health = 0;                                       // prevent display of negative health
     const userID = interaction.user.id;
     await Heroes.increment(                                   // increase exp & credits
       { exp: +monster.exp, credits: +monster.credits },
       { where: { userID: userID } },
     );
-    let battleMessages = '';
-    battleMessages += `Defeated ${monster.name}, gaining ` +
+    let battleMessages = `Defeated ${monster.name}, gaining ` +
       `${monster.exp} exp and ${monster.credits} credits!\n`;
+    interaction.message.battleMessages += battleMessages;     // add victory message
     await checkLevelUp(interaction);
+    await checkDrops(interaction, monster);
     // create display embed
     const hero = await Heroes.findOne({ where: { userID: userID }, raw: true });
-    interaction.message.battleMessages += battleMessages;
+    battleMessages = interaction.message.battleMessages;
     const battleEmbed = heroFunctions.createBattleEmbed(hero, monster, battleMessages);
     // create action row
-    const actionRow = new MessageActionRow().addComponents(closeButton);
+    const actionRow = new MessageActionRow().addComponents(leaveButton);
     // update message to confirm hero's victory
     interaction.update({ embeds: [battleEmbed], components: [actionRow] });
     return true;
-  } else {                                                    // monster not defeated
-    return false;
   }
 }
 
@@ -272,10 +279,26 @@ async function checkLevelUp(interaction) {
       { level: +1, exp: -requiredEXP, max_health: +5, strength: +1, defense: +1 },
       { where: { userID: userID } },
     );
-    let battleMessages = '';
-    battleMessages += 'Your hero leveled up!!!\n';
+    const battleMessages = 'Your hero leveled up!!!\n';
     interaction.message.battleMessages += battleMessages;
   }
+}
+
+async function checkDrops(interaction, monster) {
+  const userID = interaction.user.id;
+  const [inventory, created] = await Inventories.findOrCreate({
+    where: { userID: userID, name: monster.collection },
+    defaults: { type: 'Collection', amount: 1 },
+    raw: true,
+  });
+  if (!created) {
+    Inventories.increment(
+      { amount: +1 },
+      { where: { userID: userID } },
+    );
+  }
+  const battleMessages = `Obtained ${monster.collection} from defeating ${monster.name}\n`;
+  interaction.message.battleMessages += battleMessages;
 }
 
 async function simulateBeingHit(interaction, monster) {
@@ -319,6 +342,7 @@ async function checkDefeat(interaction, monster) {
   }
 }
 
+// ui functions
 async function quest(interaction) {
   // get quests in area
   const availableQuests = interaction.message.embeds[0].fields[5].value.split('\n');
@@ -367,10 +391,7 @@ function travel(interaction) {
   });
   actionRow.addComponents(backButton);
   // update message to confirm area traversal
-  interaction.update({
-    embeds: [displayEmbed],
-    components: [actionRow],
-  });
+  interaction.update({ embeds: [displayEmbed], components: [actionRow] });
 }
 
 function move(interaction) {
@@ -389,6 +410,14 @@ function move(interaction) {
       { status: 'Good', location: destinationName },
       { where: { userID: userID } },
     );
+    // recover hp/mp if hero traveled to town
+    const { type: areaType } = await Areas.findOne({ where: { name: destinationName }, raw: true });
+    if (areaType === 'Town') {
+      Heroes.update(
+        { health: sequelize.col('max_health'), mana: sequelize.col('max_mana') },
+        { where: { userID: userID } },
+      );
+    }
     // create display embed and action row
     displayEmbed.setDescription(`Your hero has arrived at ${destinationName}`);
     const actionRow = new MessageActionRow().addComponents(closeButton);
@@ -434,6 +463,47 @@ async function inventory(interaction) {
   });
 }
 
+function harvest(interaction) {
+  // set hero status as harvesting
+  const userID = interaction.user.id;
+  Heroes.update(
+    { status: 'Harvesting' },
+    { where: { userID: userID } },
+  );
+  // create display embed
+  const resourceName = interaction.component.label;
+  const displayEmbed = new MessageEmbed()
+    .setDescription(`Harvesting ${resourceName}...`);
+  // update message to confirm harvest
+  interaction.update({ embeds: [displayEmbed], components: [] });
+  // gain resources after a min
+  setTimeout(async () => {
+    const numResources = Math.floor(Math.random() * 3) + 1;
+    // increase hero resources in database
+    const [inventory, created] = await Inventories.findOrCreate({
+      where: { userID: userID, name: resourceName },
+      defaults: { type: 'Material', amount: numResources },
+      raw: true,
+    });
+    if (!created) {
+      Inventories.increment(
+        { amount: +numResources },
+        { where: { userID: userID, name: resourceName } },
+      );
+    }
+    // set hero status as good
+    Heroes.update(
+      { status: 'Good' },
+      { where: { userID: userID } },
+    );
+    // create display embed & action row
+    displayEmbed.setDescription(`Your hero has finished harvesting ${numResources} ${resourceName}`);
+    const actionRow = new MessageActionRow().addComponents(closeButton);
+    // update message to confirm the acquisition of resources
+    interaction.message.edit({ embeds: [displayEmbed], components: [actionRow] });
+  }, 1000 * 60);
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('hero')
@@ -446,4 +516,5 @@ module.exports = {
   travel,
   move,
   inventory,
+  harvest,
 };

@@ -17,6 +17,7 @@ const heroFunctions = require('./Functions/heroFunctions');
 const shopFunctions = require('./Functions/shopFunctions');
 const leaderboardFunctions = require('./Functions/leaderboardFunctions');
 const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
+const voiceFunctions = require('./Functions/voiceFunctions');
 const prefixCommands = require('./prefixCommands.js');
 // sql
 const { Heroes, Users } = require('./sequelize');
@@ -42,10 +43,6 @@ rem.on('ready', async () => {
   (await rem.guilds.fetch('773660297696772096')).members.fetch();                 // caches users for easier access
   logChannel = await rem.channels.fetch('911494733828857866');
 
-  // auto regen heroes' health and mana
-  require('./Functions/heroFunctions').recoverHealth();
-  require('./Functions/heroFunctions').recoverMana();
-
   // update leaderboards on startup
   // leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
   leaderboardFunctions.updateGamblingLeaderboard(rem);
@@ -56,6 +53,7 @@ rem.on('ready', async () => {
   leaderboardFunctions.checkStreakCondition(rem);
 
   shopFunctions.update(rem);
+  voiceFunctions.update(rem);
   rem.commands.get('roulette').start(rem);
 });
 
@@ -233,6 +231,7 @@ rem.on('interactionCreate', async interaction => {
             break;
           case 'resource1':
           case 'resource2':
+            heroCmds.harvest(interaction);
             break;
           case 'attack':
             const monster = interaction.message.monster;
@@ -296,6 +295,23 @@ rem.on('interactionCreate', async interaction => {
           case 'buy':
             shopFunctions.buy(interaction);
             break;
+        }
+        break;
+      case 'sound':                                     // sound buttons
+        // validate button pressers
+        const inVoice = interaction.member.voice.channelId;
+        if (!inVoice) {                                 // not in voice channel, exit
+          interaction.reply({
+            content: 'Join a voice channel to use the soundboard',
+            ephemeral: true,
+          });
+          return;
+        }
+        // execute buttons
+        if (buttonName === 'refresh') {                 // refresh soundboard
+          voiceFunctions.refresh(interaction);
+        } else {                                        // play a sound
+          voiceFunctions.play(interaction);
         }
         break;
     }

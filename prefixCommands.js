@@ -66,6 +66,7 @@ async function test(message, arg) {
   // const regexp = /"value":\d*/g
   // const str = [...xmlHttp.responseText.matchAll(regexp)];
   // message.channel.send(str[1][0].split(':')[1]);
+
 }
 
 async function update(message, arg) {
