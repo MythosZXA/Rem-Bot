@@ -14,11 +14,16 @@ async function execute(interaction) {
     return;
   }
   // increase stats
-  let totalDistribution = 100;
-  await Users.increment(                                    // increase streak & coins
+  await Users.increment(                                    // increase base streak & coins
     { streak: +1 , coins: +100 },
     { where: { userID: userID } },
   );
+  let totalDistribution = 100;
+  await Users.increment(                                    // increase coins for streak
+    { coins: +(guildUser.streak * 10) },
+    { where: { userID: userID } },
+  );
+  totalDistribution += guildUser.streak * 10;
   // check if this member is top 3 gamblers
   const hasRole = interaction.member.roles.cache.find(role => role.name === 'Gambling Addicts');
   if (hasRole) {

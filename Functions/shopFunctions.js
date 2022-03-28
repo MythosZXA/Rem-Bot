@@ -37,12 +37,12 @@ async function upgrade(interaction) {
   }
   // deduct coins & upgrade farm level
   await Users.increment(
-    { coins: -2500, farmLv: guildUser.farmLv++ },
+    { coins: -2500, farmLv: +1 },
     { where: { userID: userID } },
   );
   // send confirmation message
   interaction.reply({
-    content: `You have upgraded your farm to level ${guildUser.farmLv++}!`,
+    content: `You have upgraded your farm to level ${++guildUser.farmLv}!`,
     ephemeral: true,
   });
   // update leaderboard
