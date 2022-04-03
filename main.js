@@ -8,11 +8,13 @@ const rem = new Client({
     'GUILD_MEMBERS',
     'GUILD_EMOJIS_AND_STICKERS',
     'GUILD_VOICE_STATES',
+    'GUILD_PRESENCES',
     'GUILD_MESSAGES',
     'DIRECT_MESSAGES',
   ],
   partials: ['CHANNEL']
 });
+let guild, logChannel;
 const heroFunctions = require('./Functions/heroFunctions');
 const shopFunctions = require('./Functions/shopFunctions');
 const leaderboardFunctions = require('./Functions/leaderboardFunctions');
@@ -32,16 +34,15 @@ for (const file of commandFiles) {
   rem.commands.set(command.data.name, command);
 }
 
-let logChannel;
-
 // start up
 rem.login(process.env.token);
 rem.on('ready', async () => {
   // set up
   console.log('Rem is online.');
   // rem.user.setActivity('for /help', {type: 'WATCHING'});
-  (await rem.guilds.fetch('773660297696772096')).members.fetch();                 // caches users for easier access
+  guild = await rem.guilds.fetch('773660297696772096');
   logChannel = await rem.channels.fetch('911494733828857866');
+  guild.members.fetch();                                // caches users for easier access
 
   // update leaderboards on startup
   // leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
@@ -55,6 +56,11 @@ rem.on('ready', async () => {
   shopFunctions.update(rem);
   voiceFunctions.update(rem);
   rem.commands.get('roulette').start(rem);
+
+  setInterval(() => {
+    const amtOnline = guild.presences.cache.filter(presence => presence.status !== 'offline').size;
+    require('./influxDB').writeToInflux(guild.name, 'Users Online', amtOnline);
+  }, 1000 * 3);
 });
 
 // add user to database on join

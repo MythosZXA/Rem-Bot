@@ -22,10 +22,7 @@ function help(message, arg) {
     | play rock paper scissors with someone
     | birthday message on birthday
     | set a timer`,
-    true)
-    .addField('Playing Server Sounds',
-              `Join a voice channel and send a ! followed by a space
-    and then corresponding emoji to text channel => ! :emoji:`)
+    true);
     // .addField('RPG Commands',
     //           `/hero
     //           /dungeon
