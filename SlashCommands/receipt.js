@@ -16,6 +16,7 @@ function execute(interaction) {
   const date = interaction.options.getString('date');
   const receiptInput = interaction.options.getString('items');
   const itemsData = receiptInput.split(':');
+  const taxAmount = interaction.options.getNumber('tax');
 
   // calculate who owes what
   const amountOwed = new Array(guildMembers.length);
@@ -28,6 +29,10 @@ function execute(interaction) {
       amountOwed[buyerIndex] += amount;
     });
   });
+  // add in tax
+  for (i = 0; i < amountOwed.length; i++) {
+    amountOwed[i] += taxAmount / amountOwed.length;
+  }
   
   // create display string
   let taggedMembers = '';
@@ -63,6 +68,10 @@ module.exports = {
     .addStringOption(option =>
       option.setName('items')
       .setDescription('price1/user#,user#,user#:price2/0,2,3')
+      .setRequired(true))
+    .addNumberOption(option =>
+      option.setName('tax')
+      .setDescription('How much was tax')
       .setRequired(true)),
   execute,
 };
