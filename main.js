@@ -39,6 +39,7 @@ rem.login(process.env.token);
 rem.on('ready', async () => {
   // set up
   console.log('Rem is online.');
+  require('./jawsDB').connectJawsDB();
   // rem.user.setActivity('for /help', {type: 'WATCHING'});
   guild = await rem.guilds.fetch('773660297696772096');
   logChannel = await rem.channels.fetch('911494733828857866');
