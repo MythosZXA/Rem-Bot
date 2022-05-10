@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('sid39uidxq7spicc', 'yo9w846giu5q1l1n', process.env.sqlPassword, {
+const sequelize = new Sequelize('sid39uidxq7spicc', 'yo9w846giu5q1l1n', 'atulc4b8yzu6nrh9', {
 	host: 'pk1l4ihepirw9fob.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
 	dialect: 'mysql',
 	logging: false,
