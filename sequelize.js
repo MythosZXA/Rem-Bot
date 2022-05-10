@@ -2,7 +2,11 @@
 require('dotenv').config();
 
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('mysql://yo9w846giu5q1l1n:atulc4b8yzu6nrh9@pk1l4ihepirw9fob.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/sid39uidxq7spicc');
+const sequelize = new Sequelize('sid39uidxq7spicc', 'yo9w846giu5q1l1n', process.env.sqlPassword, {
+	host: 'pk1l4ihepirw9fob.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+	dialect: 'mysql',
+	logging: false,
+});
 const Areas = require('./Models/areas')(sequelize, Sequelize.DataTypes);
 const CompletedQuests = require('./Models/completed_quests')(sequelize, Sequelize.DataTypes);
 const Entities = require('./Models/entities')(sequelize, Sequelize.DataTypes);
