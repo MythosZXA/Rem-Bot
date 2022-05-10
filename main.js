@@ -39,7 +39,14 @@ rem.login(process.env.token);
 rem.on('ready', async () => {
   // set up
   console.log('Rem is online.');
-  require('./jawsDB').connectJawsDB();
+  const mysql = require('mysql2');
+  const connection = mysql.createConnection({
+    host: process.env.sqlHost,
+    user: process.env.sqlUsername,
+    password: process.env.sqlPassword,
+    database: process.env.sqlDB
+  });
+  connection.connect();
   // rem.user.setActivity('for /help', {type: 'WATCHING'});
   guild = await rem.guilds.fetch('773660297696772096');
   logChannel = await rem.channels.fetch('911494733828857866');
