@@ -46,7 +46,7 @@ rem.on('ready', async () => {
 
   // update leaderboards on startup
   // leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
-  leaderboardFunctions.updateGamblingLeaderboard(rem);
+  // leaderboardFunctions.updateGamblingLeaderboard(rem);
   // check for special days when tomorrow comes
   specialDaysFunctions.checkHoliday(rem);
   specialDaysFunctions.checkBirthday(rem);
@@ -57,10 +57,10 @@ rem.on('ready', async () => {
   voiceFunctions.update(rem);
   rem.commands.get('roulette').start(rem);
 
-  setInterval(() => {
-    const amtOnline = guild.presences.cache.filter(presence => presence.status !== 'offline').size;
-    require('./influxDB').writeToInflux(guild.name, 'Users Online', amtOnline);
-  }, 1000 * 3);
+  // setInterval(() => {
+  //   const amtOnline = guild.presences.cache.filter(presence => presence.status !== 'offline').size;
+  //   require('./influxDB').writeToInflux(guild.name, 'Users Online', amtOnline);
+  // }, 1000 * 3);
 });
 
 // add user to database on join
