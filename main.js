@@ -39,7 +39,6 @@ rem.login(process.env.token);
 rem.on('ready', async () => {
   // set up
   console.log('Rem is online.');
-  const PORT = process.env.PORT || 3000;
   const mysql = require('mysql2');
   const connection = mysql.createConnection({
     host: process.env.sqlHost,
