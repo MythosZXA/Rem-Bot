@@ -5,12 +5,6 @@ const Sequelize = require('sequelize');
 let sequelize;
 if (process.env.DATABASE_URL) {
   sequelize = new Sequelize(process.env.DATABASE_URL, {dialect: 'mysql', logging: false});
-} else {
-  sequelize = new Sequelize(process.env.sqlDB, process.env.sqlUsername, process.env.sqlPassword, {
-    host: process.env.sqlHost,
-    dialect: 'mysql',
-    logging: false,
-  });
 }
 
 const Areas = require('./Models/areas')(sequelize, Sequelize.DataTypes);
