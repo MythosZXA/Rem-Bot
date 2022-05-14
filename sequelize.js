@@ -2,10 +2,16 @@
 require('dotenv').config();
 
 const Sequelize = require('sequelize');
-let sequelize;
-if (process.env.DATABASE_URL) {
-  sequelize = new Sequelize(process.env.DATABASE_URL, {dialect: 'mysql', logging: false});
-}
+const sequelize = new Sequelize(
+  'sid39uidxq7spicc',
+  'yo9w846giu5q1l1n',
+  process.env.sqlPassword, 
+  {
+    host: 'pk1l4ihepirw9fob.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+    dialect: 'mysql',
+    logging: false
+  }
+);
 
 const Areas = require('./Models/areas')(sequelize, Sequelize.DataTypes);
 const CompletedQuests = require('./Models/completed_quests')(sequelize, Sequelize.DataTypes);
