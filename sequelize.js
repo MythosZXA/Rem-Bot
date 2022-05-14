@@ -8,6 +8,7 @@ const sequelize = new Sequelize(
   process.env.sqlPassword, 
   {
     host: 'pk1l4ihepirw9fob.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+    port: '3306',
     dialect: 'mysql',
     logging: false
   }
