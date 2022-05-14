@@ -9,6 +9,9 @@ const sequelize = new Sequelize(
   {
     host: 'pk1l4ihepirw9fob.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
     port: '3306',
+    username: 'yo9w846giu5q1l1n',
+    password: process.env.sqlPassword,
+    database: 'sid39uidxq7spicc',
     dialect: 'mysql',
     logging: false
   }
