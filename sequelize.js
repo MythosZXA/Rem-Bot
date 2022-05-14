@@ -13,7 +13,7 @@ const sequelize = new Sequelize(
     password: process.env.sqlPassword,
     database: 'sid39uidxq7spicc',
     dialect: 'mysql',
-    logging: false
+    // logging: false
   }
 );
 
