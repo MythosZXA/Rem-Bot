@@ -48,14 +48,14 @@ rem.on('ready', async () => {
   // leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
   // leaderboardFunctions.updateGamblingLeaderboard(rem);
   // check for special days when tomorrow comes
-  specialDaysFunctions.checkHoliday(rem);
-  specialDaysFunctions.checkBirthday(rem);
+  // specialDaysFunctions.checkHoliday(rem);
+  // specialDaysFunctions.checkBirthday(rem);
   // update on new day
-  leaderboardFunctions.checkStreakCondition(rem);
+  // leaderboardFunctions.checkStreakCondition(rem);
 
-  shopFunctions.update(rem);
-  voiceFunctions.update(rem);
-  rem.commands.get('roulette').start(rem);
+  // shopFunctions.update(rem);
+  // voiceFunctions.update(rem);
+  // rem.commands.get('roulette').start(rem);
 
   // setInterval(() => {
   //   const amtOnline = guild.presences.cache.filter(presence => presence.status !== 'offline').size;
