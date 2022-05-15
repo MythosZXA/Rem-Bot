@@ -13,9 +13,17 @@ const sequelize = new Sequelize(
     password: process.env.sqlPassword,
     database: 'sid39uidxq7spicc',
     dialect: 'mysql',
-    // logging: false
+    logging: false
   }
 );
+
+try {
+  sequelize.authenticate().then(
+    console.log('Connection success')
+  )
+} catch (error) {
+  console.error('Connection failed:', error);
+}
 
 const Areas = require('./Models/areas')(sequelize, Sequelize.DataTypes);
 const CompletedQuests = require('./Models/completed_quests')(sequelize, Sequelize.DataTypes);
