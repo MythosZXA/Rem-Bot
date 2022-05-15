@@ -8,22 +8,10 @@ const sequelize = new Sequelize(
   process.env.sqlPassword, 
   {
     host: 'pk1l4ihepirw9fob.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
-    port: '3306',
-    username: 'yo9w846giu5q1l1n',
-    password: process.env.sqlPassword,
-    database: 'sid39uidxq7spicc',
     dialect: 'mysql',
     logging: false
   }
 );
-
-try {
-  sequelize.authenticate().then(
-    console.log('Connection success')
-  )
-} catch (error) {
-  console.error('Connection failed:', error);
-}
 
 const Areas = require('./Models/areas')(sequelize, Sequelize.DataTypes);
 const CompletedQuests = require('./Models/completed_quests')(sequelize, Sequelize.DataTypes);
