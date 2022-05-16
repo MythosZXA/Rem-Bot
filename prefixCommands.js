@@ -1,34 +1,29 @@
 const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
 const leaderboardFunctions = require('./Functions/leaderboardFunctions');
 const execSync = require('child_process').execSync;
-const { XMLHttpRequest } = require('xmlhttprequest');
 
-function help(message, arg) {
+function help(message) {
+  const helpChannel = message.client.channels.cache.find(channel => channel.name === 'help');
   const helpEmbed = new MessageEmbed()
     .setColor(0x19EFF5)
     .setThumbnail('https://i.imgur.com/oO1SZAs.jpg')
     .addField('Normal Commands',
-    `/check_in
-    /pay
-    /roulette bet
-    /rps
-    /set_birthday
-    /timer`,
-    true)
+      `/check_in
+      /pay
+      /roulette bet
+      /rps
+      /set_birthday
+      /timer`,
+      true)
     .addField('Info',
-    `| daily streaks, get 100 coins
-    | give someone coins
-    | place bets on the next round of #roulette
-    | play rock paper scissors with someone
-    | birthday message on birthday
-    | set a timer`,
-    true);
-    // .addField('RPG Commands',
-    //           `/hero
-    //           /dungeon
-    //           /shop
-    //           /pay`);
-  message.channel.send({ embeds: [helpEmbed] });
+      `| daily streaks, get 100 coins
+      | give someone coins
+      | place bets on the next round of #roulette
+      | play rock paper scissors with someone
+      | birthday message on birthday
+      | set a timer`,
+      true);
+  helpChannel.send({ embeds: [helpEmbed] });
 }
 
 function lock(message) {
@@ -55,15 +50,6 @@ async function message(message, arg) {
 
 async function test(message, arg) {
   if (message.author.id != process.env.toan) return;
-
-  // var xmlHttp = new XMLHttpRequest();
-  // xmlHttp.open( "GET", 'https://public-api.tracker.gg/v2/apex/standard/profile/5/MythosZXA', false ); // false for synchronous request
-  // xmlHttp.setRequestHeader('TRN-Api-Key', process.env.trackerKey);
-  // xmlHttp.send();
-  // const regexp = /"value":\d*/g
-  // const str = [...xmlHttp.responseText.matchAll(regexp)];
-  // message.channel.send(str[1][0].split(':')[1]);
-
 }
 
 async function update(message, arg) {

@@ -26,10 +26,11 @@ function join(interaction) {
 }
 
 function play(interaction) {
+  const boardName = interaction.message.content;
   const soundName = interaction.component.label;
   join(interaction);
   const voiceConnection = getVoiceConnection(interaction.guildId);
-  const audioResource = createAudioResource(`./mp3/${soundName}.mp3`, { inlineVolume: true });
+  const audioResource = createAudioResource(`./mp3/${boardName}/${soundName}.mp3`, { inlineVolume: true });
 
   audioResource.volume.setVolume(0.5);
   voiceConnection.audioPlayer.play(audioResource);
@@ -43,7 +44,8 @@ function refresh(interaction) {
   // create buttons for each sound
   const actionRows = [];
   let actionRow = new MessageActionRow();
-  const soundFiles = fs.readdirSync('./mp3');
+  const boardName = interaction.message.content;
+  const soundFiles = fs.readdirSync(`./mp3/${boardName}`);
   soundFiles.forEach((soundFile, index) => {
     const soundName = soundFile.split('.');
     const soundButton = new MessageButton()
@@ -65,9 +67,11 @@ function refresh(interaction) {
 }
 
 async function update(rem) {
-  const soundChannel = await rem.channels.fetch('945165144156172339');
-  const soundMessage = await soundChannel.messages.fetch('945521728443019344');
-  soundMessage.buttonType = 'sound';
+  const soundboardChannel = rem.channels.cache.find(channel => channel.name === 'soundboard');
+  const soundboardMessages = await soundboardChannel.messages.fetch();
+  soundboardMessages.forEach((message, id) => {
+    message.buttonType = 'sound';
+  });
 }
 
 module.exports = {
