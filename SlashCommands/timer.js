@@ -7,7 +7,7 @@ async function execute(interaction) {
   let duration = 0;
   if (hrs) duration += hrs * 60;
   if (mins) duration += mins;
-  // duration validation
+  // validate timer
   const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
   if (hrs == null && mins == null) {
     interaction.reply({
@@ -29,7 +29,12 @@ async function execute(interaction) {
     const user = interaction.user;
     // set timer
     setTimeout(() => {
-      user.send(`${user} Time is up!`);
+      const storedMessage = interaction.options.getString('message');
+      if (storedMessage) {
+        user.send(storedMessage);
+      } else {
+        user.send(`${user} Time is up!`);
+      }
     }, 1000 * 60 * duration);
   }
 }
@@ -43,6 +48,9 @@ module.exports = {
       .setDescription('How many hours'))
     .addIntegerOption(option =>
       option.setName('min')
-      .setDescription('How many minutes')),
+      .setDescription('How many minutes'))
+    .addStringOption(option =>
+      option.setName('message')
+      .setDescription('The message you want to be sent when time is up (optional)')),
 	execute,
 };
