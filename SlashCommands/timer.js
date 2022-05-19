@@ -62,7 +62,7 @@ function validateDuration(interaction, duration) {
   } else if (duration < 0) {
     interaction.reply({
       content: `Please don't enter negative values ${remjudge}`,
-      ephermeral: true,
+      ephemeral: true,
     });
     return false;
   } else if (duration >= 180) {
