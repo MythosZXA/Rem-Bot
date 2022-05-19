@@ -7,7 +7,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
  */
 async function execute(interaction) {
   const duration = calculateDuration(interaction);
-  if (!validateDuration(duration)) return;
+  if (!validateDuration(interaction, duration)) return;
 
   // confirmation message
   interaction.reply({
@@ -47,10 +47,11 @@ function calculateDuration(interaction) {
 
 /**
  * Checks if the timer duration is a reasonable number.
+ * @param interaction - Interaction event used to access server's emojis
  * @param duration - The duration of the timer in minutes
  * @returns a boolean value that determines the continuation of the command.
  */
-function validateDuration(duration) {
+function validateDuration(interaction, duration) {
   const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
   if (duration == 0) {
     interaction.reply({
