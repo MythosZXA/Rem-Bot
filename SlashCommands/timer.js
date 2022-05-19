@@ -41,8 +41,8 @@ function calculateDuration(interaction) {
     let duration = 0;
     if (hrs) duration += hrs * 60;
     if (mins) duration += mins;
+    return duration;
   }
-  return duration;
 }
 
 /**
