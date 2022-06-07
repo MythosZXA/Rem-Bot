@@ -338,7 +338,7 @@ rem.on('voiceStateUpdate', (oldState, newState) => {
 	}
 });
 
-// process.on('SIGTERM', () => {
-// 	rem.destroy();
-// 	console.log('Rem went down!');
-// });
+process.on('SIGTERM', () => {
+	rem.destroy();
+	console.log('Rem went down!');
+});
