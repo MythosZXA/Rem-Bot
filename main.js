@@ -1,6 +1,5 @@
 // environment variables
 require('dotenv').config();
-const process = require('node:process');
 // discord
 const { Client } = require('discord.js');
 const rem = new Client({
@@ -340,5 +339,6 @@ rem.on('voiceStateUpdate', (oldState, newState) => {
 });
 
 process.on('SIGTERM', () => {
+	rem.destroy();
 	console.log('Rem went down!');
 });
