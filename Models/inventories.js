@@ -1,32 +1,32 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define('inventories', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
+		id: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			autoIncrement: true,
+		},
 		userID: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    type: {
 			type: DataTypes.STRING,
-      allowNull: false,
+			allowNull: false,
 		},
-    name: {
+		type: {
 			type: DataTypes.STRING,
-      allowNull: false,
+			allowNull: false,
 		},
-    attack: {
-      type: DataTypes.INTEGER,
-    },
+		name: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		attack: {
+			type: DataTypes.INTEGER,
+		},
 		amount: {
 			type: DataTypes.INTEGER,
 			defaultValue: 1,
-      allowNull: false,
+			allowNull: false,
 		},
 	}, 
-  {
+	{
 		timestamps: false,
 	});
 };

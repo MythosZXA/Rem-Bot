@@ -9,11 +9,11 @@ const writeApi = influxClient.getWriteApi('Re:Zero', 'Rem');
 
 
 function writeToInflux(measurement, field, value) {
-  // writeApi.useDefaultTags({ Server: serverName });
-  const point = new Point(measurement).floatField(field, value);
-  writeApi.writePoint(point);
+	// writeApi.useDefaultTags({ Server: serverName });
+	const point = new Point(measurement).floatField(field, value);
+	writeApi.writePoint(point);
 }
 
 module.exports = {
-  writeToInflux,
+	writeToInflux,
 };

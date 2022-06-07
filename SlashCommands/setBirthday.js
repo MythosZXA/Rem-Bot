@@ -2,145 +2,145 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Users } = require('../sequelize');
 
 async function execute(interaction) {
-  try {
-    // validate input format
-    const regex = new RegExp('[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}');
-    const birthdayString = interaction.options.getString('birthday', true);
-    if (!regex.test(birthdayString)) {                          // incorrect format, exit
-      interaction.reply({
-        content: 'Invalid format, please try again',
-        ephemeral: true,
-      })
-      return;
-    }
-    if (!validateFormat(interaction, birthdayString)) {         // birthday invalid, exit
-      return;
-    }
-    // set or update in database
-    const userID = interaction.user.id;
-    Users.update(
-      { birthday: birthdayString},
-      { where: { userID: userID } },
-    );
-    // send confirmation message
-    interaction.reply({
-      content: 'Birthday set!',
-      ephemeral: true,
-    });
-  } catch(error) {
-    console.log(error);
-    return interaction.reply({
-      content: 'Something went wrong with setting your birthday. Let Toan know!',
-      ephemeral: true,
-    });
-  }
+	try {
+		// validate input format
+		const regex = new RegExp('[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}');
+		const birthdayString = interaction.options.getString('birthday', true);
+		if (!regex.test(birthdayString)) {                          // incorrect format, exit
+			interaction.reply({
+				content: 'Invalid format, please try again',
+				ephemeral: true,
+			});
+			return;
+		}
+		if (!validateFormat(interaction, birthdayString)) {         // birthday invalid, exit
+			return;
+		}
+		// set or update in database
+		const userID = interaction.user.id;
+		Users.update(
+			{ birthday: birthdayString},
+			{ where: { userID: userID } },
+		);
+		// send confirmation message
+		interaction.reply({
+			content: 'Birthday set!',
+			ephemeral: true,
+		});
+	} catch(error) {
+		console.log(error);
+		return interaction.reply({
+			content: 'Something went wrong with setting your birthday. Let Toan know!',
+			ephemeral: true,
+		});
+	}
 }
 
 function validateFormat(interaction, birthdayString) {
-  const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
-  // parse input
-  const birthdayFormat = birthdayString.split('-');
-  const userYear = parseInt(birthdayFormat[0]);
-  const userMonth = parseInt(birthdayFormat[1]);
-  const userDate = parseInt(birthdayFormat[2]);
-  // validate year
-  let currentYear = new Date().getFullYear();
-  let currentMonth = new Date().getMonth() + 1;
-  let currentDate = new Date().getDate();
-  if ((userYear > currentYear) ||
+	const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
+	// parse input
+	const birthdayFormat = birthdayString.split('-');
+	const userYear = parseInt(birthdayFormat[0]);
+	const userMonth = parseInt(birthdayFormat[1]);
+	const userDate = parseInt(birthdayFormat[2]);
+	// validate year
+	let currentYear = new Date().getFullYear();
+	let currentMonth = new Date().getMonth() + 1;
+	let currentDate = new Date().getDate();
+	if ((userYear > currentYear) ||
     ((userYear == currentYear) && (userMonth > currentMonth)) ||
     ((userYear == currentYear) && (userMonth > currentMonth) && (userDate > currentDate))) {
-    interaction.reply({
-      content: `No time travellers allowed! ${remjudge}`,
-      ephemeral: true,
-    });
-    return false;
-  } else if (userYear < (currentYear - 100)) {
-    interaction.reply({
-      content: `No immortals allowed! ${remjudge}`,
-      ephemeral: true,
-    });
-    return false;
-  }
-  // validate month
-  if (userMonth == 0) {                              // zero-th month, exit
-    interaction.reply({
-      content: `What is month 0?! ${remjudge}`,
-      ephemeral: true,
-    });
-    return false;
-  } else if (userMonth < 0) {                        // negative month, exit
-    interaction.reply({
-      content: `Months can\'t be negative! ${remjudge}`,
-      ephemeral: true,
-    });
-    return false;
-  } else if (userMonth > 12) {                       // more than 12 month, exit
-    interaction.reply({
-      content: `There aren\'t more than 12 months! ${remjudge}`,
-      ephemeral: true,
-    });
-    return false;
-  }
-  // validate date
-  if (userDate == 0) {                               // zero-th date, exit
-    interaction.reply({
-      content: `What is day 0?! ${remjudge}`,
-      ephemeral: true,
-    });
-    return false;
-  } else if(userDate < 0) {                          // negative date, exit
-    interaction.reply({
-      content: `Days cannot be negative! ${remjudge}`,
-      ephemeral: true,
-    });
-    return false;
-  } else if (userDate > 31) {                        // more than 31 day, exit
-    interaction.reply({
-      content: `There aren\'t more than 31 days! ${remjudge}`,
-      ephemeral: true,
-    });
-    return false;
-  } else if (userDate == 31 && (userMonth == 4 ||
+		interaction.reply({
+			content: `No time travellers allowed! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	} else if (userYear < (currentYear - 100)) {
+		interaction.reply({
+			content: `No immortals allowed! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	}
+	// validate month
+	if (userMonth == 0) {                              // zero-th month, exit
+		interaction.reply({
+			content: `What is month 0?! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	} else if (userMonth < 0) {                        // negative month, exit
+		interaction.reply({
+			content: `Months can't be negative! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	} else if (userMonth > 12) {                       // more than 12 month, exit
+		interaction.reply({
+			content: `There aren't more than 12 months! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	}
+	// validate date
+	if (userDate == 0) {                               // zero-th date, exit
+		interaction.reply({
+			content: `What is day 0?! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	} else if(userDate < 0) {                          // negative date, exit
+		interaction.reply({
+			content: `Days cannot be negative! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	} else if (userDate > 31) {                        // more than 31 day, exit
+		interaction.reply({
+			content: `There aren't more than 31 days! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	} else if (userDate == 31 && (userMonth == 4 ||
                                 userMonth == 6 ||
                                 userMonth == 9 ||
                                 userMonth == 11)) {  // non-31 day months, exit
-    interaction.reply({
-      content: `There aren\'t 31 days in that month! ${remjudge}`,
-      ephemeral: true,
-    });
-    return false;
-  } else if (userDate > 29 && userMonth == 2) {      // more than 29 day in Feb, exit
-    interaction.reply({
-      content: `There aren\'t that many days in February! ${remjudge}`,
-      ephemeral: true,
-    });
-    return false;
-  } else if (userDate == 29 && userMonth == 2) {     // 29 Feb days on specific years
-    if ((year % 4) != 0) {                           // wrong year, exit
-      interaction.reply({
-        content: `February doesn\'t have 29 days that year! ${remjudge}`,
-        ephemeral: true,
-      });
-      return false;
-    } else {
-      interaction.reply({
-        content: `Ooo a special birthday!`,
-        ephemeral: true,
-      });
-    }
-  }
+		interaction.reply({
+			content: `There aren't 31 days in that month! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	} else if (userDate > 29 && userMonth == 2) {      // more than 29 day in Feb, exit
+		interaction.reply({
+			content: `There aren't that many days in February! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	} else if (userDate == 29 && userMonth == 2) {     // 29 Feb days on specific years
+		if ((userYear % 4) != 0) {                           // wrong year, exit
+			interaction.reply({
+				content: `February doesn't have 29 days that year! ${remjudge}`,
+				ephemeral: true,
+			});
+			return false;
+		} else {
+			interaction.reply({
+				content: 'Ooo a special birthday!',
+				ephemeral: true,
+			});
+		}
+	}
 
-  return true;
+	return true;
 }
 
 module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('set_birthday')
-    .setDescription('If you want a birthday message from Rem on your birthday')
-    .addStringOption(option => 
-      option.setName('birthday')
-        .setDescription('yyyy-mm-dd')
-        .setRequired(true)),
-  execute,
-}
+	data: new SlashCommandBuilder()
+		.setName('set_birthday')
+		.setDescription('If you want a birthday message from Rem on your birthday')
+		.addStringOption(option => 
+			option.setName('birthday')
+				.setDescription('yyyy-mm-dd')
+				.setRequired(true)),
+	execute,
+};

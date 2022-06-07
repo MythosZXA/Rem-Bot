@@ -3,14 +3,14 @@ require('dotenv').config();
 
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize(
-  'sid39uidxq7spicc',
-  'yo9w846giu5q1l1n',
-  process.env.sqlPassword, 
-  {
-    host: 'pk1l4ihepirw9fob.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
-    dialect: 'mysql',
-    logging: false
-  }
+	'sid39uidxq7spicc',
+	'yo9w846giu5q1l1n',
+	process.env.sqlPassword, 
+	{
+		host: 'pk1l4ihepirw9fob.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+		dialect: 'mysql',
+		logging: false
+	}
 );
 
 const Areas = require('./Models/areas')(sequelize, Sequelize.DataTypes);
@@ -23,13 +23,13 @@ const Quests = require('./Models/quests')(sequelize, Sequelize.DataTypes);
 const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
 
 module.exports = {
-  sequelize,
-  Areas,
-  CompletedQuests,
-  Entities,
-  Equip,
-  Heroes,
-  Inventories,
-  Quests,
-  Users,
+	sequelize,
+	Areas,
+	CompletedQuests,
+	Entities,
+	Equip,
+	Heroes,
+	Inventories,
+	Quests,
+	Users,
 };

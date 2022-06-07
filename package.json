@@ -27,5 +27,8 @@
     "node.js": "0.0.1-security",
     "sequelize": "*",
     "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.17.0"
   }
 }

@@ -1,29 +1,29 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define('quests', {
-    name: {
+		name: {
 			type: DataTypes.STRING,
-      primaryKey: true,
+			primaryKey: true,
 		},
-    description: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    location: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+		description: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		location: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
 		exp: {
 			type: DataTypes.INTEGER,
 			defaultValue: 0,
-      allowNull: false,
+			allowNull: false,
 		},
-    credits: {
+		credits: {
 			type: DataTypes.INTEGER,
 			defaultValue: 0,
-      allowNull: false,
+			allowNull: false,
 		},
 	}, 
-  {
+	{
 		timestamps: false
 	});
 };

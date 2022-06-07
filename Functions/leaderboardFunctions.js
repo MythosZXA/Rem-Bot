@@ -2,72 +2,72 @@ const { Formatters } = require('discord.js');
 const { Users } = require('../sequelize');
 
 function secsToMidnight() {
-  const nowString = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
-  const nowTime = new Date(nowString);
-  const midnight = new Date(nowTime).setHours(24, 0, 0, 0);
-  return (midnight - nowTime) / 1000;
+	const nowString = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
+	const nowTime = new Date(nowString);
+	const midnight = new Date(nowTime).setHours(24, 0, 0, 0);
+	return (midnight - nowTime) / 1000;
 }
 
 async function updateHeroLeaderboard(rem, sequelize, DataTypes) {
-  // fetch leaderboard message to update
-  const guild = await rem.guilds.fetch('773660297696772096');
-  const leaderboardChannel = await rem.channels.fetch('921925078541824052');
-  const heroLeaderboardMessage = await leaderboardChannel.messages.fetch('923023729255141397');
-  // get heroes of members
-  const Hero = require('../Models/heroes')(sequelize, DataTypes);
-  const heroes = await Hero.findAll({                               // get all heroes in DB
-    order: [[ 'level', 'DESC' ]],
-    raw: true,
-  });
-  // create leaderboard display
-  let displayString =                                               // leaderboard header
+	// fetch leaderboard message to update
+	const guild = await rem.guilds.fetch('773660297696772096');
+	const leaderboardChannel = await rem.channels.fetch('921925078541824052');
+	const heroLeaderboardMessage = await leaderboardChannel.messages.fetch('923023729255141397');
+	// get heroes of members
+	const Hero = require('../Models/heroes')(sequelize, DataTypes);
+	const heroes = await Hero.findAll({                               // get all heroes in DB
+		order: [[ 'level', 'DESC' ]],
+		raw: true,
+	});
+	// create leaderboard display
+	let displayString =                                               // leaderboard header
     'User'.padEnd(15) +
     'Level'.padEnd(10) +
     'Credits'.padEnd(10) +
     '\n';
-  await new Promise (resolve => {
-    if (heroes.length == 0) resolve();
-    heroes.forEach(async (hero, index) => {                         // add each hero to display
-      const member = await guild.members.fetch(hero.userID);
-      displayString += 
+	await new Promise (resolve => {
+		if (heroes.length == 0) resolve();
+		heroes.forEach(async (hero, index) => {                         // add each hero to display
+			const member = await guild.members.fetch(hero.userID);
+			displayString += 
         `${member.nickname}`.padEnd(15) +
         `${hero.level}`.padEnd(10) +
         `${hero.credits}`.padEnd(10) +
         '\n';
-      if (index === heroes.length - 1) resolve();
-    });
-  });
-  // update leaderboard
-  setTimeout(() => {
-    heroLeaderboardMessage.edit({                                   // update message
-      content: Formatters.codeBlock(displayString) 
-    });
-    console.log('Hero leaderboard updated');
-  }, 1000 * 3);
-  // update at midnight
-  setTimeout(() => {                                                // update again tomorrow
-    updateHeroLeaderboard(rem, sequelize, DataTypes);
-  }, (1000 * secsToMidnight()) + (1000 * 5));
+			if (index === heroes.length - 1) resolve();
+		});
+	});
+	// update leaderboard
+	setTimeout(() => {
+		heroLeaderboardMessage.edit({                                   // update message
+			content: Formatters.codeBlock(displayString) 
+		});
+		console.log('Hero leaderboard updated');
+	}, 1000 * 3);
+	// update at midnight
+	setTimeout(() => {                                                // update again tomorrow
+		updateHeroLeaderboard(rem, sequelize, DataTypes);
+	}, (1000 * secsToMidnight()) + (1000 * 5));
 }
 
 async function updateGamblingLeaderboard(rem) {
-  // fetch leaderboard message to update
-  const guild = await rem.guilds.fetch('773660297696772096');
-  const leaderboardChannel = await rem.channels.fetch('921925078541824052');
-  const rpsLeaderboardMessage = await leaderboardChannel.messages.fetch('932326839408533554');
-  // get members with coins or rps wins
-  const { Op } = require('sequelize');
-  const guildUsers = await Users.findAll({
-    where: { [Op.or]: [
-      { rpsWins: { [Op.gt]: 0 } },
-      { coins: { [Op.gt]: 0 } },
-    ] },
-    order: [[ 'coins', 'DESC' ]],
-    raw: true,
-  });
-  if (!guildUsers) return;                                            // no members with wins
-  // create leaderboard display
-  let displayString =                                                 // leaderboard header
+	// fetch leaderboard message to update
+	const guild = await rem.guilds.fetch('773660297696772096');
+	const leaderboardChannel = await rem.channels.fetch('921925078541824052');
+	const rpsLeaderboardMessage = await leaderboardChannel.messages.fetch('932326839408533554');
+	// get members with coins or rps wins
+	const { Op } = require('sequelize');
+	const guildUsers = await Users.findAll({
+		where: { [Op.or]: [
+			{ rpsWins: { [Op.gt]: 0 } },
+			{ coins: { [Op.gt]: 0 } },
+		] },
+		order: [[ 'coins', 'DESC' ]],
+		raw: true,
+	});
+	if (!guildUsers) return;                                            // no members with wins
+	// create leaderboard display
+	let displayString =                                                 // leaderboard header
     'Top 3 will get the Gambling Addicts role\n' +
     'Gambling Addicts will receive 50 additional coins on check in\n\n' +
     'User'.padEnd(15) +
@@ -75,51 +75,51 @@ async function updateGamblingLeaderboard(rem) {
     'RPS Wins'.padEnd(10) +
     'Streaks'.padEnd(10) +
     '\n';
-  await new Promise (resolve => {
-    if (guildUsers.length === 0) resolve();
-    guildUsers.forEach(async (guildUser, index) => {                  // add each user to display
-      const guildMember = await guild.members.fetch(guildUser.userID);
-      displayString += 
+	await new Promise (resolve => {
+		if (guildUsers.length === 0) resolve();
+		guildUsers.forEach(async (guildUser, index) => {                  // add each user to display
+			const guildMember = await guild.members.fetch(guildUser.userID);
+			displayString += 
         `${guildMember.nickname}`.padEnd(15) +
         `${guildUser.coins}`.padEnd(10)+
         `${guildUser.rpsWins}`.padEnd(10) +
         `${guildUser.streak}`.padEnd(10) +
         '\n';
-        // give Gambling Addicts role to top 3 members
-        if (index < 3) {
-          guildMember.roles.add('933834205991952467');
-        } else {
-          guildMember.roles.remove('933834205991952467');
-        }
-      if (index === guildUsers.length - 1) resolve();
-    });
-  });
+			// give Gambling Addicts role to top 3 members
+			if (index < 3) {
+				guildMember.roles.add('933834205991952467');
+			} else {
+				guildMember.roles.remove('933834205991952467');
+			}
+			if (index === guildUsers.length - 1) resolve();
+		});
+	});
   
-  // update leaderboard
-  rpsLeaderboardMessage.edit({                                        // update message
-    content: Formatters.codeBlock(displayString) 
-  });
-  console.log('Gambling leaderboard updated');
+	// update leaderboard
+	rpsLeaderboardMessage.edit({                                        // update message
+		content: Formatters.codeBlock(displayString) 
+	});
+	console.log('Gambling leaderboard updated');
 }
 
 async function checkStreakCondition(rem) {
-  // update at midnight
-  setTimeout(async () => {
-    await Users.update(                                               // reset streak for non check ins
-      { streak: 0 },
-      { where: { checkedIn: 'false' } },
-    );
-    await Users.update(                                               // reset check in
-      { checkedIn: 'false' },
-      { where: { checkedIn: 'true' } },
-    );
-    updateGamblingLeaderboard(rem);             // update leaderboard
-  }, 1000 * secsToMidnight());
+	// update at midnight
+	setTimeout(async () => {
+		await Users.update(                                               // reset streak for non check ins
+			{ streak: 0 },
+			{ where: { checkedIn: 'false' } },
+		);
+		await Users.update(                                               // reset check in
+			{ checkedIn: 'false' },
+			{ where: { checkedIn: 'true' } },
+		);
+		updateGamblingLeaderboard(rem);             // update leaderboard
+	}, 1000 * secsToMidnight());
 }
 
 module.exports = {
-  secsToMidnight,
-  updateHeroLeaderboard,
-  updateGamblingLeaderboard,
-  checkStreakCondition,
+	secsToMidnight,
+	updateHeroLeaderboard,
+	updateGamblingLeaderboard,
+	checkStreakCondition,
 };

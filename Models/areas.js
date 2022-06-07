@@ -1,22 +1,22 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define('areas', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-    },
-    name: {
-			type: DataTypes.STRING,
-      allowNull: false,
+		id: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
 		},
-    type: {
+		name: {
 			type: DataTypes.STRING,
-      allowNull: false,
+			allowNull: false,
 		},
-    entity: {
-      type: DataTypes.STRING,
-    },
+		type: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		entity: {
+			type: DataTypes.STRING,
+		},
 	}, 
-  {
+	{
 		timestamps: false
 	});
 };
