@@ -56,11 +56,6 @@ rem.on('ready', async () => {
 	shopFunctions.update(rem);
 	voiceFunctions.update(rem);
 	rem.commands.get('roulette').start(rem);
-
-	// setInterval(() => {
-	//   const amtOnline = guild.presences.cache.filter(presence => presence.status !== 'offline').size;
-	//   require('./influxDB').writeToInflux(guild.name, 'Users Online', amtOnline);
-	// }, 1000 * 3);
 });
 
 // add user to database on join
