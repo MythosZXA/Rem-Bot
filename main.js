@@ -16,7 +16,6 @@ const rem = new Client({
 });
 let guild, logChannel;
 const heroFunctions = require('./Functions/heroFunctions');
-const shopFunctions = require('./Functions/shopFunctions');
 const leaderboardFunctions = require('./Functions/leaderboardFunctions');
 const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
 const voiceFunctions = require('./Functions/voiceFunctions');
@@ -26,6 +25,7 @@ const { Heroes, Users } = require('./sequelize');
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
+// eslint-disable-next-line no-unused-vars
 const { INET } = require('sequelize');
 rem.commands = new Collection();
 const commandFiles = fs.readdirSync('./SlashCommands').filter(file => file.endsWith('.js'));
@@ -53,7 +53,6 @@ rem.on('ready', async () => {
 	// update on new day
 	leaderboardFunctions.checkStreakCondition(rem);
 
-	shopFunctions.update(rem);
 	voiceFunctions.update(rem);
 	rem.commands.get('roulette').start(rem);
 });
@@ -108,7 +107,7 @@ rem.on('messageCreate', message => {
 // interactions
 rem.on('interactionCreate', async interaction => {
 	if (interaction.isApplicationCommand()) {             // slash commands
-		// logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
+		logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
 		const command = rem.commands.get(interaction.commandName);
 		if (!command) return;                               // if there isn't a file with the command name
 		// execute command, catch error if unsuccessful
@@ -141,9 +140,9 @@ rem.on('interactionCreate', async interaction => {
 					return;
 				}
 				switch (buttonName) {
-				case 'undo':
-					thirteenCmds.undo(interaction);
-					break;
+					case 'undo':
+						thirteenCmds.undo(interaction);
+						break;
 				}
 				break;
 			case 'dungeon':                                   // dungeon buttons
@@ -158,35 +157,35 @@ rem.on('interactionCreate', async interaction => {
 				}
 				// execute button
 				switch (buttonName) {
-				case 'attack':
-					dungeon.battle(interaction, sequelize, Sequelize.DataTypes);
-					break;
-				case 'shieldBash':
-				case 'tripleStrike':
-				case 'swordEnhance':
-				case 'sixfoldArrow':
-				case 'explosiveBolt':
-				case 'fireBall':
-				case 'assassinate':
-				case 'execute':
+					case 'attack':
+						dungeon.battle(interaction, sequelize, Sequelize.DataTypes);
+						break;
+					case 'shieldBash':
+					case 'tripleStrike':
+					case 'swordEnhance':
+					case 'sixfoldArrow':
+					case 'explosiveBolt':
+					case 'fireBall':
+					case 'assassinate':
+					case 'execute':
 					// await dungeon.battle(interaction, sequelize, Sequelize.DataTypes, interaction.customId)
-					break;
-				case 'nextStage':
-					interaction.message.currentStage++;
-					dungeon.execute(interaction, sequelize, Sequelize.DataTypes);
-					break;
-				case 'leave':
-					const { status } = await Heroes.findOne({
-						attributes: ['status'],
-						where: { userID: originalMember.id },
-						raw: true,
-					});
-					// hero left dungeon, no longer busy
-					if (status === 'Busy') {
-						Heroes.update({ status: 'Good' }, { where: { userID: originalMember.id } });
-					}
-					interaction.message.delete();
-					break;
+						break;
+					case 'nextStage':
+						interaction.message.currentStage++;
+						dungeon.execute(interaction, sequelize, Sequelize.DataTypes);
+						break;
+					case 'leave':
+						const { status } = await Heroes.findOne({
+							attributes: ['status'],
+							where: { userID: originalMember.id },
+							raw: true,
+						});
+						// hero left dungeon, no longer busy
+						if (status === 'Busy') {
+							Heroes.update({ status: 'Good' }, { where: { userID: originalMember.id } });
+						}
+						interaction.message.delete();
+						break;
 				}
 				break;
 			case 'hero':                                      // hero buttons
@@ -202,61 +201,61 @@ rem.on('interactionCreate', async interaction => {
 				const { status } = await Heroes.findOne({ where: { userID: userID }, raw: true });
 				// execute button     
 				switch (buttonName) {
-				case 'explore':
-					if (!heroFunctions.checkStatus(interaction, status)) return;
-					heroCmds.explore(interaction);
-					break;
-				case 'quest':
-					heroCmds.quest(interaction);
-					break;
-				case 'travel':
-					heroCmds.travel(interaction);
-					break;
-				case 'close':
-					const buttonLabel = interaction.component.label;
-					if (buttonLabel === 'Leave' && status !== 'Good') {
+					case 'explore':
+						if (!heroFunctions.checkStatus(interaction, status)) return;
+						heroCmds.explore(interaction);
+						break;
+					case 'quest':
+						heroCmds.quest(interaction);
+						break;
+					case 'travel':
+						heroCmds.travel(interaction);
+						break;
+					case 'close':
+						const buttonLabel = interaction.component.label;
+						if (buttonLabel === 'Leave' && status !== 'Good') {
+							Heroes.update(
+								{ status: 'Good' },
+								{ where: { userID: userID } },
+							);
+						}
+						interaction.message.edit('deleted').then(message => message.delete());
+						break;
+					case 'inventory':
+						heroCmds.inventory(interaction);
+						break;
+					case 'resource1':
+					case 'resource2':
+						heroCmds.harvest(interaction);
+						break;
+					case 'attack':
+						const monster = interaction.message.monster;
+						heroCmds.simulateBattle(interaction, monster);
+						break;
+					case 'escort':
+						if (!heroFunctions.checkStatus(interaction, status)) return;
 						Heroes.update(
-							{ status: 'Good' },
+							{ status: 'Escorting'},
 							{ where: { userID: userID } },
 						);
-					}
-					interaction.message.edit('deleted').then(message => message.delete());
-					break;
-				case 'inventory':
-					heroCmds.inventory(interaction);
-					break;
-				case 'resource1':
-				case 'resource2':
-					heroCmds.harvest(interaction);
-					break;
-				case 'attack':
-					const monster = interaction.message.monster;
-					heroCmds.simulateBattle(interaction, monster);
-					break;
-				case 'escort':
-					if (!heroFunctions.checkStatus(interaction, status)) return;
-					Heroes.update(
-						{ status: 'Escorting'},
-						{ where: { userID: userID } },
-					);
-					heroCmds.move(interaction);
-					break;
-				case 'move1':
-				case 'move2':
-					if (!heroFunctions.checkStatus(interaction, status)) return;
-					Heroes.update(
-						{ status: 'Travelling'},
-						{ where: { userID: userID } },
-					);
-					heroCmds.move(interaction);
-					break;
-				case 'back':
-					interaction.update({
-						content: '\u200B',
-						embeds: [interaction.message.heroEmbed],
-						components: [interaction.message.actionRow, interaction.message.actionRow2],
-					});
-					break;
+						heroCmds.move(interaction);
+						break;
+					case 'move1':
+					case 'move2':
+						if (!heroFunctions.checkStatus(interaction, status)) return;
+						Heroes.update(
+							{ status: 'Travelling'},
+							{ where: { userID: userID } },
+						);
+						heroCmds.move(interaction);
+						break;
+					case 'back':
+						interaction.update({
+							content: '\u200B',
+							embeds: [interaction.message.heroEmbed],
+							components: [interaction.message.actionRow, interaction.message.actionRow2],
+						});
+						break;
 				}
 				break;
 			case 'rps':                                       // rock-paper-scissors buttons
@@ -272,25 +271,15 @@ rem.on('interactionCreate', async interaction => {
 				}
 				// execute buttons
 				switch (buttonName) {
-				case 'rock':
-				case 'paper':
-				case 'scissors':
-					rpsCmds.play(interaction);
-					break;
-				case 'decline':
+					case 'rock':
+					case 'paper':
+					case 'scissors':
+						rpsCmds.play(interaction);
+						break;
+					case 'decline':
 					// opponent cancels
-					rpsCmds.cancelGame(interaction.message);
-					break;
-				}
-				break;
-			case 'shop':                                      // shop buttons
-				switch (buttonName) {
-				case 'upgrade':
-					shopFunctions.upgrade(interaction);
-					break;
-				case 'buy':
-					shopFunctions.buy(interaction);
-					break;
+						rpsCmds.cancelGame(interaction.message);
+						break;
 				}
 				break;
 			case 'sound': {                                   // sound buttons
