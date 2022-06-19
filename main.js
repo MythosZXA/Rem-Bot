@@ -105,11 +105,6 @@ rem.on('messageCreate', message => {
 	}
 
 	const arg = message.content.split(' ');
-	// check if message is a sound command
-	if (message.content.includes(':') && arg.length == 2) {
-		const mp3Emoji = arg[1].split(':');
-		if (arg[0] === '!') require('./Functions/voiceFunctions').play(message, mp3Emoji[1]);
-	}
 	// check if message is a prefix command
 	if (arg[0].toLowerCase() != 'rem,') return;
 	prefixCommands[arg[1].toLowerCase()]?.(message, arg);
