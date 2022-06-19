@@ -33,15 +33,6 @@ async function execute(interaction) {
 		);
 		totalDistribution += 50;
 	}
-	// check if this member has a farm
-	const farmLevel = guildUser.farmLv;
-	if (farmLevel !== null) {                                 // give farmer owners more coins
-		await Users.increment(
-			{ coins: +(200 + (farmLevel * 50))},
-			{ where: { userID: userID } },
-		);
-		totalDistribution += 200 + (farmLevel * 50);
-	}
 	// update check in conditions
 	Users.update(                                             // set check in to be true
 		{ checkedIn: 'true' },
