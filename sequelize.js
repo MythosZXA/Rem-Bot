@@ -1,17 +1,28 @@
 // environment variables
 require('dotenv').config();
-
+const fs = require('fs');
+// connect to DB
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize(
-	'sid39uidxq7spicc',
-	'yo9w846giu5q1l1n',
-	process.env.sqlPassword, 
+	'sid39uidxq7spicc',														// db name
+	'yo9w846giu5q1l1n',														// username
+	process.env.sqlPassword, 											// password
 	{
 		host: 'pk1l4ihepirw9fob.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
 		dialect: 'mysql',
 		logging: false
 	}
 );
+
+// create/import all the models & use to download db into map
+const dir = './Models';
+const modelFiles = fs.readdirSync(dir);
+const remDB = new Map();
+for (const file of modelFiles) {
+	const modelName = file.split('.')[0];
+	const model = require(`./Models/${file}`)(sequelize, Sequelize.DataTypes);
+	remDB.set(modelName, model);
+}
 
 const Areas = require('./Models/areas')(sequelize, Sequelize.DataTypes);
 const CompletedQuests = require('./Models/completed_quests')(sequelize, Sequelize.DataTypes);
@@ -24,6 +35,7 @@ const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
 
 module.exports = {
 	sequelize,
+	remDB,
 	Areas,
 	CompletedQuests,
 	Entities,
