@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/builders": "^0.8.2",
-    "@discordjs/opus": "^0.7.0",
+    "@discordjs/opus": "^0.8.0",
     "@discordjs/rest": "0.1.0-canary.0",
     "@discordjs/voice": "^0.7.5",
     "aws-sdk": "^2.1053.0",
@@ -24,6 +24,7 @@
     "libsodium-wrappers": "^0.7.9",
     "mysql2": "^2.3.3",
     "node.js": "0.0.1-security",
+    "request": "^2.88.2",
     "sequelize": "*",
     "xmlhttprequest": "^1.8.0"
   },

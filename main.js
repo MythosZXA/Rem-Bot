@@ -43,6 +43,7 @@ rem.on('ready', async () => {
 	guild = await rem.guilds.fetch('773660297696772096');
 	logChannel = await rem.channels.fetch('911494733828857866');
 	guild.members.fetch();                                // caches users for easier access
+	require('./Functions/twitter').checkNewTweets(rem);
 
 	// update leaderboards on startup
 	// leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
