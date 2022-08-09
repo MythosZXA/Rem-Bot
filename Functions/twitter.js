@@ -1,3 +1,4 @@
+// enable environment variables
 require('dotenv').config();
 const request = require('request');
 const get = require('util').promisify(request.get);
@@ -24,9 +25,11 @@ async function checkNewTweets(rem) {
 				tweetURL.splice(3, 1, twitterHandle);
 				tweetURL.splice(5, 1, latestTweetID);
 				tweetChannel.send(tweetURL.join('/'));
+
+				latestTweetsID.set(twitterHandle, latestTweetID);
 			}
 		});
-	}, 1000 * 60 * 10);
+	}, 1000 * 30);
 }
 
 async function getCurrentTweets(rem) {
@@ -41,28 +44,30 @@ async function getCurrentTweets(rem) {
 }
 
 async function getUserLatestTweetID(twitterHandle) {
-	const twitterUserID = await getUserID(twitterHandle);
+	const twitterUserID = await getTwitterUserID(twitterHandle);
 	const endpointURL = new URL(`https://api.twitter.com/2/users/${twitterUserID}/tweets`);
 	const params = {
 		'exclude': 'retweets,replies'
 	};
 
 	// send request
-	const req = await get({url: endpointURL, oauth: oAuthConfig, qs: params, json: true});
-	if (req.body) {
-		return req.body.data[0].id;
+	const requestResponse = await get({ url: endpointURL, oauth: oAuthConfig, qs: params, json: true });
+	if (requestResponse.body) {
+		const tweetID = requestResponse.body.data[0].id;
+		return tweetID;
 	} else {
 		throw new Error('Could not get the latest tweet');
 	}
 }
 
-async function getUserID(twitterHandle) {
+async function getTwitterUserID(twitterHandle) {
 	const endpointURL = new URL(`https://api.twitter.com/2/users/by/username/${twitterHandle}`);
 
 	// send request
-	const requestResponse = await get({url: endpointURL, oauth: oAuthConfig, json: true});
+	const requestResponse = await get({ url: endpointURL, oauth: oAuthConfig, json: true });
 	if (requestResponse.body) {
-		return requestResponse.body.data.id;
+		const twitterUserID = requestResponse.body.data.id;
+		return twitterUserID;
 	} else {
 		throw new Error(`Could not get/find the user ${twitterHandle}`);
 	}

@@ -1,4 +1,4 @@
-// environment variables
+// enable environment variables
 require('dotenv').config();
 // discord
 const { Client } = require('discord.js');

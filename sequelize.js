@@ -1,4 +1,4 @@
-// environment variables
+// enable environment variables
 require('dotenv').config();
 const fs = require('fs');
 // connect to DB
