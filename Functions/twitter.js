@@ -11,7 +11,7 @@ const oAuthConfig = {
 };
 
 let tweetURL = ['https:', '', 'twitter.com', '', 'status', ''];
-const twitterHandlers = ['GrandChaseG', 'playlostark'];
+const twitterHandlers = ['GrandChaseG', 'playlostark', 'HoloCureGame'];
 const latestTweetsID = new Map();
 
 async function checkNewTweets(rem) {
