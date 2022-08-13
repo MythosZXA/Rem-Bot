@@ -1,3 +1,5 @@
+// discord.js				https://discord.js.org/#/
+
 // enable environment variables
 require('dotenv').config();
 // discord
@@ -14,7 +16,7 @@ const rem = new Client({
 	],
 	partials: ['CHANNEL']
 });
-let guild, logChannel;
+let server, channels, logChannel;
 const heroFunctions = require('./Functions/heroFunctions');
 const leaderboardFunctions = require('./Functions/leaderboardFunctions');
 const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
@@ -22,6 +24,7 @@ const voiceFunctions = require('./Functions/voiceFunctions');
 const prefixCommands = require('./prefixCommands.js');
 // sql
 const { Heroes, Users } = require('./sequelize');
+let remDB;
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
@@ -40,9 +43,12 @@ rem.on('ready', async () => {
 	// set up
 	console.log('Rem is online.');
 	// rem.user.setActivity('for /help', {type: 'WATCHING'});
-	guild = await rem.guilds.fetch('773660297696772096');
+	server = await rem.guilds.fetch('773660297696772096');
+	channels = await require('./channels').getServerChannels(server);
 	logChannel = await rem.channels.fetch('911494733828857866');
-	guild.members.fetch();                                // caches users for easier access
+	remDB = await require('./sequelize').importDBToMemory();
+	server.members.fetch();		// caches users for easier access
+
 	require('./Functions/twitter').checkNewTweets(rem);
 
 	// update leaderboards on startup
@@ -50,7 +56,7 @@ rem.on('ready', async () => {
 	leaderboardFunctions.updateGamblingLeaderboard(rem);
 	// check for special days when tomorrow comes
 	specialDaysFunctions.checkHoliday(rem);
-	specialDaysFunctions.checkBirthday(rem);
+	specialDaysFunctions.checkBirthday(server, remDB, channels);
 	// update on new day
 	leaderboardFunctions.checkStreakCondition(rem);
 
@@ -113,7 +119,7 @@ rem.on('interactionCreate', async interaction => {
 		if (!command) return;                               // if there isn't a file with the command name
 		// execute command, catch error if unsuccessful
 		try {
-			command.execute(interaction);
+			command.execute(interaction, remDB);
 		} catch (error) {
 			console.error(error);
 			interaction.reply({ 
@@ -321,6 +327,7 @@ rem.on('voiceStateUpdate', (oldState, newState) => {
 process.on('SIGTERM', () => {
 	rem.destroy();
 	console.log('Rem went down!');
+	Users.bulkCreate(remDB.get('users'), {updateOnDuplicate: ['birthday']});
 	setTimeout(() => {
 		process.exit();
 	}, 1000 * 10);

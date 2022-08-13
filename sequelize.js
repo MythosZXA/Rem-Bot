@@ -1,3 +1,5 @@
+// sequelize website				https://sequelize.org/
+
 // enable environment variables
 require('dotenv').config();
 const fs = require('fs');
@@ -15,13 +17,18 @@ const sequelize = new Sequelize(
 );
 
 // create/import all the models & use to download db into map
-const dir = './Models';
-const modelFiles = fs.readdirSync(dir);
-const remDB = new Map();
-for (const file of modelFiles) {
-	const modelName = file.split('.')[0];
-	const model = require(`./Models/${file}`)(sequelize, Sequelize.DataTypes);
-	remDB.set(modelName, model);
+async function importDBToMemory() {
+	const dir = './Models';
+	const modelFiles = fs.readdirSync(dir);
+	const remDB = new Map();
+	for (const file of modelFiles) {
+		const modelName = file.split('.')[0];
+		const model = require(`./Models/${file}`)(sequelize, Sequelize.DataTypes);
+		const tuplesArray = await model.findAll({ raw: true });
+		remDB.set(modelName, tuplesArray);
+	}
+
+	return remDB;
 }
 
 const Areas = require('./Models/areas')(sequelize, Sequelize.DataTypes);
@@ -35,7 +42,7 @@ const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
 
 module.exports = {
 	sequelize,
-	remDB,
+	importDBToMemory,
 	Areas,
 	CompletedQuests,
 	Entities,

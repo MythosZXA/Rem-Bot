@@ -1,5 +1,4 @@
 const { MessageAttachment } = require('discord.js');
-const { Users } = require('../sequelize');
 
 function secsToMidnight() {
 	let currentTimeString = new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'});
@@ -8,28 +7,26 @@ function secsToMidnight() {
 	return (midnight - currentTime) / 1000;
 }
 
-function checkBirthday(rem) {
+function checkBirthday(server, remDB, channels) {
 	setTimeout(async () => {
-		// grabs the birthday of all users in database
-		const guildUsers = await Users.findAll({ raw: true });
+		const guildUsers = remDB.get('users');
 		// get today's month and date
 		const currentTime = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
 		const currentMonth = new Date(currentTime).getMonth() + 1;
 		const currentDate = new Date(currentTime).getDate();
 		// compare each birthday to today's date
 		guildUsers.forEach(async guildUser => {
-			if (!guildUser.birthday) return;                                  // no birthday set, no message
-			// get user birth month and date
-			const birthdayFormat = guildUser.birthday.split('-');
-			const userMonth = parseInt(birthdayFormat[1]);
-			const userDate = parseInt(birthdayFormat[2]);
-			// if it's user's birthday
+			if (!guildUser.birthday) return;		// no birthday set, no message
+			// get current user birth month and date
+			const birthdayFormat = guildUser.birthday.split('/');
+			const userMonth = parseInt(birthdayFormat[0]);
+			const userDate = parseInt(birthdayFormat[1]);
+			// if it's the user's birthday
 			if (userMonth == currentMonth && userDate == currentDate) {
-				const server = await rem.guilds.fetch('773660297696772096');
 				const bdMember = await server.members.fetch(guildUser.userID);
 				// send birthday message
 				const picture = new MessageAttachment('https://i.imgur.com/7IqikPC.jpg');
-				const generalChannel = await rem.channels.fetch('773660297696772100');
+				const generalChannel = channels.get('console');
 				generalChannel.send({
 					content: `🎉🎉Happy Birthday ${bdMember}!!!🎉🎉`,
 					files: [picture]
@@ -38,7 +35,7 @@ function checkBirthday(rem) {
 		});
 		// check again tomorrow
 		console.log(`Hours until midnight: ${secsToMidnight() / 60 / 60}`);
-		checkBirthday(rem);
+		checkBirthday(server, remDB, channels);
 	}, (1000 * secsToMidnight()) + (1000 * 5));
 }
 

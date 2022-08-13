@@ -1,27 +1,29 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Users } = require('../sequelize');
 
-async function execute(interaction) {
+async function execute(interaction, remDB) {
 	try {
 		// validate input format
-		const regex = new RegExp('[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}');
+		const regex = new RegExp('[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}');
 		const birthdayString = interaction.options.getString('birthday', true);
-		if (!regex.test(birthdayString)) {                          // incorrect format, exit
+		if (!regex.test(birthdayString)) {		// incorrect format, exit
 			interaction.reply({
 				content: 'Invalid format, please try again',
 				ephemeral: true,
 			});
 			return;
 		}
-		if (!validateFormat(interaction, birthdayString)) {         // birthday invalid, exit
-			return;
-		}
+		if (!validateBirthdate(interaction, birthdayString)) { return; }		// birthday invalid, exit
 		// set or update in database
 		const userID = interaction.user.id;
 		Users.update(
 			{ birthday: birthdayString},
 			{ where: { userID: userID } },
 		);
+		const users = remDB.get('users');
+		const user = users.find(user => user.userID === userID);
+		user.birthday = birthdayString;
+		console.log(users);
 		// send confirmation message
 		interaction.reply({
 			content: 'Birthday set!',
@@ -36,13 +38,13 @@ async function execute(interaction) {
 	}
 }
 
-function validateFormat(interaction, birthdayString) {
+function validateBirthdate(interaction, birthdayString) {
 	const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
 	// parse input
-	const birthdayFormat = birthdayString.split('-');
-	const userYear = parseInt(birthdayFormat[0]);
-	const userMonth = parseInt(birthdayFormat[1]);
-	const userDate = parseInt(birthdayFormat[2]);
+	const birthdayFormat = birthdayString.split('/');
+	const userMonth = parseInt(birthdayFormat[0]);
+	const userDate = parseInt(birthdayFormat[1]);
+	const userYear = parseInt(birthdayFormat[2]);
 	// validate year
 	let currentYear = new Date().getFullYear();
 	let currentMonth = new Date().getMonth() + 1;
@@ -63,19 +65,19 @@ function validateFormat(interaction, birthdayString) {
 		return false;
 	}
 	// validate month
-	if (userMonth == 0) {                              // zero-th month, exit
+	if (userMonth == 0) {		// zero-th month, exit
 		interaction.reply({
 			content: `What is month 0?! ${remjudge}`,
 			ephemeral: true,
 		});
 		return false;
-	} else if (userMonth < 0) {                        // negative month, exit
+	} else if (userMonth < 0) {		// negative month, exit
 		interaction.reply({
 			content: `Months can't be negative! ${remjudge}`,
 			ephemeral: true,
 		});
 		return false;
-	} else if (userMonth > 12) {                       // more than 12 month, exit
+	} else if (userMonth > 12) {		// more than 12 month, exit
 		interaction.reply({
 			content: `There aren't more than 12 months! ${remjudge}`,
 			ephemeral: true,
@@ -83,19 +85,19 @@ function validateFormat(interaction, birthdayString) {
 		return false;
 	}
 	// validate date
-	if (userDate == 0) {                               // zero-th date, exit
+	if (userDate == 0) {		// zero-th date, exit
 		interaction.reply({
 			content: `What is day 0?! ${remjudge}`,
 			ephemeral: true,
 		});
 		return false;
-	} else if(userDate < 0) {                          // negative date, exit
+	} else if(userDate < 0) {		// negative date, exit
 		interaction.reply({
 			content: `Days cannot be negative! ${remjudge}`,
 			ephemeral: true,
 		});
 		return false;
-	} else if (userDate > 31) {                        // more than 31 day, exit
+	} else if (userDate > 31) {		// more than 31 day, exit
 		interaction.reply({
 			content: `There aren't more than 31 days! ${remjudge}`,
 			ephemeral: true,
@@ -104,20 +106,20 @@ function validateFormat(interaction, birthdayString) {
 	} else if (userDate == 31 && (userMonth == 4 ||
                                 userMonth == 6 ||
                                 userMonth == 9 ||
-                                userMonth == 11)) {  // non-31 day months, exit
+                                userMonth == 11)) {		// non-31 day months, exit
 		interaction.reply({
 			content: `There aren't 31 days in that month! ${remjudge}`,
 			ephemeral: true,
 		});
 		return false;
-	} else if (userDate > 29 && userMonth == 2) {      // more than 29 day in Feb, exit
+	} else if (userDate > 29 && userMonth == 2) {		// more than 29 day in Feb, exit
 		interaction.reply({
 			content: `There aren't that many days in February! ${remjudge}`,
 			ephemeral: true,
 		});
 		return false;
-	} else if (userDate == 29 && userMonth == 2) {     // 29 Feb days on specific years
-		if ((userYear % 4) != 0) {                           // wrong year, exit
+	} else if (userDate == 29 && userMonth == 2) {		// 29 Feb days on specific years
+		if ((userYear % 4) != 0) {		// wrong year, exit
 			interaction.reply({
 				content: `February doesn't have 29 days that year! ${remjudge}`,
 				ephemeral: true,
@@ -140,7 +142,7 @@ module.exports = {
 		.setDescription('If you want a birthday message from Rem on your birthday')
 		.addStringOption(option => 
 			option.setName('birthday')
-				.setDescription('yyyy-mm-dd')
+				.setDescription('mm/dd/yyyy')
 				.setRequired(true)),
 	execute,
 };
