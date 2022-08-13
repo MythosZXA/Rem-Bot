@@ -49,7 +49,7 @@ rem.on('ready', async () => {
 	remDB = await require('./sequelize').importDBToMemory();
 	server.members.fetch();		// caches users for easier access
 
-	require('./Functions/twitter').checkNewTweets(rem);
+	require('./Functions/twitter').checkNewTweets(channels);
 
 	// update leaderboards on startup
 	// leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
