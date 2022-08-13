@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Users } = require('../sequelize');
 
 async function execute(interaction, remDB) {
 	try {
@@ -14,16 +13,11 @@ async function execute(interaction, remDB) {
 			return;
 		}
 		if (!validateBirthdate(interaction, birthdayString)) { return; }		// birthday invalid, exit
-		// set or update in database
+		// set or update data
 		const userID = interaction.user.id;
-		// Users.update(
-		// 	{ birthday: birthdayString},
-		// 	{ where: { userID: userID } },
-		// );
 		const users = remDB.get('users');
 		const user = users.find(user => user.userID === userID);
 		user.birthday = birthdayString;
-		console.log(users);
 		// send confirmation message
 		interaction.reply({
 			content: 'Birthday set!',

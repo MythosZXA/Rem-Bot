@@ -36,7 +36,7 @@ function checkBirthday(server, remDB, channels) {
 		// check again tomorrow
 		console.log(`Hours until midnight: ${secsToMidnight() / 60 / 60}`);
 		checkBirthday(server, remDB, channels);
-	}, (1000 * secsToMidnight()) + (1000 * 5));
+	}, (1000 * 5));
 }
 
 function checkHoliday(rem) {

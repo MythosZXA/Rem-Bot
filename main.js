@@ -327,7 +327,9 @@ rem.on('voiceStateUpdate', (oldState, newState) => {
 process.on('SIGTERM', () => {
 	rem.destroy();
 	console.log('Rem went down!');
-	Users.bulkCreate(remDB.get('users'), {updateOnDuplicate: ['birthday']});
+
+	Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+
 	setTimeout(() => {
 		process.exit();
 	}, 1000 * 10);
