@@ -55,7 +55,7 @@ rem.on('ready', async () => {
 	// leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
 	leaderboardFunctions.updateGamblingLeaderboard(rem);
 	// check for special days when tomorrow comes
-	specialDaysFunctions.checkHoliday(rem);
+	specialDaysFunctions.checkHoliday(channels);
 	specialDaysFunctions.checkBirthday(server, remDB, channels);
 	// update on new day
 	leaderboardFunctions.checkStreakCondition(rem);
