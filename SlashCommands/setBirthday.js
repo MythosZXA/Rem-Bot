@@ -16,10 +16,10 @@ async function execute(interaction, remDB) {
 		if (!validateBirthdate(interaction, birthdayString)) { return; }		// birthday invalid, exit
 		// set or update in database
 		const userID = interaction.user.id;
-		Users.update(
-			{ birthday: birthdayString},
-			{ where: { userID: userID } },
-		);
+		// Users.update(
+		// 	{ birthday: birthdayString},
+		// 	{ where: { userID: userID } },
+		// );
 		const users = remDB.get('users');
 		const user = users.find(user => user.userID === userID);
 		user.birthday = birthdayString;
