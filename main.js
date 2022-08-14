@@ -336,5 +336,5 @@ process.on('SIGTERM', () => {
 
 	setTimeout(() => {
 		process.exit();
-	}, 1000 * 10);
+	}, 1000 * 5);
 });
