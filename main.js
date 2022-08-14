@@ -42,7 +42,6 @@ rem.login(process.env.token);
 rem.on('ready', async () => {
 	// set up
 	console.log('Rem is online.');
-	// rem.user.setActivity('for /help', {type: 'WATCHING'});
 	server = await rem.guilds.fetch('773660297696772096');
 	channels = await require('./channels').getServerChannels(server);
 	logChannel = await rem.channels.fetch('911494733828857866');
@@ -98,7 +97,12 @@ rem.on('messageCreate', message => {
 		logChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`);
 	// misc responses
 	if (message.content.toLowerCase().includes('thanks rem')) {
-		message.channel.send('You\'re welcome!');
+		if (message.author.id === process.env.toan) {
+			const remhehe = rem.emojis.cache.find(emoji => emoji.name === 'remhehe');
+			message.channel.send(`${remhehe}`);
+		} else {
+			message.channel.send('You\'re welcome!');
+		}
 		return;
 	} else if (message.content.includes('🙁')) {
 		message.react('🙁');
