@@ -108,7 +108,7 @@ rem.on('messageCreate', message => {
 	const arg = message.content.split(' ');
 	// check if message is a prefix command
 	if (arg[0].toLowerCase() != 'rem,') return;
-	prefixCommands[arg[1].toLowerCase()]?.(message, arg);
+	prefixCommands[arg[1].toLowerCase()]?.(message, arg, remDB);
 });
 
 // interactions

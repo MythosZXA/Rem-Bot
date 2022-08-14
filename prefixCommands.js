@@ -1,6 +1,5 @@
 const { MessageEmbed } = require('discord.js');
 const leaderboardFunctions = require('./Functions/leaderboardFunctions');
-const execSync = require('child_process').execSync;
 
 function help(message) {
 	const helpChannel = message.client.channels.cache.find(channel => channel.name === 'help');
@@ -26,11 +25,6 @@ function help(message) {
 	helpChannel.send({ embeds: [helpEmbed] });
 }
 
-function lock(message) {
-	if (message.author.id != process.env.toan) return;
-	execSync('rundll32.exe user32.dll,LockWorkStation');
-}
-
 async function message(message, arg) {
 	if (message.member.id !== process.env.toan) return;
 
@@ -48,6 +42,12 @@ async function message(message, arg) {
 		textChannel.send(msgToSend);
 }
 
+async function sleep(message, arg, remDB) {
+	const { Users } = require('./sequelize');
+	await Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+	process.kill(process.pid, 'SIGTERM');
+}
+
 async function test(message) {
 	if (message.author.id != process.env.toan) return;
 }
@@ -58,8 +58,8 @@ async function update(message) {
 
 module.exports = {
 	help,
-	lock,
 	message,
+	sleep,
 	test,
 	update,
 };

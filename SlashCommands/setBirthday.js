@@ -51,25 +51,6 @@ function validateBirthdate(interaction, birthdayString) {
 	const userMonth = parseInt(birthdayFormat[0]);
 	const userDate = parseInt(birthdayFormat[1]);
 	const userYear = parseInt(birthdayFormat[2]);
-	// validate year
-	let currentYear = new Date().getFullYear();
-	let currentMonth = new Date().getMonth() + 1;
-	let currentDate = new Date().getDate();
-	if ((userYear > currentYear) ||
-    ((userYear == currentYear) && (userMonth > currentMonth)) ||
-    ((userYear == currentYear) && (userMonth > currentMonth) && (userDate > currentDate))) {
-		interaction.reply({
-			content: `No time travellers allowed! ${remjudge}`,
-			ephemeral: true,
-		});
-		return false;
-	} else if (userYear < (currentYear - 100)) {
-		interaction.reply({
-			content: `No immortals allowed! ${remjudge}`,
-			ephemeral: true,
-		});
-		return false;
-	}
 	// validate month
 	if (userMonth == 0) {		// zero-th month, exit
 		interaction.reply({
@@ -137,6 +118,25 @@ function validateBirthdate(interaction, birthdayString) {
 				ephemeral: true,
 			});
 		}
+	}
+	// validate year
+	let currentYear = new Date().getFullYear();
+	let currentMonth = new Date().getMonth() + 1;
+	let currentDate = new Date().getDate();
+	if ((userYear > currentYear) ||
+    ((userYear == currentYear) && (userMonth > currentMonth)) ||
+    ((userYear == currentYear) && (userMonth > currentMonth) && (userDate > currentDate))) {
+		interaction.reply({
+			content: `No time travellers allowed! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
+	} else if (userYear < (currentYear - 100)) {
+		interaction.reply({
+			content: `No immortals allowed! ${remjudge}`,
+			ephemeral: true,
+		});
+		return false;
 	}
 
 	return true;

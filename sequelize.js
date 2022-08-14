@@ -1,4 +1,4 @@
-// sequelize website				https://sequelize.org/
+// sequelize				https://sequelize.org/
 
 // enable environment variables
 require('dotenv').config();
