@@ -1,4 +1,5 @@
-// discord.js				https://discord.js.org/#/
+// discord.js api								https://discord.js.org/#/
+// discord.js guide							https://discordjs.guide/#before-you-begin
 
 // enable environment variables
 require('dotenv').config();
@@ -16,15 +17,14 @@ const rem = new Client({
 	],
 	partials: ['CHANNEL']
 });
-let server, channels, logChannel;
+let remDB, channels;
 const heroFunctions = require('./Functions/heroFunctions');
 const leaderboardFunctions = require('./Functions/leaderboardFunctions');
-const specialDaysFunctions = require('./Functions/specialDaysFunctions.js');
+const specialDaysFunctions = require('./Functions/specialDaysFunctions');
+const twitterFunctions = require('./Functions/twitterFunctions');
 const voiceFunctions = require('./Functions/voiceFunctions');
-const prefixCommands = require('./prefixCommands.js');
 // sql
 const { Heroes, Users } = require('./sequelize');
-let remDB;
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
@@ -39,17 +39,13 @@ for (const file of commandFiles) {
 
 // start up
 rem.login(process.env.token);
-rem.on('ready', async () => {
-	// set up
-	console.log('Rem is online.');
-	server = await rem.guilds.fetch('773660297696772096');
-	channels = await require('./channels').getServerChannels(server);
-	logChannel = await rem.channels.fetch('911494733828857866');
+rem.once('ready', async () => {
+	// set up global variables
+	const server = await rem.guilds.fetch('773660297696772096');
 	remDB = await require('./sequelize').importDBToMemory();
-	server.members.fetch();		// caches users for easier access
-
-	require('./Functions/twitter').checkNewTweets(channels);
-
+	channels = await require('./channels').getServerChannels(server);
+	// caches users for easier access
+	server.members.fetch();
 	// update leaderboards on startup
 	// leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
 	leaderboardFunctions.updateGamblingLeaderboard(rem);
@@ -58,10 +54,23 @@ rem.on('ready', async () => {
 	specialDaysFunctions.checkBirthday(server, remDB, channels);
 	// update on new day
 	leaderboardFunctions.checkStreakCondition(rem);
-
+	twitterFunctions.checkNewTweets(channels);
 	voiceFunctions.update(rem);
 	rem.commands.get('roulette').start(rem);
+
+	console.log('Rem is online.');
 });
+
+// event listener
+const eventFiles = fs.readdirSync('./Events').filter(file => file.endsWith('.js'));
+for (const fileName of eventFiles) {
+	const event = require(`./Events/${fileName}`);
+	if (event.once) {
+		rem.once(event.name, (...args) => event.execute(...args, rem, remDB, channels));
+	} else {
+		rem.on(event.name, (...args) => event.execute(...args, rem, remDB, channels));
+	}
+}
 
 // add user to database on join
 rem.on('guildMemberAdd', member => {
@@ -88,39 +97,13 @@ rem.on('guildMemberRemove', async member => {
 	}
 });
 
-// prefix commands
-rem.on('messageCreate', message => {
-	console.log(`${message.author.username}: ${message.content}`);
-	if (message.author.bot) return;
-	// log DMs to Rem
-	if (!message.inGuild() && message.author.id != process.env.toan) 
-		logChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`);
-	// misc responses
-	if (message.content.toLowerCase().includes('thanks rem')) {
-		if (message.author.id === process.env.toan) {
-			const remhehe = rem.emojis.cache.find(emoji => emoji.name === 'remhehe');
-			message.channel.send(`${remhehe}`);
-		} else {
-			message.channel.send('You\'re welcome!');
-		}
-		return;
-	} else if (message.content.includes('🙁')) {
-		message.react('🙁');
-		return;
-	}
-
-	const arg = message.content.split(' ');
-	// check if message is a prefix command
-	if (arg[0].toLowerCase() != 'rem,') return;
-	prefixCommands[arg[1].toLowerCase()]?.(message, arg, remDB);
-});
-
 // interactions
 rem.on('interactionCreate', async interaction => {
-	if (interaction.isApplicationCommand()) {             // slash commands
-		logChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
+	if (interaction.isApplicationCommand()) {		// slash commands
+		const consoleChannel = channels.get('console');
+		consoleChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
 		const command = rem.commands.get(interaction.commandName);
-		if (!command) return;                               // if there isn't a file with the command name
+		if (!command) return;		// if there isn't a file with the command name
 		// execute command, catch error if unsuccessful
 		try {
 			command.execute(interaction, remDB);
