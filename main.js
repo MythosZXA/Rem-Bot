@@ -47,7 +47,7 @@ rem.once('ready', async () => {
 	server.members.fetch();
 	// update leaderboards on startup
 	// leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
-	leaderboardFunctions.updateGamblingLeaderboard(rem);
+	leaderboardFunctions.updateGamblingLeaderboard(rem, remDB, channels);
 	// check for special days when tomorrow comes
 	specialDaysFunctions.checkHoliday(channels);
 	specialDaysFunctions.checkBirthday(server, remDB, channels);
@@ -55,7 +55,7 @@ rem.once('ready', async () => {
 	leaderboardFunctions.checkStreakCondition(rem);
 	twitterFunctions.checkNewTweets(channels);
 	voiceFunctions.update(rem);
-	rem.commands.get('roulette').start(rem);
+	rem.commands.get('roulette').start(rem, remDB, channels);
 
 	console.log('Rem is online.');
 });

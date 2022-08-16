@@ -52,14 +52,9 @@ async function test(message) {
 	if (message.author.id != process.env.toan) return;
 }
 
-async function update(message) {
-	leaderboardFunctions.updateGamblingLeaderboard(message.client);
-}
-
 module.exports = {
 	help,
 	message,
 	sleep,
-	test,
-	update,
+	test
 };

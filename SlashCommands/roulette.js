@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const { Users } = require('../sequelize');
 const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
 const rouletteInfoEmbed = new MessageEmbed()
@@ -41,11 +40,11 @@ const blacks = [
 ];
 let rouletteMessage, playerBets = [], playerNicknames = '';
 
-async function execute(interaction) {
+async function execute(interaction, rem, remDB) {
 	// get info to check if user can make a bet
 	const interactionMember = interaction.member;
-	const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
-	const guildUser = await Users.findOne({ where: { userID: interaction.member.id }, raw: true });
+	const remjudge = rem.emojis.cache.find(emoji => emoji.name === 'remjudge');
+	const guildUser = remDB.get('users').find(user => user.userID === interaction.member.id);
 	const betAmount = interaction.options._hoistedOptions[0].value;
 	const betType = interaction.options._hoistedOptions[1].value;
 	const isOutsideBet = outsideBets.find(bet => bet === betType);
@@ -165,9 +164,9 @@ async function execute(interaction) {
 	});
 }
 
-async function start(rem) {
+async function start(rem, remDB, channels) {
 	// save roulette message for future reference
-	const rouletteChannel = await rem.channels.cache.find(channel => channel.name === 'roulette');
+	const rouletteChannel = channels.get('roulette');
 	rouletteMessage = await rouletteChannel.messages.fetch('934925025834831942');
 	// get current time for time stamp
 	const startupTime = new Date();
@@ -189,14 +188,14 @@ async function start(rem) {
 	rouletteMessage.edit({ embeds: [rouletteInfoEmbed, rouletteEmbed] });
 	// roll at the next 30 minute mark and then roll every 30 minutes
 	setTimeout(() => {
-		roll(rem);
+		roll(rem, remDB, channels);
 		setInterval(() => {
-			roll(rem);
+			roll(rem, remDB, channels);
 		}, 1000 * 60 * 30);
 	}, (1000 * 60 * (minutesUntil30 - 1) + (1000 * secondsUntilMinute)));
 }
 
-async function roll(rem) {
+async function roll(rem, remDB, channels) {
 	// simulate rolling the ball
 	let rollNumber = Math.floor(Math.random() * 38);
 	// check each bets to see if it won
@@ -306,10 +305,8 @@ async function roll(rem) {
 			// update data according to win or loss
 			resultsField += `${playerBet.member.nickname} ${win ? 'won' : 'lost'} ` +
         `${resultCoin} coins with a ${playerBet.bet} bet!\n`;
-			await Users.increment(
-				{ coins: (win ? +resultCoin : -resultCoin) },
-				{ where: { userID: playerBet.member.id } }
-			);
+			const user = remDB.get('users').find(user => user.userID === playerBet.member.id);
+			win ? (user.coins += resultCoin) : (user.coins -= resultCoin);
 			// resolve promise once all bets have been checked
 			if (index === playerBets.length - 1) resolve();
 		});
@@ -351,7 +348,7 @@ async function roll(rem) {
 	playerBets = [];
 	playerNicknames = '';
 	// update leaderboard
-	leaderboardFunctions.updateGamblingLeaderboard(rem);
+	leaderboardFunctions.updateGamblingLeaderboard(rem, remDB, channels);
 }
 
 module.exports = {
@@ -390,7 +387,7 @@ module.exports = {
 					option.setName('inside_bet_values')
 						.setDescription(
 							'Enter number(s) you want to bet (ascending) ' +
-          'separated by commas, omit for outside bet'
+							'separated by commas, omit for outside bet'
 						))),
 	execute,
 	start,

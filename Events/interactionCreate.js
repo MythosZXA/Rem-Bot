@@ -13,7 +13,7 @@ module.exports = {
 			if (!command) return;		// if there isn't a file with the command name
 			// execute command, catch error if unsuccessful
 			try {
-				command.execute(interaction, remDB);
+				command.execute(interaction, rem, remDB, channels);
 			} catch (error) {
 				console.error(error);
 				interaction.reply({ 

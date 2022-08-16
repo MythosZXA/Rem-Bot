@@ -1,50 +1,34 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Users } = require('../sequelize');
 const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
-async function execute(interaction) {
+async function execute(interaction, rem, remDB, channels) {
 	// check if member can check in
 	const userID = interaction.user.id;
-	const guildUser = await Users.findOne({ where: { userID: userID }, raw: true });
-	if (guildUser.checkedIn == 'true') {                      // user already checked in, exit
+	const guildUser = remDB.get('users').find(user => user.userID === userID);
+	if (guildUser.checkedIn == 'true') {		// user already checked in, exit
 		interaction.reply({
 			content: 'You have already checked in today',
 			ephemeral: true,
 		});
 		return;
 	}
-	// increase stats
-	await Users.increment(                                    // increase base streak & coins
-		{ streak: +1 , coins: +100 },
-		{ where: { userID: userID } },
-	);
-	let totalDistribution = 100;
-	await Users.increment(                                    // increase coins for streak
-		{ coins: +(guildUser.streak * 10) },
-		{ where: { userID: userID } },
-	);
-	totalDistribution += guildUser.streak * 10;
-	// check if this member is top 3 gamblers
+	// calculate coins
+	let totalDistribution = 100;		// base check in
+	totalDistribution += guildUser.streak * 10;		// streak multiplier
 	const hasRole = interaction.member.roles.cache.find(role => role.name === 'Gambling Addicts');
-	if (hasRole) {
-		await Users.increment(                                  // give gambling addicts 50 more coins
-			{ coins: +50 },
-			{ where: { userID: userID } },
-		);
-		totalDistribution += 50;
-	}
+	if (hasRole) totalDistribution += 50;		// gamblimg addicts title
+	// increase coins & streak
+	guildUser.coins += totalDistribution;
+	guildUser.streak++;
 	// update check in conditions
-	Users.update(                                             // set check in to be true
-		{ checkedIn: 'true' },
-		{ where: { userID: userID } },
-	);
+	guildUser.checkedIn = 'true';
 	// send confirmation message
-	interaction.reply({                                       // confirmation message
+	interaction.reply({
 		content: `You have checked in for the day & received ${totalDistribution} coins`,
 		ephemeral: true,
 	});
 	// update leaderboard
-	leaderboardFunctions.updateGamblingLeaderboard(interaction.client);
+	leaderboardFunctions.updateGamblingLeaderboard(rem, remDB, channels);
 }
 
 module.exports = {
