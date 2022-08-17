@@ -24,23 +24,23 @@ async function checkNewTweets(channels) {
 	const tweetChannel = channels.get('tweets');
 	await getCurrentTweets(tweetChannel);
 
-	setInterval(() => {
-		currentTweets.forEach(async (currentTweet, twitterHandle) => {
-			// get timestamps of current/latest tweets
-			const currentTweetTimestamp = new Date(currentTweet.created_at);
-			const latestTweet = await getUserLatestTweet(twitterHandle);
-			const latestTweetTimestamp = new Date(latestTweet.created_at);
-			// send & save latest tweet if it's newer than current tweet
-			if (currentTweetTimestamp.getTime() < latestTweetTimestamp.getTime()) {
-				// build tweet URL
-				tweetURL.splice(3, 1, twitterHandle);
-				tweetURL.splice(5, 1, latestTweet.id);
-				tweetChannel.send(tweetURL.join('/'));
-				// send tweet to channel
-				currentTweets.set(twitterHandle, latestTweet);
-			}
-		});
-	}, 1000 * 60 * 15);
+	// setInterval(() => {
+	// 	currentTweets.forEach(async (currentTweet, twitterHandle) => {
+	// 		// get timestamps of current/latest tweets
+	// 		const currentTweetTimestamp = new Date(currentTweet.created_at);
+	// 		const latestTweet = await getUserLatestTweet(twitterHandle);
+	// 		const latestTweetTimestamp = new Date(latestTweet.created_at);
+	// 		// send & save latest tweet if it's newer than current tweet
+	// 		if (currentTweetTimestamp.getTime() < latestTweetTimestamp.getTime()) {
+	// 			// build tweet URL
+	// 			tweetURL.splice(3, 1, twitterHandle);
+	// 			tweetURL.splice(5, 1, latestTweet.id);
+	// 			tweetChannel.send(tweetURL.join('/'));
+	// 			// send tweet to channel
+	// 			currentTweets.set(twitterHandle, latestTweet);
+	// 		}
+	// 	});
+	// }, 1000 * 60 * 30);
 }
 
 /**
