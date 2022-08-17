@@ -1,5 +1,4 @@
 const { MessageEmbed } = require('discord.js');
-const leaderboardFunctions = require('./Functions/leaderboardFunctions');
 
 function help(message) {
 	const helpChannel = message.client.channels.cache.find(channel => channel.name === 'help');
