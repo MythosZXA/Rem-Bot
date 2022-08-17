@@ -40,7 +40,7 @@ function execute(interaction) {
 		taggedMembers += `${member} `;
 	});
 	taggedMembers += 'Time to pay up!';
-	let displayString = date + description.padEnd(15) + '\n\n';
+	let displayString = date + '\n' + description.padEnd(15) + '\n\n';
 	nicknames.forEach((nickname, index) => {
 		displayString += nickname.padEnd(15) + amountOwed[index].toFixed(2) + '\n';
 	});
