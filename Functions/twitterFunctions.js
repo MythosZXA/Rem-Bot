@@ -40,7 +40,7 @@ async function checkNewTweets(channels) {
 				currentTweets.set(twitterHandle, latestTweet);
 			}
 		});
-	}, 1000 * 30);
+	}, 1000 * 60 * 15);
 }
 
 /**
@@ -61,7 +61,9 @@ async function getCurrentTweets(tweetChannel) {
 		};
 		// send request
 		const requestResponse = await get({ url: endpointURL, oauth: oAuthConfig, qs: params, json: true });
-		if (requestResponse.body) {
+		if (requestResponse.body.title === 'UsageCapExceeded') {		// api limit, exit
+			return;
+		} else if (requestResponse.body) {
 			const latestTweet = requestResponse.body.data;
 			currentTweets.set(twitterHandle, latestTweet);
 		} else {
@@ -80,7 +82,9 @@ async function getUserLatestTweet(twitterHandle) {
 
 	// send request
 	const requestResponse = await get({ url: endpointURL, oauth: oAuthConfig, qs: params, json: true });
-	if (requestResponse.body) {
+	if (requestResponse.body.title === 'UsageCapExceeded') {		// api limit, exit
+		return;
+	} else if (requestResponse.body) {
 		const latestTweet = requestResponse.body.data[0];
 		return latestTweet;
 	} else {
