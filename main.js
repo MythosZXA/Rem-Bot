@@ -81,3 +81,14 @@ process.on('SIGTERM', () => {
 		process.exit();
 	}, 1000 * 5);
 });
+
+process.on('uncaughtException', err => {
+	rem.destroy();
+	console.error('Rem went down!', err);
+
+	Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+
+	setTimeout(() => {
+		process.exit(1);
+	}, 1000 * 5);
+});
