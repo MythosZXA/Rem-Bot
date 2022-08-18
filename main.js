@@ -52,7 +52,7 @@ rem.once('ready', async () => {
 	specialDaysFunctions.checkHoliday(channels);
 	specialDaysFunctions.checkBirthday(server, remDB, channels);
 	// update on new day
-	leaderboardFunctions.checkStreakCondition(rem);
+	leaderboardFunctions.checkStreakCondition(rem, remDB, channels);
 	twitterFunctions.checkNewTweets(channels);
 	voiceFunctions.update(rem);
 	rem.commands.get('roulette').start(rem, remDB, channels);
