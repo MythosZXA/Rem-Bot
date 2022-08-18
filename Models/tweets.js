@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define('tweets', {
-		twitter_id: {
+		tweet_id: {
 			type: DataTypes.STRING,
 			primaryKey: true,
 		},
