@@ -106,7 +106,8 @@ async function checkStreakCondition(rem, remDB, channels) {
 		checkInUsers.forEach(user => user.checkedIn = 'false');
 		// update leaderboard
 		updateGamblingLeaderboard(rem, remDB, channels);
-	}, 1000 * 10);
+		checkStreakCondition(rem, remDB, channels);
+	}, (1000 * secsToMidnight()) + 5 );
 }
 
 module.exports = {
