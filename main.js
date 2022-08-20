@@ -17,11 +17,6 @@ const rem = new Client({
 	],
 	partials: ['CHANNEL']
 });
-let remDB, channels;
-const leaderboardFunctions = require('./Functions/leaderboardFunctions');
-const specialDaysFunctions = require('./Functions/specialDaysFunctions');
-const twitterFunctions = require('./Functions/twitterFunctions');
-const voiceFunctions = require('./Functions/voiceFunctions');
 // sql
 // eslint-disable-next-line no-unused-vars
 const { INET } = require('sequelize');
@@ -38,34 +33,18 @@ for (const file of commandFiles) {
 
 // start up
 rem.login(process.env.token);
-rem.once('ready', async () => {
-	// set up global variables
-	const server = await rem.guilds.fetch('773660297696772096');
-	remDB = await require('./sequelize').importDBToMemory();
-	channels = await require('./channels').getServerChannels(server);
-	// caches users for easier access
-	server.members.fetch();
-	// update leaderboards on startup
-	// leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
-	leaderboardFunctions.updateGamblingLeaderboard(rem, remDB, channels);
-	// check for special days when tomorrow comes
-	specialDaysFunctions.checkHoliday(channels);
-	specialDaysFunctions.checkBirthday(server, remDB, channels);
-	// update on new day
-	leaderboardFunctions.checkStreakCondition(rem, remDB, channels);
-	twitterFunctions.checkNewTweets(channels);
-	voiceFunctions.update(rem);
-	rem.commands.get('roulette').start(rem, remDB, channels);
-
-	console.log('Rem is online.');
-});
-
+// globals, set by event 'ready'
+let remDB, channels;
 // event listener
 const eventFiles = fs.readdirSync('./Events').filter(file => file.endsWith('.js'));
 for (const fileName of eventFiles) {
 	const event = require(`./Events/${fileName}`);
 	if (event.once) {
-		rem.once(event.name, (...args) => event.execute(...args, rem, remDB, channels));
+		rem.once(event.name, async (...args) => {
+			await event.execute(...args, remDB, channels);
+			remDB = rem.remDB;
+			channels = rem.serverChannels;
+		});
 	} else {
 		rem.on(event.name, (...args) => event.execute(...args, rem, remDB, channels));
 	}
