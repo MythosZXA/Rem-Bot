@@ -25,7 +25,7 @@ module.exports = {
 		// update on new day
 		leaderboardFunctions.checkStreakCondition(rem, remDB, channels);
 		twitterFunctions.checkForNewTweets(remDB, channels);
-		voiceFunctions.update(rem);
+		voiceFunctions.setupSoundboard(channels);
 
 		// setups
 		rem.commands.get('roulette').start(rem, remDB, channels);

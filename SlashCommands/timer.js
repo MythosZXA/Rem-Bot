@@ -77,6 +77,12 @@ function validateDuration(interaction, duration) {
 	}
 }
 
+/**
+ * It sets up timers for all unexpired timers in the database, and sends a message to the user for all
+ * expired timers in the database
+ * @param rem - the Discord client
+ * @param remDB - the database for this project
+ */
 function setupTimers(rem, remDB) {
 	const timers = remDB.get('timers');
 	const expiredTimers = timers.filter(timer => timer.expiration_time < (new Date).getTime());

@@ -150,12 +150,8 @@ module.exports = {
 						});
 						return;
 					}
-					// execute buttons
-					if (buttonName === 'refresh') {                 // refresh soundboard
-						voiceFunctions.refresh(interaction);
-					} else {                                        // play a sound
-						voiceFunctions.play(interaction);
-					}
+					// execute button
+					voiceFunctions.play(interaction);
 					break;
 				}
 			}

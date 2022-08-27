@@ -28,6 +28,6 @@ module.exports = {
 		const arg = message.content.split(' ');
 		// check if message is a prefix command
 		if (arg[0].toLowerCase() != 'rem,') return;
-		prefixCommands[arg[1].toLowerCase()]?.(message, arg, remDB);
+		prefixCommands[arg[1].toLowerCase()]?.(message, arg, remDB, channels);
 	}
 };

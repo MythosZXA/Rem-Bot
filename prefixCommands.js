@@ -41,6 +41,10 @@ async function message(message, arg) {
 		textChannel.send(msgToSend);
 }
 
+async function soundboard(message, arg, remDB, channels) {
+	require('./Functions/voiceFunctions').setupSoundboard(channels);
+}
+
 async function sleep(message, arg, remDB) {
 	const { Users, Timers } = require('./sequelize');
 	await Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
@@ -55,6 +59,7 @@ async function test(message) {
 module.exports = {
 	help,
 	message,
+	soundboard,
 	sleep,
 	test
 };
