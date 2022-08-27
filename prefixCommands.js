@@ -42,8 +42,9 @@ async function message(message, arg) {
 }
 
 async function sleep(message, arg, remDB) {
-	const { Users } = require('./sequelize');
+	const { Users, Timers } = require('./sequelize');
 	await Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+	await Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
 	process.kill(process.pid, 'SIGTERM');
 }
 

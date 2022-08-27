@@ -17,14 +17,19 @@ module.exports = {
 		// update leaderboards on startup
 		// leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
 		leaderboardFunctions.updateGamblingLeaderboard(rem, remDB, channels);
+
 		// check for special days when tomorrow comes
 		specialDaysFunctions.checkHoliday(channels);
 		specialDaysFunctions.checkBirthday(server, remDB, channels);
+
 		// update on new day
 		leaderboardFunctions.checkStreakCondition(rem, remDB, channels);
-		twitterFunctions.checkNewTweets(channels);
+		twitterFunctions.checkForNewTweets(remDB, channels);
 		voiceFunctions.update(rem);
+
+		// setups
 		rem.commands.get('roulette').start(rem, remDB, channels);
+		rem.commands.get('timer').setupTimers(rem, remDB);
 
 		// attach globals to client so main.js can access
 		rem.remDB = remDB;

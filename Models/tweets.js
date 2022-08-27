@@ -11,8 +11,12 @@ module.exports = (sequelize, DataTypes) => {
 		twitter_handle: {
 			type: DataTypes.STRING,
 			allowNull: false,
-			unique: true
+			unique: true,
 		},
+		user_id: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		}
 	}, 
 	{
 		timestamps: false

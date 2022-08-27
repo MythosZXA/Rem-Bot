@@ -13,65 +13,35 @@ const oAuthConfig = {
 };
 // globals
 let tweetURL = ['https:', '', 'twitter.com', '', 'status', ''];
-const twitterHandlers = ['GrandChaseG', 'playlostark', 'HoloCureGame'];
-const currentTweets = new Map();
 
-/**
- * It checks for new tweets every 30 seconds and sends them to a Discord channel
- * @param channels - a Map of all the channels in the server
- */
-async function checkNewTweets(channels) {
-	const tweetChannel = channels.get('tweets');
-	await getCurrentTweets(tweetChannel);
-
+async function checkForNewTweets(remDB, channels) {
+	// const tweets = remDB.get('tweets');
 	// setInterval(() => {
-	// 	currentTweets.forEach(async (currentTweet, twitterHandle) => {
-	// 		// get timestamps of current/latest tweets
-	// 		const currentTweetTimestamp = new Date(currentTweet.created_at);
-	// 		const latestTweet = await getUserLatestTweet(twitterHandle);
+	// 	tweets.forEach(tweet => {
+	// 		const latestTweet = getUserLatestTweet(tweet.twitter_handle);
 	// 		const latestTweetTimestamp = new Date(latestTweet.created_at);
-	// 		// send & save latest tweet if it's newer than current tweet
+	// 		const currentTweetTimestamp = new Date(tweet.created_at);
 	// 		if (currentTweetTimestamp.getTime() < latestTweetTimestamp.getTime()) {
 	// 			// build tweet URL
-	// 			tweetURL.splice(3, 1, twitterHandle);
+	// 			tweetURL.splice(3, 1, tweet.twitter_handle);
 	// 			tweetURL.splice(5, 1, latestTweet.id);
-	// 			tweetChannel.send(tweetURL.join('/'));
 	// 			// send tweet to channel
-	// 			currentTweets.set(twitterHandle, latestTweet);
+	// 			const tweetChannel = channels.get('tweets');
+	// 			tweetChannel.send(tweetURL.join('/'));
+	// 			// replace tweet data in db
+	// 			tweet.tweet_id = latestTweet.id;
+	// 			tweet.created_at = latestTweet.created_at;
+	// 			tweet.user_id = latestTweet.author_id;
 	// 		}
 	// 	});
 	// }, 1000 * 60 * 30);
 }
 
 /**
- * It fetches the latest 50 messages from a Discord channel, extracts the tweet ID from
- * the latest message for each handler, and then sends a request to the Twitter API to get the tweet's
- * data to store in the Map
- * @param tweetChannel - the channel where the bot will post the tweets
+ * It gets the latest tweet of a user
+ * @param twitterHandle - The twitter handle of the user you want to get the latest tweet from
+ * @returns The latest tweet from the user
  */
-async function getCurrentTweets(tweetChannel) {
-	const channelMessages = await tweetChannel.messages.fetch({ limit: 50 });
-
-	twitterHandlers.forEach(async twitterHandle => {
-		const currentMessage = channelMessages.find(message => message.content.split('/')[3] === twitterHandle);
-		const currentTweetID = currentMessage.content.split('/')[5];
-		const endpointURL = new URL(`https://api.twitter.com/2/tweets/${currentTweetID}`);
-		const params = {
-			'tweet.fields': 'created_at'
-		};
-		// send request
-		const requestResponse = await get({ url: endpointURL, oauth: oAuthConfig, qs: params, json: true });
-		if (requestResponse.body.title === 'UsageCapExceeded') {		// api limit, exit
-			return;
-		} else if (requestResponse.body) {
-			const latestTweet = requestResponse.body.data;
-			currentTweets.set(twitterHandle, latestTweet);
-		} else {
-			throw new Error('Could not get the current tweet');
-		}
-	});
-}
-
 async function getUserLatestTweet(twitterHandle) {
 	const twitterUserID = await getTwitterUserID(twitterHandle);
 	const endpointURL = new URL(`https://api.twitter.com/2/users/${twitterUserID}/tweets`);
@@ -111,5 +81,7 @@ async function getTwitterUserID(twitterHandle) {
 }
 
 module.exports = {
-	checkNewTweets
+	tweetURL,
+	checkForNewTweets,
+	getUserLatestTweet
 };

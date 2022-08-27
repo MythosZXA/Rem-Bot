@@ -6,7 +6,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
  * @param remDB - the database for this project
  * @returns the success/error message
  */
-async function execute(interaction, remDB) {
+async function execute(interaction, rem, remDB) {
 	try {
 		// validate input format
 		const regex = new RegExp('[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}');

@@ -38,6 +38,8 @@ const Equip = require('./Models/equip')(sequelize, Sequelize.DataTypes);
 const Heroes = require('./Models/heroes')(sequelize, Sequelize.DataTypes);
 const Inventories = require('./Models/inventories')(sequelize, Sequelize.DataTypes);
 const Quests = require('./Models/quests')(sequelize, Sequelize.DataTypes);
+const Timers = require('./Models/timers')(sequelize, Sequelize.DataTypes);
+const Tweets = require('./Models/tweets')(sequelize, Sequelize.DataTypes);
 const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
 
 module.exports = {
@@ -50,5 +52,7 @@ module.exports = {
 	Heroes,
 	Inventories,
 	Quests,
+	Timers,
+	Tweets,
 	Users,
 };

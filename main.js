@@ -20,7 +20,7 @@ const rem = new Client({
 // sql
 // eslint-disable-next-line no-unused-vars
 const { INET } = require('sequelize');
-const { Users } = require('./sequelize');
+const { Users, Timers } = require('./sequelize');
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
@@ -55,6 +55,7 @@ process.on('SIGTERM', () => {
 	console.log('Rem went down!');
 
 	Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+	Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
 
 	setTimeout(() => {
 		process.exit();
@@ -66,6 +67,7 @@ process.on('uncaughtException', err => {
 	console.error('Rem went down!', err);
 
 	Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+	Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
 
 	setTimeout(() => {
 		process.exit(1);
