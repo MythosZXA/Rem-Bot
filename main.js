@@ -54,8 +54,12 @@ process.on('SIGTERM', () => {
 	rem.destroy();
 	console.log('Rem went down!');
 
-	Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
-	Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+	try {
+		Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+		Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+	} catch(error) {
+		console.log(error);
+	}
 
 	setTimeout(() => {
 		process.exit();
@@ -66,8 +70,12 @@ process.on('uncaughtException', err => {
 	rem.destroy();
 	console.error('Rem went down!', err);
 
-	Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
-	Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+	try {
+		Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+		Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+	} catch(error) {
+		console.log(error);
+	}
 
 	setTimeout(() => {
 		process.exit(1);

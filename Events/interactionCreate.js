@@ -132,7 +132,7 @@ module.exports = {
 						case 'rock':
 						case 'paper':
 						case 'scissors':
-							rpsCmds.play(interaction);
+							rpsCmds.play(interaction, rem, remDB, channels);
 							break;
 						case 'decline':
 						// opponent cancels

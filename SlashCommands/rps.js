@@ -1,7 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
-const { Users } = require('../sequelize');
-const { Op } = require('sequelize');
 const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
 const rockButton = new MessageButton()
@@ -23,12 +21,12 @@ const declineButton = new MessageButton()
 const rpsChoices = new MessageActionRow()
 	.setComponents([rockButton, paperButton, scissorsButton, declineButton]);
 
-async function execute(interaction) {
+async function execute(interaction, rem, remDB) {
 	// validate bet value
 	const betAmount = interaction.options.getInteger('coins', true);
 	if (betAmount < 0) {
 		const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
-		await interaction.reply({
+		interaction.reply({
 			content: `No betting negative values ${remjudge}`,
 			ephemeral: true,
 		});
@@ -39,32 +37,28 @@ async function execute(interaction) {
 	const opponentMember = (await interaction.guild.members.fetch()).find(guildMember => 
 		guildMember.nickname?.toUpperCase() === opponentNickname.toUpperCase());
 	if (!opponentMember) {                                      // no opponent, exit
-		await interaction.reply({
+		interaction.reply({
 			content: 'I could not find anyone with that nickname!',
 			ephemeral: true,
 		});
 		return;
 	}
 	// check to see if both parties has enough coins
-	const gameMembers = await Users.findAll({                   // get players of this game
-		where: { userID: { [Op.or]: [interaction.member.id, opponentMember.id] } },
-		raw: true,
-	});
-	let enoughCoins = true;
-	gameMembers.forEach(async member => {                       // check players' coins
-		if (member.coins < interaction.options.getInteger('coins', true)) {
-			enoughCoins = false;
-		}
-	});
-	if (!enoughCoins) {                                         // not enough coins, exit
-		await interaction.reply({
+	const users = remDB.get('users');
+	const gameUsers = users.filter(users =>		// get players of this game
+		users.userID === interaction.member.id ||
+		users.userID === opponentMember.id
+	);
+	const enoughCoins = gameUsers.every(user => user.coins > betAmount);
+	if (!enoughCoins) {		// not enough coins, exit
+		interaction.reply({
 			content: 'Either you or your opponent does not have enough coins!',
 			ephemeral: true,
 		});
 		return;
 	}
 	// initiate game by sending game message
-	await interaction.reply({      
+	interaction.reply({      
 		content: `${opponentMember}, ${interaction.member.nickname} ` +
     `wants to play\nrock-paper-scissors with a bet of ${betAmount} coins!`,
 		components: [rpsChoices],
@@ -82,21 +76,22 @@ async function execute(interaction) {
 	}, 1000 * 60 * 10);
 }
 
-async function play(interaction) {
+async function play(interaction, rem, remDB, channels) {
 	// determine winner
 	const gameMessage = interaction.message;
 	let requesterChoice = gameMessage.requesterChoice.toUpperCase();
 	let opponentChoice = interaction.customId.toUpperCase();
-	let winner;
-	if (requesterChoice == opponentChoice) {                                        // tie
-		winner = undefined;
-	} else if ((requesterChoice === 'ROCK' && opponentChoice === 'SCISSORS') ||
-             (requesterChoice === 'PAPER' && opponentChoice === 'ROCK') ||
-             (requesterChoice === 'SCISSORS' && opponentChoice === 'PAPER')) {    // requester wins
-		winner = gameMessage.originalMember;
-	} else {                                                                        // opponent wins
-		winner = interaction.member;
-	}
+	const winner = (() => {
+		if (requesterChoice == opponentChoice) {		// tie
+			return undefined;
+		} else if ((requesterChoice === 'ROCK' && opponentChoice === 'SCISSORS') ||
+								(requesterChoice === 'PAPER' && opponentChoice === 'ROCK') ||
+								(requesterChoice === 'SCISSORS' && opponentChoice === 'PAPER')) {		// requester wins
+			return gameMessage.originalMember;
+		} else {		// opponent wins
+			return interaction.member;
+		}
+	})();		// iife
 	// switch choices to emojis for display
 	switch (requesterChoice) {
 		case 'ROCK':
@@ -143,26 +138,23 @@ async function play(interaction) {
 	});
 	// update data
 	if (winner) {
-		// increase winner stats
+		// find corresponding users in DB
 		const betAmount = gameMessage.betAmount;
-		await Users.increment(
-			{ rpsWins: +1 , coins: +betAmount },
-			{ where: { userID: winner.id } },
-		);
-		// decrease loser stats
-		if (winner == gameMessage.originalMember) {                                   // requester won
-			await Users.increment(
-				{ coins: -betAmount },
-				{ where: { userID: interaction.user.id } },
-			);
-		} else {                                                                      // requester lost
-			await Users.increment(
-				{ coins: -betAmount },
-				{ where: { userID: gameMessage.originalMember.id } },
-			);
-		}
+		const users = remDB.get('users');
+		const winningUser = users.find(user => user.userID === winner.id);
+		const losingUser = (() => {
+			if (winner == gameMessage.originalMember) {
+				return users.find(user => user.userID === interaction.user.id);
+			} else {
+				return users.find(user => user.userID === gameMessage.originalMember.id);
+			}
+		})();
+		// update stats
+		winningUser.rpsWins++;
+		winningUser.coins += betAmount;
+		losingUser.coins -= betAmount;
 		// update leaderboard
-		leaderboardFunctions.updateGamblingLeaderboard(interaction.client);
+		leaderboardFunctions.updateGamblingLeaderboard(rem, remDB, channels);
 	}
 }
 

@@ -47,8 +47,12 @@ async function soundboard(message, arg, remDB, channels) {
 
 async function sleep(message, arg, remDB) {
 	const { Users, Timers } = require('./sequelize');
-	await Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
-	await Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+	try {
+		await Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+		await Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+	} catch(error) {
+		console.log(error);
+	}
 	process.kill(process.pid, 'SIGTERM');
 }
 

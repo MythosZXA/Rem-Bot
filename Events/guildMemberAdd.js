@@ -6,7 +6,12 @@ module.exports = {
 		const users = remDB.get('users');
 		users.push({
 			userID: member.id,
-			username: member.user.tag
+			username: member.user.tag,
+			birthday: null,
+			coins: 0,
+			rpsWins: 0,
+			streak: 0,
+			checkedIn: 'false'
 		});
 	}
 };
