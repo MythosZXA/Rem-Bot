@@ -20,7 +20,7 @@ const rem = new Client({
 // sql
 // eslint-disable-next-line no-unused-vars
 const { INET } = require('sequelize');
-const { Users, Timers } = require('./sequelize');
+const { Users, Timers, Tweets } = require('./sequelize');
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
@@ -50,34 +50,32 @@ for (const fileName of eventFiles) {
 	}
 }
 
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
 	rem.destroy();
 	console.log('Rem went down!');
 
 	try {
-		Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
-		Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+		await Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+		await Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+		await Tweets.bulkCreate(remDB.get('tweets'), { updateOnDuplicate: ['tweet_id', 'created_at', 'twitter_handle'] });
+		console.log('DB Saved');
+		process.exit();
 	} catch(error) {
 		console.log(error);
 	}
-
-	setTimeout(() => {
-		process.exit();
-	}, 1000 * 5);
 });
 
-process.on('uncaughtException', err => {
+process.on('uncaughtException', async err => {
 	rem.destroy();
 	console.error('Rem went down!', err);
 
 	try {
-		Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
-		Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+		await Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
+		await Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+		await Tweets.bulkCreate(remDB.get('tweets'), { updateOnDuplicate: ['tweet_id', 'created_at', 'twitter_handle'] });
+		console.log('DB Saved');
+		process.exit();
 	} catch(error) {
 		console.log(error);
 	}
-
-	setTimeout(() => {
-		process.exit(1);
-	}, 1000 * 5);
 });
