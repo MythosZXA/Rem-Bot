@@ -6,11 +6,11 @@ const voiceFunctions = require('../Functions/voiceFunctions');
 module.exports = {
 	name: 'ready',
 	once: true,
-	async execute(rem, remDB, channels) {
+	async execute(rem) {
 		// set up global variables
 		const server = await rem.guilds.fetch('773660297696772096');
-		remDB = await require('../sequelize').importDBToMemory();
-		channels = await require('../channels').getServerChannels(server);
+		const remDB = await require('../sequelize').importDBToMemory();
+		const channels = await require('../channels').getServerChannels(server);
 
 		// caches users for easier access
 		server.members.fetch();

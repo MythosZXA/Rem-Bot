@@ -41,7 +41,7 @@ for (const fileName of eventFiles) {
 	const event = require(`./Events/${fileName}`);
 	if (event.once) {
 		rem.once(event.name, async (...args) => {
-			await event.execute(...args, remDB, channels);
+			await event.execute(...args);
 			remDB = rem.remDB;
 			channels = rem.serverChannels;
 		});
@@ -79,3 +79,17 @@ process.on('uncaughtException', async err => {
 		console.log(error);
 	}
 });
+
+// server
+const express = require('express');
+const app = express();
+
+app.listen(process.env.PORT);
+
+setTimeout(() => {
+	remDB.forEach((tableObj, tableName) => {
+		app.get(`/${tableName}`, (req, res) => {
+			res.send(tableObj);
+		});
+	});
+}, 5000);
