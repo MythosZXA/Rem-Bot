@@ -20,11 +20,11 @@ let tweetURL = ['https:', '', 'twitter.com', '', 'status', ''];
  * @param remDB - The database for this project
  * @param channels - The channels object from the client.
  */
-async function checkForNewTweets(remDB, channels) {
+function checkForNewTweets(remDB, channels) {
 	const tweets = remDB.get('tweets');
 	setInterval(() => {
-		tweets.forEach(tweet => {
-			const latestTweet = getUserLatestTweet(tweet.twitter_handle);
+		tweets.forEach(async tweet => {
+			const latestTweet = await getUserLatestTweet(tweet.twitter_handle);
 			const latestTweetTimestamp = new Date(latestTweet.created_at);
 			const currentTweetTimestamp = new Date(tweet.created_at);
 			if (currentTweetTimestamp.getTime() < latestTweetTimestamp.getTime()) {
