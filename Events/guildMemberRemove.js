@@ -2,6 +2,7 @@ const { Users } = require('../sequelize');
 
 module.exports = {
 	name: 'guildMemberRemove',
+	many: true,
 	execute(member, rem, remDB) {
 		if (member.user.bot) return;		// bot left, exit
 		// remove user (locally) from db

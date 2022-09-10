@@ -14,6 +14,7 @@ module.exports = {
 
 		// caches users for easier access
 		server.members.fetch();
+		
 		// update leaderboards on startup
 		// leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
 		leaderboardFunctions.updateGamblingLeaderboard(rem, remDB, channels);
@@ -30,6 +31,9 @@ module.exports = {
 		// setups
 		rem.commands.get('roulette').start(rem, remDB, channels);
 		rem.commands.get('timer').setupTimers(rem, remDB);
+
+		// server
+		require('../express').setupServer(remDB);
 
 		// attach globals to client so main.js can access
 		rem.remDB = remDB;

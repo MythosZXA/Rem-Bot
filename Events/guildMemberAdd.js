@@ -1,5 +1,6 @@
 module.exports = {
 	name: 'guildMemberAdd',
+	many: true,
 	execute(member, rem, remDB) {
 		if (member.user.bot) return;		// bot joined, exit
 		// add user to db

@@ -5,6 +5,7 @@ const { Heroes } = require('../sequelize');
 
 module.exports = {
 	name: 'interactionCreate',
+	many: true,
 	async execute(interaction, rem, remDB, channels) {
 		if (interaction.isApplicationCommand()) {		// slash commands
 			const consoleChannel = channels.get('console');

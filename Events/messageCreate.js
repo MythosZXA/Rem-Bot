@@ -2,6 +2,7 @@ const prefixCommands = require('../prefixCommands');
 
 module.exports = {
 	name: 'messageCreate',
+	many: true,
 	execute(message, rem, remDB, channels) {
 		const consoleChannel = channels.get('console');
 		
