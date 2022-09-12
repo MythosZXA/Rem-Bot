@@ -3,7 +3,7 @@ const { Users, Timers, Tweets } = require('../sequelize');
 module.exports = {
 	name: 'uncaughtException',
 	process: true,
-	async execute(err, rem, remDB) {
+	async execute(rem, remDB, err) {
 		try {
 			await Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
 			await Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });

@@ -1,5 +1,6 @@
 module.exports = {
 	name: 'voiceStateUpdate',
+	many: true,
 	execute(oldState, newState) {
 		const { getVoiceConnection } = require('@discordjs/voice');
 

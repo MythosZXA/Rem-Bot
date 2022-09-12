@@ -16,9 +16,9 @@ let tweetURL = ['https:', '', 'twitter.com', '', 'status', ''];
 
 /**
  * It checks for new tweets every minute and if there is a new tweet, it sends the tweet URL to a
- * channel.
+ * channel
  * @param remDB - The database for this project
- * @param channels - The channels object from the client.
+ * @param channels - The channels object from the client
  */
 function checkForNewTweets(remDB, channels) {
 	const tweets = remDB.get('tweets');
@@ -46,7 +46,7 @@ function checkForNewTweets(remDB, channels) {
  * It gets the latest tweet from a Twitter user
  * @param twitterHandle - The twitter handle of the user you want to get the latest tweet from
  * @param interaction - (optional) The interaction object if adding a new twitter account to monitor
- * @returns The latest tweet from the user.
+ * @returns The latest tweet from the user
  */
 async function getUserLatestTweet(twitterHandle, interaction) {
 	const twitterUserID = await getTwitterUserID(twitterHandle, interaction);
@@ -81,7 +81,7 @@ async function getUserLatestTweet(twitterHandle, interaction) {
  * It takes a Twitter handle and returns the user's Twitter ID
  * @param twitterHandle - The twitter handle of the user you want to get the ID for
  * @param interaction - (optional) The interaction object if adding a new twitter account to monitor
- * @returns The twitterUserID is being returned.
+ * @returns The twitterUserID is being returned
  */
 async function getTwitterUserID(twitterHandle, interaction) {
 	// build request

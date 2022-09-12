@@ -29,6 +29,9 @@
 			]
 	},
 	"globals": {
-			"process": "readonly"
-	}
+			"process": "readonly",
+			"React": "readonly",
+			"ReactDOM": "readonly"
+	},
+	"parser": "babel-eslint"
 }
