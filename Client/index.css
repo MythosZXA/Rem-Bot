@@ -1,0 +1,78 @@
+.page {
+	display: flex;
+	justify-content: center;
+}
+
+.content {
+	padding-top: 50px;
+	width: 100%;
+	justify-self: left;
+}
+
+/* navbar */
+ul {
+	border: 1px solid #555;
+  list-style-type: none;
+  margin: auto;
+  padding: 0;
+	height: 34px;
+	width: fit-content;
+  background-color: #f1f1f1;
+  position: fixed; /* Make it stick, even on scroll */
+}
+
+/* navbar tabs */
+li, .dropdown {
+  text-align: center;
+  float: left;
+}
+
+/* navbar buttons/links */
+li a, .dropbtn {
+  display: block;
+  color: #000;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+/* navbar hover */
+li a:hover:not(.active) {
+  background-color: rgb(255, 160, 176);
+  color: black;
+}
+
+/* navbar active tab */
+.active {
+	background-color: aqua;
+	color: black;
+}
+
+/* navbar dropdown box */
+div.dropdown-content {
+  display: none;
+	border: 1px solid #555;
+  background-color: #ffffff;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* navbar dropdown box button/links */
+.dropdown-content a {
+  color: black;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+	border-top: none;
+}
+
+.dropdown:hover {
+	border-bottom: none;
+}
+
+li.active {
+	
+}

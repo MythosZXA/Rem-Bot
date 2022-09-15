@@ -5,7 +5,7 @@ app.use(express.static('./Client'));
 
 function setupServer(remDB) {
 	app.get('/', (req, res) => {
-		res.sendFile(__dirname + '/index.html');
+		res.sendFile(__dirname + './Client/index.html');
 	});
 
 	remDB.forEach((tableObj, tableName) => {
