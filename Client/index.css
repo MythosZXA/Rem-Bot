@@ -9,8 +9,7 @@
 	justify-self: left;
 }
 
-/* navbar */
-ul {
+.navbar {
 	border: 1px solid #555;
   list-style-type: none;
   margin: auto;
@@ -18,11 +17,11 @@ ul {
 	height: 34px;
 	width: fit-content;
   background-color: #f1f1f1;
-  position: fixed; /* Make it stick, even on scroll */
+  position: fixed;
 }
 
 /* navbar tabs */
-li, .dropdown {
+.navtab, .dropdown {
   text-align: center;
   float: left;
 }

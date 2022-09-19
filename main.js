@@ -37,3 +37,7 @@ for (const fileName of eventFiles) {
 		process.on(event.name, (...args) => event.execute(rem, remDB, ...args));
 	}
 }
+
+module.exports = {
+	rem
+};
