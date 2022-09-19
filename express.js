@@ -55,7 +55,7 @@ async function processReceipt(formData) {
 	memberNicknames.forEach((nickname, index) => {
 		displayString += nickname.padEnd(15) + debtAmts[index].toFixed(2) + '\n';
 	});
-	consoleChannel.send(taggedMembers + Formatters.codeBlock(displayString));
+	receiptChannel.send(taggedMembers + Formatters.codeBlock(displayString));
 }
 
 module.exports = {
