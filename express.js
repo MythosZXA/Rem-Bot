@@ -33,7 +33,7 @@ function setupServer(remDB) {
 
 async function processReceipt(formData) {
 	const server = await rem.guilds.fetch('773660297696772096');
-	const rentChannel = await rem.channels.fetch('911494733828857866');
+	const rentChannel = await rem.channels.fetch('970920325170753546');
 	const numMembers = formData.numPayers;	
 	const memberNicknames = [];
 	const debtAmts = [];
