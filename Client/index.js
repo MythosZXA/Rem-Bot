@@ -146,13 +146,17 @@ class FormReceipt extends React.Component {
 						<col/>
 					</colgroup>
 					<tr>
+						<td><input type='date' name='date'/></td>
+						<td><input name='description' placeholder='Description' size='50'/></td>
+					</tr>
+					<tr>
 						<td><ButtonAddPerson onClick={() => this.clickAddPeople()}/></td>
 						<td>{inputNicknames}</td>
 					</tr>
 					<tr>
 						<td style={{display: 'inline-block'}}><ButtonAddItem onClick={() => this.clickAddItem()}/></td>
 						<td>
-							<ul style={{listStyleType: 'none', paddingLeft: '0'}}>{pricePayer}</ul>
+							<ul style={{listStyleType: 'none', margin: '0', paddingLeft: '0'}}>{pricePayer}</ul>
 						</td>
 					</tr>
 					<tr>
@@ -175,7 +179,7 @@ class ButtonAddPerson extends React.Component {
 class InputNickname extends React.Component {
 	render() {
 		return (
-			<input name={`nickname${this.props.personNum}`} placeholder='DC Nickname'></input>
+			<input name={`nickname${this.props.personNum}`} placeholder='DC Nickname'/>
 		)
 	}
 }
@@ -191,7 +195,7 @@ class ButtonAddItem extends React.Component {
 class InputPrice extends React.Component {
 	render() {
 		return (
-			<input type='number' id={`price${this.props.itemNum}`} placeholder='Item Price'></input>
+			<input type='number' id={`price${this.props.itemNum}`} placeholder='Item Price'/>
 		)
 	}
 }

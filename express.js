@@ -33,7 +33,7 @@ function setupServer(remDB) {
 
 async function processReceipt(formData) {
 	const server = await rem.guilds.fetch('773660297696772096');
-	const receiptChannel = await rem.channels.fetch('970920325170753546');
+	const rentChannel = await rem.channels.fetch('911494733828857866');
 	const numMembers = formData.numPayers;	
 	const memberNicknames = [];
 	const debtAmts = [];
@@ -51,11 +51,11 @@ async function processReceipt(formData) {
 		taggedMembers += `${member} `;
 	});
 	taggedMembers += 'Time to pay up!';
-	let displayString = '\n' /*+ description.padEnd(15)*/ + '\n\n';
+	let displayString = formData.date + '\n' + formData.description.padEnd(15) + '\n\n';
 	memberNicknames.forEach((nickname, index) => {
 		displayString += nickname.padEnd(15) + debtAmts[index].toFixed(2) + '\n';
 	});
-	receiptChannel.send(taggedMembers + Formatters.codeBlock(displayString));
+	rentChannel.send(taggedMembers + Formatters.codeBlock(displayString));
 }
 
 module.exports = {
