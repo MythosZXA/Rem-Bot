@@ -53,22 +53,6 @@ class NavTab extends React.Component {
 	}
 }
 
-class FormTest extends React.Component {
-	render() {
-		return (
-			<form action='./message' method='post'>
-				<table id='table0'>
-					<tr>
-						<td><label>First</label></td>
-						<td><input name='message'></input></td>
-						<td><button type='submit'>Send</button></td>
-					</tr>
-				</table>
-			</form>
-		)
-	}
-}
-
 class FormReceipt extends React.Component {
 	constructor(props) {
 		super(props);
@@ -129,9 +113,13 @@ class FormReceipt extends React.Component {
 		}
 		for (let i = 1; i <= this.state.numInputPrice; i++) {
 			pricePayer.push(
-				<li style={{paddingBottom: '5px', width: '100%', /*display: 'inline-block'*/}}>
+				<li style={{paddingBottom: '5px', width: '100%'}}>
 					<InputPrice itemNum={i}/>
-					<CheckboxesPayer onClick={(priceNum, payerNum) => this.clickCheckbox(priceNum, payerNum)} numPayers={this.state.numInputNickname} priceNum={i}/>
+					<CheckboxesPayer
+						numPayers={this.state.numInputNickname}
+						priceNum={i}
+						onClick={(priceNum, payerNum) => this.clickCheckbox(priceNum, payerNum)}
+					/>
 				</li>
 			);
 		}
@@ -142,7 +130,7 @@ class FormReceipt extends React.Component {
 				{hiddenDebts}
 				<table class='inactive' id='tableReceipt'>
 					<colgroup width='100%;'>
-						<col width='90px;'/>
+						<col width='200px;'/>
 						<col/>
 					</colgroup>
 					<tr>
@@ -150,11 +138,11 @@ class FormReceipt extends React.Component {
 						<td><input name='description' placeholder='Description' size='50'/></td>
 					</tr>
 					<tr>
-						<td><ButtonAddPerson onClick={() => this.clickAddPeople()}/></td>
+						<td class='buttonCell'><ButtonAddPerson onClick={() => this.clickAddPeople()}/></td>
 						<td>{inputNicknames}</td>
 					</tr>
 					<tr>
-						<td style={{display: 'inline-block'}}><ButtonAddItem onClick={() => this.clickAddItem()}/></td>
+						<td class='buttonCell'><ButtonAddItem onClick={() => this.clickAddItem()}/></td>
 						<td>
 							<ul style={{listStyleType: 'none', margin: '0', paddingLeft: '0'}}>{pricePayer}</ul>
 						</td>

@@ -1,12 +1,11 @@
 .page {
 	display: flex;
 	justify-content: center;
-
 }
 
 .content {
 	padding-top: 50px;
-	width: 100%;
+	width: 90%;
 	justify-self: left;
 }
 
@@ -73,6 +72,10 @@ div.dropdown-content {
 	border-bottom: none;
 }
 
+table {
+	width: 100%;
+}
+
 table.inactive {
 	visibility: hidden;
 	width: 100%;
@@ -94,6 +97,10 @@ button {
 	background-color: rgb(223, 255, 224);
 }
 
+.buttonCell {
+	display: inline-block;
+}
+
 button:hover { background-color: rgb(0, 211, 11); }
 
 button:active {
@@ -103,4 +110,5 @@ button:active {
 
 input {
 	border-radius: 6px;
+	padding: 8px 24px;
 }
