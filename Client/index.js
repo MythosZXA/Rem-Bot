@@ -129,7 +129,7 @@ class FormReceipt extends React.Component {
 		}
 		for (let i = 1; i <= this.state.numInputPrice; i++) {
 			pricePayer.push(
-				<li style={{paddingBottom: '5px', width: '100%', display: 'inline-block'}}>
+				<li style={{paddingBottom: '5px', width: '100%', /*display: 'inline-block'*/}}>
 					<InputPrice itemNum={i}/>
 					<CheckboxesPayer onClick={(priceNum, payerNum) => this.clickCheckbox(priceNum, payerNum)} numPayers={this.state.numInputNickname} priceNum={i}/>
 				</li>
@@ -195,7 +195,7 @@ class ButtonAddItem extends React.Component {
 class InputPrice extends React.Component {
 	render() {
 		return (
-			<input type='number' id={`price${this.props.itemNum}`} placeholder='Item Price'/>
+			<input type='number' id={`price${this.props.itemNum}`} placeholder='Item Price' class='inputtest'/>
 		)
 	}
 }
@@ -204,7 +204,13 @@ class CheckboxesPayer extends React.Component {
 	render() {
 		const checkboxesPayer = [];
 		for (let i = 1; i <= this.props.numPayers; i++) {
-			checkboxesPayer.push(<input type='checkbox' id={`item${this.props.priceNum}payer${i}`} onClick={() => this.props.onClick(this.props.priceNum, i)}></input>);
+			checkboxesPayer.push(
+				<input
+					type='checkbox'
+					id={`item${this.props.priceNum}payer${i}`}
+					onClick={() => this.props.onClick(this.props.priceNum, i)}
+				/>
+			);
 		}
 
 		return (

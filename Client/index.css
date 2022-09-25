@@ -1,6 +1,7 @@
 .page {
 	display: flex;
 	justify-content: center;
+
 }
 
 .content {
@@ -74,4 +75,17 @@ div.dropdown-content {
 
 li.active {
 	
+}
+
+button {
+	border-radius: 8px;
+	border: 2px solid rgb(21, 255, 0);
+	background-color: rgb(223, 255, 224);
+}
+
+button:hover { background-color: rgb(0, 211, 11); }
+
+button:active {
+	background-color: rgb(0, 190, 10);
+	transform: translateY(1px);
 }
