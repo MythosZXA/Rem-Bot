@@ -11,7 +11,7 @@
 }
 
 .navbar {
-	border: 1px solid #555;
+	border: 2px solid #555;
   list-style-type: none;
   margin: auto;
   padding: 0;
@@ -36,13 +36,13 @@ li a, .dropbtn {
 }
 
 /* navbar hover */
-li a:hover:not(.active) {
+li:not(.active) a:hover {
   background-color: rgb(255, 160, 176);
   color: black;
 }
 
 /* navbar active tab */
-.active {
+.navtab.active {
 	background-color: aqua;
 	color: black;
 }
@@ -73,8 +73,19 @@ div.dropdown-content {
 	border-bottom: none;
 }
 
-li.active {
-	
+table.inactive {
+	visibility: hidden;
+	width: 100%;
+	transform: translateY(1500px);
+	transition: 
+		transform .5s,
+		visibility 0s linear .5s;
+}
+
+table.active {
+	visibility: visible;
+	transform: translateY(0);
+	transition: transform .5s;
 }
 
 button {
@@ -88,4 +99,8 @@ button:hover { background-color: rgb(0, 211, 11); }
 button:active {
 	background-color: rgb(0, 190, 10);
 	transform: translateY(1px);
+}
+
+input {
+	border-radius: 6px;
 }

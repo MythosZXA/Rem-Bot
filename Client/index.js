@@ -4,24 +4,24 @@ class NavBar extends React.Component {
 		this.state = {navtabs: [true, false, false, false]};
 	}
 
-	clickTab(tabIndex) {
-		// update active tab
+	clickTab(tabIndex, tabName) {
+		// update active tab in state
 		const navtabs = this.state.navtabs.slice();
 		navtabs.fill(false);
 		navtabs[tabIndex] = true;
 		this.setState({navtabs: navtabs});
 		// display/hide tab's content
-		const tabTable = document.getElementById(`table${tabIndex}`);
-		tabIndex === 1 ?
-		tabTable.style.removeProperty('display') :
-		document.getElementById('table1').style.display = 'none';
+		const activeTable = document.querySelector('table.active');
+		if (activeTable) activeTable.setAttribute('class', 'inactive');
+		const tabTable = document.getElementById(`table${tabName}`);
+		if (tabTable) tabTable.setAttribute('class', 'active');
 	}
 
 	renderNavTab(tabIndex, tabName) {
 		return <NavTab
 			active={this.state.navtabs[tabIndex]}
 			name={tabName}
-			onClick={() => this.clickTab(tabIndex)}
+			onClick={() => this.clickTab(tabIndex, tabName)}
 		/>;
 	}
 
@@ -140,7 +140,7 @@ class FormReceipt extends React.Component {
 			<form id='formReceipt' action='./receipt' method='post'>
 				<input type='hidden' id='numPayers' name='numPayers' value={this.state.numInputNickname}/>
 				{hiddenDebts}
-				<table id='table1' style={{display: 'none', width: '100%'}}>
+				<table class='inactive' id='tableReceipt'>
 					<colgroup width='100%;'>
 						<col width='90px;'/>
 						<col/>
