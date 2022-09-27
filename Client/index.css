@@ -101,7 +101,9 @@ button {
 	display: inline-block;
 }
 
-button:hover { background-color: rgb(0, 211, 11); }
+button:hover {
+	background-color: rgb(0, 211, 11);
+}
 
 button:active {
 	background-color: rgb(0, 190, 10);

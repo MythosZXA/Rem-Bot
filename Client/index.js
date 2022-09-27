@@ -70,6 +70,12 @@ class FormReceipt extends React.Component {
 			numInputNickname: this.state.numInputNickname + 1,
 			checkboxesPayer: checkboxesPayer
 		});
+
+		setTimeout(() => {
+			const newInput = document.getElementById(`nickname${this.state.numInputNickname}`);
+			newInput.style.transition = 'all .1s';
+			newInput.style.transform = 'translateX(0)';
+		}, 50);
 	}
 
 	clickAddItem() {
@@ -79,6 +85,12 @@ class FormReceipt extends React.Component {
 			numInputPrice: this.state.numInputPrice + 1,
 			checkboxesPayer: checkboxesPayer
 		});
+
+		setTimeout(() => {
+			const newInput = document.getElementById(`price${this.state.numInputPrice}`);
+			newInput.style.transition = 'all .1s';
+			newInput.style.transform = 'translateX(0)';
+		}, 50);
 	}
 
 	clickCheckbox(priceNum, payerNum) {
@@ -167,7 +179,12 @@ class ButtonAddPerson extends React.Component {
 class InputNickname extends React.Component {
 	render() {
 		return (
-			<input name={`nickname${this.props.personNum}`} placeholder='DC Nickname'/>
+			<input
+				id={`nickname${this.props.personNum}`}
+				name={`nickname${this.props.personNum}`}
+				placeholder='DC Nickname'
+				style={{transform: this.props.personNum > 1 ? 'translateX(2000px)' : 'translateX(0)'}}
+			/>
 		)
 	}
 }
@@ -183,7 +200,12 @@ class ButtonAddItem extends React.Component {
 class InputPrice extends React.Component {
 	render() {
 		return (
-			<input type='number' id={`price${this.props.itemNum}`} placeholder='Item Price' class='inputtest'/>
+			<input
+				type='number'
+				id={`price${this.props.itemNum}`}
+				placeholder='Item Price'
+				style={{transform: this.props.itemNum > 1 ? 'translateX(2000px)' : 'translateX(0)'}}
+			/>
 		)
 	}
 }
