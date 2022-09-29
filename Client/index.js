@@ -215,6 +215,7 @@ class CheckboxesPayer extends React.Component {
 			checkboxesPayer.push(
 				<input
 					type='checkbox'
+					class='receipt-input'
 					id={`item${this.props.priceNum}payer${i}`}
 					onClick={() => this.props.onClick(this.props.priceNum, i)}
 				/>
