@@ -3,64 +3,62 @@
 	justify-content: center;
 }
 
-.content {
-	padding-top: 50px;
-	width: 90%;
-	justify-self: left;
-}
-
 .navbar {
-	border: 2px solid #555;
-  list-style-type: none;
-  margin: auto;
-  padding: 0;
-	height: 34px;
-	width: fit-content;
-  background-color: #f1f1f1;
   position: fixed;
+  margin: 10px 0;
+	border: 2px solid #555;
+  padding: 0;
+	width: fit-content;
+	height: 34px;
+  background-color: #f1f1f1;
+	z-index: 2;
+  list-style-type: none;
 }
 
-/* navbar tabs */
-.navtab, .dropdown {
-  text-align: center;
+.content {
+	padding-top: 60px; /* space for navbar */
+	width: 90%;
+	z-index: 1;
+}
+
+.navtab {
   float: left;
+  text-align: center;
 }
 
 /* navbar buttons/links */
-li a, .dropbtn {
+.navtab a, .dropbtn {
   display: block;
-  color: #000;
   padding: 8px 16px;
+  color: #000;
   text-decoration: none;
 }
 
-/* navbar hover */
-li:not(.active) a:hover {
+/* navtab hover */
+.navtab:not(.active):hover, .dropdown-content:hover {
   background-color: rgb(255, 160, 176);
   color: black;
 }
 
-/* navbar active tab */
 .navtab.active {
 	background-color: aqua;
 	color: black;
 }
 
 /* navbar dropdown box */
-div.dropdown-content {
+.dropdown-content {
   display: none;
 	border: 1px solid #555;
   background-color: #ffffff;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
 }
 
-/* navbar dropdown box button/links */
+/* navbar dropdown tab button/links */
 .dropdown-content a {
-  color: black;
-  text-decoration: none;
   display: block;
+  color: black;
   text-align: left;
+  text-decoration: none;
 }
 
 .dropdown:hover .dropdown-content {
@@ -72,17 +70,12 @@ div.dropdown-content {
 	border-bottom: none;
 }
 
-table {
-	width: 100%;
-}
-
 table.inactive {
 	visibility: hidden;
-	width: 100%;
 	transform: translateY(1500px);
 	transition: 
 		transform .5s,
-		visibility 0s linear .5s;
+		visibility 0s linear .5s; 
 }
 
 table.active {
@@ -91,26 +84,48 @@ table.active {
 	transition: transform .5s;
 }
 
-button {
+.buttonCell {
+	display: inline-block;
+}
+
+.receipt-button {
 	border-radius: 8px;
 	border: 2px solid rgb(21, 255, 0);
 	background-color: rgb(223, 255, 224);
 }
 
-.buttonCell {
-	display: inline-block;
-}
-
-button:hover {
+.receipt-button:hover {
 	background-color: rgb(0, 211, 11);
 }
 
-button:active {
+.receipt-button:active {
 	background-color: rgb(0, 190, 10);
 	transform: translateY(1px);
 }
 
-input {
+.price-list {
+	margin: 0;
+	padding-left: 0;
+	list-style-type: none;
+}
+
+.price-list-item {
+	padding-bottom: 5px;
+	width: 100%;
+}
+
+.receipt-input {
 	border-radius: 6px;
 	padding: 8px 24px;
+	animation: slideLeft .1s;
+}
+
+@keyframes slideLeft {
+	from {
+		transform: translateX(2000px);
+	}
+
+	to {
+		transform: translateX(0);
+	}
 }

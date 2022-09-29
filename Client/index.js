@@ -30,7 +30,7 @@ class NavBar extends React.Component {
 			<ul class='navbar'>
 				{this.renderNavTab(0, 'Home')}
 				{this.renderNavTab(1, 'Receipt')}
-				<li class='dropdown'>
+				<li class='navtab dropdown'>
 					<a href='javascript:void(0)' class='dropbtn'>Database</a>
 					<div class="dropdown-content">
 						<a href='./users'>users</a>
@@ -70,12 +70,6 @@ class FormReceipt extends React.Component {
 			numInputNickname: this.state.numInputNickname + 1,
 			checkboxesPayer: checkboxesPayer
 		});
-
-		setTimeout(() => {
-			const newInput = document.getElementById(`nickname${this.state.numInputNickname}`);
-			newInput.style.transition = 'all .1s';
-			newInput.style.transform = 'translateX(0)';
-		}, 50);
 	}
 
 	clickAddItem() {
@@ -85,12 +79,6 @@ class FormReceipt extends React.Component {
 			numInputPrice: this.state.numInputPrice + 1,
 			checkboxesPayer: checkboxesPayer
 		});
-
-		setTimeout(() => {
-			const newInput = document.getElementById(`price${this.state.numInputPrice}`);
-			newInput.style.transition = 'all .1s';
-			newInput.style.transform = 'translateX(0)';
-		}, 50);
 	}
 
 	clickCheckbox(priceNum, payerNum) {
@@ -125,7 +113,7 @@ class FormReceipt extends React.Component {
 		}
 		for (let i = 1; i <= this.state.numInputPrice; i++) {
 			pricePayer.push(
-				<li style={{paddingBottom: '5px', width: '100%'}}>
+				<li class='price-list-item'>
 					<InputPrice itemNum={i}/>
 					<CheckboxesPayer
 						numPayers={this.state.numInputNickname}
@@ -146,8 +134,8 @@ class FormReceipt extends React.Component {
 						<col/>
 					</colgroup>
 					<tr>
-						<td><input type='date' name='date'/></td>
-						<td><input name='description' placeholder='Description' size='50'/></td>
+						<td><input type='date' class='receipt-input' name='date'/></td>
+						<td><input class='receipt-input' name='description' placeholder='Description' size='50'/></td>
 					</tr>
 					<tr>
 						<td class='buttonCell'><ButtonAddPerson onClick={() => this.clickAddPeople()}/></td>
@@ -156,11 +144,11 @@ class FormReceipt extends React.Component {
 					<tr>
 						<td class='buttonCell'><ButtonAddItem onClick={() => this.clickAddItem()}/></td>
 						<td>
-							<ul style={{listStyleType: 'none', margin: '0', paddingLeft: '0'}}>{pricePayer}</ul>
+							<ul class='price-list'>{pricePayer}</ul>
 						</td>
 					</tr>
 					<tr>
-						<td><button type='button' onClick={() => this.submitForm()}>Submit</button></td>
+						<td><button type='button' class='receipt-button' onClick={() => this.submitForm()}>Submit</button></td>
 					</tr>
 				</table>
 			</form>
@@ -171,7 +159,13 @@ class FormReceipt extends React.Component {
 class ButtonAddPerson extends React.Component {
 	render() {
 		return (
-			<button type='button' onClick={this.props.onClick}>Add Person</button>
+			<button
+				type='button'
+				class='receipt-button'
+				onClick={this.props.onClick}
+			>
+				Add Person
+			</button>
 		)
 	}
 }
@@ -180,10 +174,9 @@ class InputNickname extends React.Component {
 	render() {
 		return (
 			<input
-				id={`nickname${this.props.personNum}`}
+				class='receipt-input'
 				name={`nickname${this.props.personNum}`}
 				placeholder='DC Nickname'
-				style={{transform: this.props.personNum > 1 ? 'translateX(2000px)' : 'translateX(0)'}}
 			/>
 		)
 	}
@@ -192,7 +185,13 @@ class InputNickname extends React.Component {
 class ButtonAddItem extends React.Component {
 	render() {
 		return (
-			<button type='button' onClick={this.props.onClick}>Add Item</button>
+			<button
+				type='button'
+				class='receipt-button'
+				onClick={this.props.onClick}
+			>
+				Add Item
+			</button>
 		)
 	}
 }
@@ -202,9 +201,8 @@ class InputPrice extends React.Component {
 		return (
 			<input
 				type='number'
-				id={`price${this.props.itemNum}`}
+				class='receipt-input'
 				placeholder='Item Price'
-				style={{transform: this.props.itemNum > 1 ? 'translateX(2000px)' : 'translateX(0)'}}
 			/>
 		)
 	}
