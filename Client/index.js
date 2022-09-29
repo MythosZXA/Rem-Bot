@@ -202,6 +202,7 @@ class InputPrice extends React.Component {
 			<input
 				type='number'
 				class='receipt-input'
+				id={`price${this.props.itemNum}`}
 				placeholder='Item Price'
 			/>
 		)
