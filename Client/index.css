@@ -35,7 +35,7 @@
 }
 
 /* navtab hover */
-.navtab:not(.active):hover, .dropdown-content:hover {
+.navtab:not(.active):hover, .dropdown-content a:hover {
   background-color: rgb(255, 160, 176);
   color: black;
 }
