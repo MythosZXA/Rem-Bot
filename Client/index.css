@@ -70,7 +70,12 @@
 	border-bottom: none;
 }
 
-table.inactive {
+form {
+	margin: 0;
+	height: 0;
+}
+
+table.receipt {
 	visibility: hidden;
 	transform: translateY(1500px);
 	transition: 
@@ -78,7 +83,7 @@ table.inactive {
 		visibility 0s linear .5s; 
 }
 
-table.active {
+table.receipt.active {
 	visibility: visible;
 	transform: translateY(0);
 	transition: transform .5s;
@@ -88,17 +93,17 @@ table.active {
 	display: inline-block;
 }
 
-.receipt-button {
+.form-button {
 	border-radius: 8px;
 	border: 2px solid rgb(21, 255, 0);
 	background-color: rgb(223, 255, 224);
 }
 
-.receipt-button:hover {
+.form-button:hover {
 	background-color: rgb(0, 211, 11);
 }
 
-.receipt-button:active {
+.form-button:active {
 	background-color: rgb(0, 190, 10);
 	transform: translateY(1px);
 }
@@ -114,10 +119,25 @@ table.active {
 	width: 100%;
 }
 
-.receipt-input {
+.form-input {
 	border-radius: 6px;
 	padding: 8px 24px;
 	animation: slideLeft .1s;
+}
+
+table.message {
+	margin: auto;
+	visibility: hidden;
+	transform: translateY(1500px);
+	transition:
+		transform .5s,
+		visibility 0s linear .5s;
+}
+
+table.message.active {
+	visibility: visible;
+	transform: translateY(0px);
+	transition: transform .5s;
 }
 
 @keyframes slideLeft {

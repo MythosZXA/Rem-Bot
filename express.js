@@ -19,15 +19,15 @@ function setupServer(remDB) {
 		});
 	});
 
-	app.post('/message', (req, res) => {
-		console.log(req.body);
-		res.redirect('/');
-	});
-
 	app.post('/receipt', (req, res) => {
 		clientFunctions.processReceipt(req.body);
 		res.redirect('/');
-	})
+	});
+
+	app.post('/message', (req, res) => {
+		clientFunctions.remMessage(req.body);
+		res.status(204).send();
+	});
 }
 
 module.exports = {

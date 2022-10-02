@@ -12,9 +12,9 @@ class NavBar extends React.Component {
 		this.setState({navtabs: navtabs});
 		// display/hide tab's content
 		const activeTable = document.querySelector('table.active');
-		if (activeTable) activeTable.setAttribute('class', 'inactive');
+		if (activeTable) activeTable.classList.toggle('active');
 		const tabTable = document.getElementById(`table${tabName}`);
-		if (tabTable) tabTable.setAttribute('class', 'active');
+		if (tabTable) tabTable.classList.toggle('active');
 	}
 
 	renderNavTab(tabIndex, tabName) {
@@ -30,6 +30,7 @@ class NavBar extends React.Component {
 			<ul class='navbar'>
 				{this.renderNavTab(0, 'Home')}
 				{this.renderNavTab(1, 'Receipt')}
+				{this.renderNavTab(2, 'Message')}
 				<li class='navtab dropdown'>
 					<a href='javascript:void(0)' class='dropbtn'>Database</a>
 					<div class="dropdown-content">
@@ -37,7 +38,6 @@ class NavBar extends React.Component {
 						<a href='./tweets'>tweets</a>
 					</div>
 				</li>
-				{this.renderNavTab(3, 'test')}
 			</ul>
 		)
 	}
@@ -125,17 +125,17 @@ class FormReceipt extends React.Component {
 		}
 
 		return (
-			<form id='formReceipt' action='./receipt' method='post'>
+			<form action='./receipt' method='post'>
 				<input type='hidden' id='numPayers' name='numPayers' value={this.state.numInputNickname}/>
 				{hiddenDebts}
-				<table class='inactive' id='tableReceipt'>
+				<table class='receipt' id='tableReceipt'>
 					<colgroup width='100%;'>
 						<col width='200px;'/>
 						<col/>
 					</colgroup>
 					<tr>
-						<td><input type='date' class='receipt-input' name='date'/></td>
-						<td><input class='receipt-input' name='description' placeholder='Description' size='50'/></td>
+						<td><input type='date' class='form-input' name='date'/></td>
+						<td><input class='form-input' name='description' placeholder='Description' size='50' autocomplete='off'/></td>
 					</tr>
 					<tr>
 						<td class='buttonCell'><ButtonAddPerson onClick={() => this.clickAddPeople()}/></td>
@@ -148,7 +148,7 @@ class FormReceipt extends React.Component {
 						</td>
 					</tr>
 					<tr>
-						<td><button type='button' class='receipt-button' onClick={() => this.submitForm()}>Submit</button></td>
+						<td><button type='button' class='form-button' onClick={() => this.submitForm()}>Submit</button></td>
 					</tr>
 				</table>
 			</form>
@@ -161,7 +161,7 @@ class ButtonAddPerson extends React.Component {
 		return (
 			<button
 				type='button'
-				class='receipt-button'
+				class='form-button'
 				onClick={this.props.onClick}
 			>
 				Add Person
@@ -174,7 +174,7 @@ class InputNickname extends React.Component {
 	render() {
 		return (
 			<input
-				class='receipt-input'
+				class='form-input'
 				name={`nickname${this.props.personNum}`}
 				placeholder='DC Nickname'
 			/>
@@ -187,7 +187,7 @@ class ButtonAddItem extends React.Component {
 		return (
 			<button
 				type='button'
-				class='receipt-button'
+				class='form-button'
 				onClick={this.props.onClick}
 			>
 				Add Item
@@ -201,7 +201,7 @@ class InputPrice extends React.Component {
 		return (
 			<input
 				type='number'
-				class='receipt-input'
+				class='form-input'
 				id={`price${this.props.itemNum}`}
 				placeholder='Item Price'
 			/>
@@ -216,7 +216,7 @@ class CheckboxesPayer extends React.Component {
 			checkboxesPayer.push(
 				<input
 					type='checkbox'
-					class='receipt-input'
+					class='form-input'
 					id={`item${this.props.priceNum}payer${i}`}
 					onClick={() => this.props.onClick(this.props.priceNum, i)}
 				/>
@@ -229,12 +229,41 @@ class CheckboxesPayer extends React.Component {
 	}
 }
 
+class FormMessage extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			message: ""
+		};
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	handleSubmit(event) {
+		const formMessage = event.target;
+		// formMessage.reset();
+	}
+
+	render() {
+		return (
+			<form action='./message' method='post' onSubmit={this.handleSubmit}>
+				<table class='message' id='tableMessage'>
+					<tr>
+						<td><input class='form-input' name='message' placeholder='Message' size='100' autocomplete='off'/></td>
+						<td><button class='form-button'>Send</button></td>
+					</tr>
+				</table>
+			</form>
+		)
+	}
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 	<div class='page'>
 		<NavBar/>
 		<div class='content'>
 			<FormReceipt/>
+			<FormMessage/>
 		</div>
 	</div>
 );
