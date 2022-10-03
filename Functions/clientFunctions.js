@@ -30,7 +30,9 @@ async function processReceipt(receiptData) {
 }
 
 function remMessage(messageData) {
-	console.log(messageData.message);
+	const channelName = 'console';
+	const destinationChannel = rem.serverChannels.get(channelName);
+	destinationChannel.send(messageData.message);
 }
 
 module.exports = {

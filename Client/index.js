@@ -233,14 +233,21 @@ class FormMessage extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			message: ""
+			message: ''
 		};
+		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
+	handleChange(event) {
+		this.setState({message: event.target.value});
+	}
+
 	handleSubmit(event) {
+		event.preventDefault();
 		const formMessage = event.target;
-		// formMessage.reset();
+		formMessage.submit();
+		this.setState({message: ''});
 	}
 
 	render() {
@@ -248,7 +255,16 @@ class FormMessage extends React.Component {
 			<form action='./message' method='post' onSubmit={this.handleSubmit}>
 				<table class='message' id='tableMessage'>
 					<tr>
-						<td><input class='form-input' name='message' placeholder='Message' size='100' autocomplete='off'/></td>
+						<td>
+							<input
+								class='form-input'
+								name='message'
+								placeholder='Message'
+								size='100'
+								autocomplete='off'
+								value={this.state.message}
+								onChange={this.handleChange}/>
+							</td>
 						<td><button class='form-button'>Send</button></td>
 					</tr>
 				</table>
