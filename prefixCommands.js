@@ -61,10 +61,23 @@ async function test(message) {
 	if (message.author.id != process.env.toan) return;
 }
 
+async function wakeraf(message, arg, remDB, channels) {
+	const smexiesChannel = channels.get('smexies');
+	let tagAmt = 0;
+
+	const rafMember = await message.guild.members.fetch('188548021598945280');
+	const interval = setInterval(() => {
+		if (tagAmt === 10) clearInterval(interval);
+		tagAmt++;
+		smexiesChannel.send(`${rafMember}`);
+	}, 1000);
+}
+
 module.exports = {
 	help,
 	message,
 	soundboard,
 	sleep,
-	test
+	test,
+	wakeraf
 };
