@@ -33,7 +33,7 @@ module.exports = {
 		rem.commands.get('timer').setupTimers(rem, remDB);
 
 		// server
-		require('../express').setupServer(remDB);
+		require('../express').setupServer(rem, remDB);
 
 		// attach globals to client so main.js can access
 		rem.remDB = remDB;

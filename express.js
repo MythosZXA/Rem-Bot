@@ -4,19 +4,31 @@ const app = express();
 app.listen(process.env.PORT);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('./Client'));
+app.use(express.static('./src'));
 
 const clientFunctions = require('./Functions/clientFunctions');
 
-function setupServer(remDB) {
+function setupServer(rem, remDB) {
 	app.get('/', (req, res) => {
-		res.sendFile(__dirname + './Client/index.html');
+		res.sendFile(__dirname + '/src/index.html');
+	});
+
+	app.get('/textChannels', async (req, res) => {
+		const server = await rem.guilds.fetch('773660297696772096');
+		const channels = await server.channels.fetch();
+		const textChannels = channels.filter(channel => channel.type === 'GUILD_TEXT');
+		res.send({ channels: textChannels });
 	});
 
 	remDB.forEach((tableObj, tableName) => {
 		app.get(`/${tableName}`, (req, res) => {
 			res.send(tableObj);
 		});
+	});
+
+	app.post('/login', async (req, res) => {
+		const result = await clientFunctions.processLogin(req.body);
+		res.send({ result: result });
 	});
 
 	app.post('/receipt', (req, res) => {
@@ -26,7 +38,7 @@ function setupServer(remDB) {
 
 	app.post('/message', (req, res) => {
 		clientFunctions.remMessage(req.body);
-		res.status(204).send();
+		res.send({ result: 'good?'});
 	});
 }
 

@@ -1,3 +1,71 @@
+class FormLogin extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			message: ''
+		};
+		this.handleChange = this.handleChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	handleChange(event) {
+		this.setState({message: event.target.value});
+	}
+
+	async handleSubmit(event) {
+		event.preventDefault();
+		const formLogin = document.querySelector('form.form-login');
+		const formData = new FormData(formLogin);
+		const response = await sendForm(formData, formLogin.action);
+
+		if (!response) return;
+
+		const textLogin = document.getElementById('textLogin');
+		const buttonLogin = document.getElementById('buttonLogin');
+		if (textLogin.getAttribute('name') === 'nickname') {
+			this.setState({ message: '' });
+			textLogin.setAttribute('name', 'authcode');
+			textLogin.setAttribute('placeholder', 'Auth Code');
+			buttonLogin.innerText = 'Login';
+		}
+		// document.querySelector('.left-login').classList.add('logged-in');
+		// document.querySelector('.right-login').classList.add('logged-in');
+	}
+
+	render() {
+		return (
+			<form action='./login' method='post' class='form-login' onSubmit={this.handleSubmit}>
+				<input
+					class='input-login'
+					id='textLogin'
+					name='nickname'
+					placeholder='Discord Nickname'
+					autocomplete='off'
+					value={this.state.message}
+					onChange={this.handleChange}/>
+				<button id='buttonLogin'>Get Auth Code</button>
+			</form>
+		)
+	}
+}
+
+async function sendForm(formData, action) {
+	const formJSON = JSON.stringify(Object.fromEntries(formData.entries()));
+	const response = await fetch(action, {
+		method: 'POST',
+		headers: {
+			"Content-Type": "application/json",
+			"Accept": "application/json"
+		},
+		body: formJSON
+	});
+	if (response.status === 200) {
+		return await response.json();
+	} else {
+		return false;
+	}
+}
+
 class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
@@ -246,7 +314,8 @@ class FormMessage extends React.Component {
 	handleSubmit(event) {
 		event.preventDefault();
 		const formMessage = event.target;
-		formMessage.submit();
+		const formData = new FormData(formMessage);
+		sendForm(formData, formMessage.action);
 		this.setState({message: ''});
 	}
 
@@ -273,13 +342,25 @@ class FormMessage extends React.Component {
 	}
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-	<div class='page'>
-		<NavBar/>
-		<div class='content'>
-			<FormReceipt/>
-			<FormMessage/>
-		</div>
-	</div>
-);
+export default class App extends React.Component { 
+	render() {
+		return (
+			<React.Fragment>
+				{/* <div class='left-login'></div>
+				<div class='right-login'>
+					<span class='server-image'/>
+					<FormLogin/>
+				</div> */}
+				<LHN/>
+				<div class="left-login"/>
+				<div class='page'>
+					{/* <NavBar/> */}
+					<div class='content'>
+						<FormReceipt/>
+						<FormMessage/>
+					</div>
+				</div>
+			</React.Fragment>
+		)
+	}
+}
