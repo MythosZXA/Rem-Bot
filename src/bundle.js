@@ -20,6 +20,7 @@ function LHN() {
     setActive = _useState2[1];
   function toggleLHN() {
     document.querySelector('div.lhn').style.transform = "translateX(".concat(active ? '-400px' : '0', ")");
+    document.querySelector('button.nav-button').classList.toggle('active');
     setActive(!active);
   }
   function selectTab(event) {
@@ -35,7 +36,7 @@ function LHN() {
     (_document$getElementB = document.getElementById("page".concat(event.target.innerHTML))) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.classList.toggle('active');
 
     // close lhn
-    document.querySelector('button.side-button').click();
+    document.querySelector('button.nav-button').click();
   }
   function renderTab(label, firstTab) {
     return /*#__PURE__*/React.createElement("li", {
@@ -44,9 +45,9 @@ function LHN() {
     }, label);
   }
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
-    "class": "side-button",
+    "class": "nav-button active",
     onClick: toggleLHN
-  }, "A"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", null)), /*#__PURE__*/React.createElement("div", {
     "class": "lhn"
   }, /*#__PURE__*/React.createElement("ul", {
     "class": "nav-list"

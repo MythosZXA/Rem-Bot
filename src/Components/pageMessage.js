@@ -14,7 +14,7 @@ export default function PageMessage() {
 				const option = document.createElement('option');
 				option.text = channel.name;
 				selectChannel.current.add(option);
-			})
+			});
 		} else {
 			console.log('Failed to retrieve channels');
 		}

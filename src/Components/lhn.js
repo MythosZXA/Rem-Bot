@@ -5,6 +5,7 @@ export default function LHN() {
 
 	function toggleLHN() {
 		document.querySelector('div.lhn').style.transform = `translateX(${active ? '-400px' : '0'})`;
+		document.querySelector('button.nav-button').classList.toggle('active');
 		setActive(!active);
 	}
 
@@ -20,7 +21,7 @@ export default function LHN() {
 		document.getElementById(`page${event.target.innerHTML}`)?.classList.toggle('active');
 
 		// close lhn
-		document.querySelector('button.side-button').click();
+		document.querySelector('button.nav-button').click();
 	}
 
 	function renderTab(label, firstTab) {
@@ -29,8 +30,8 @@ export default function LHN() {
 
 	return(
 		<React.Fragment>
-			<button class="side-button" onClick={toggleLHN}>
-				A
+			<button class="nav-button active" onClick={toggleLHN}>
+				<span/>
 			</button>
 			<div class="lhn">
 				<ul class="nav-list">
