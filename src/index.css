@@ -67,72 +67,34 @@
 }
 /* lhn end */
 
-.right-login {
-	position: absolute;
-	top: 0;
-	margin-left: 50%;
-	height: 100%;
-	width: 50%;
-	z-index: 3;
-  background-color: #b3fcff;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-}
-
-.server-image {
-	position: absolute;
-	transform: translateY(-300px);
-	background-image: url('https://cdn.discordapp.com/icons/773660297696772096/4429a4cab28533327e3134b415de2616.webp');
-	background-size: cover;
-  height: 230px;
-  width: 230px;
-  border-radius: 30%;
-}
-
-.form-login {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-self: center;
-	align-items: center;
-	gap: 30px;
-}
-
-.input-login {
-	border-radius: 6px;
-	padding: 8px 24px;
-}
-
-.left-login.logged-in {
-	transform: translateX(-100%);
-	transition: transform 1s ease-in-out;
-}
-
-.right-login.logged-in {
-	transform: translateX(100%);
-	transition: transform 1s ease-in-out;
-}
-
 .page.active {
 	visibility: visible;
 	padding-top: 5%;
 	display: flex;
 	justify-content: center;
+	height: 100%;
 	transform: translateY(0);
 	transition: transform .5s;
 }
 
 .page {
 	visibility: hidden;
-	padding-top: 5%;
 	display: flex;
 	justify-content: center;
 	transform: translateY(1500px);
 	transition:
 		transform .5s,
 		visibility 0s linear .5s;
+}
+
+.board-row {
+	height: 100px;
+	width: 300px;
+}
+
+.board-square {
+	height: 100px;
+	width: 100px;
 }
 
 .navbar {

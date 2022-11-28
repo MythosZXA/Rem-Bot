@@ -38,7 +38,7 @@ export default function LHN() {
 					{renderTab('Home', true)}
 					{renderTab('Receipt')}
 					{renderTab('Message')}
-					{renderTab('4')}
+					{renderTab('TicTacToe')}
 					{renderTab('5')}
 				</ul>
 			</div>

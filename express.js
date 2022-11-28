@@ -26,11 +26,6 @@ function setupServer(rem, remDB) {
 		});
 	});
 
-	app.post('/login', async (req, res) => {
-		const result = await clientFunctions.processLogin(req.body);
-		res.send({ result: result });
-	});
-
 	app.post('/receipt', (req, res) => {
 		clientFunctions.processReceipt(req.body);
 		res.redirect('/');

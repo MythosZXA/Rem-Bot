@@ -51,7 +51,7 @@ function LHN() {
     "class": "lhn"
   }, /*#__PURE__*/React.createElement("ul", {
     "class": "nav-list"
-  }, renderTab('Home', true), renderTab('Receipt'), renderTab('Message'), renderTab('4'), renderTab('5'))));
+  }, renderTab('Home', true), renderTab('Receipt'), renderTab('Message'), renderTab('TicTacToe'), renderTab('5'))));
 }
 
 },{}],2:[function(require,module,exports){
@@ -146,7 +146,57 @@ function PageMessage() {
   })));
 }
 
-},{"../commonFunctions":3}],3:[function(require,module,exports){
+},{"../commonFunctions":4}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = PageTicTacToe;
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+var _React = React,
+  useState = _React.useState;
+function PageTicTacToe() {
+  var _useState = useState(new Array(9).fill(null)),
+    _useState2 = _slicedToArray(_useState, 2),
+    board = _useState2[0],
+    setBoard = _useState2[1];
+  return /*#__PURE__*/React.createElement("div", {
+    "class": "page ttt",
+    id: "pageTicTacToe"
+  }, /*#__PURE__*/React.createElement("span", {
+    "class": "board-row"
+  }, /*#__PURE__*/React.createElement("button", {
+    "class": "board-square"
+  }), /*#__PURE__*/React.createElement("button", {
+    "class": "board-square"
+  }), /*#__PURE__*/React.createElement("button", {
+    "class": "board-square"
+  })), /*#__PURE__*/React.createElement("span", {
+    "class": "board-row"
+  }, /*#__PURE__*/React.createElement("button", {
+    "class": "board-square"
+  }), /*#__PURE__*/React.createElement("button", {
+    "class": "board-square"
+  }), /*#__PURE__*/React.createElement("button", {
+    "class": "board-square"
+  })), /*#__PURE__*/React.createElement("span", {
+    "class": "board-row"
+  }, /*#__PURE__*/React.createElement("button", {
+    "class": "board-square"
+  }), /*#__PURE__*/React.createElement("button", {
+    "class": "board-square"
+  }), /*#__PURE__*/React.createElement("button", {
+    "class": "board-square"
+  })));
+}
+
+},{}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -202,12 +252,13 @@ function _sendForm() {
   return _sendForm.apply(this, arguments);
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 var _lhn = _interopRequireDefault(require("./Components/lhn"));
 var _pageMessage = _interopRequireDefault(require("./Components/pageMessage"));
+var _pageTicTacToe = _interopRequireDefault(require("./Components/pageTicTacToe"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-ReactDOM.render( /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_lhn["default"], null), /*#__PURE__*/React.createElement(_pageMessage["default"], null)), document.getElementById('root'));
+ReactDOM.render( /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_lhn["default"], null), /*#__PURE__*/React.createElement(_pageMessage["default"], null), /*#__PURE__*/React.createElement(_pageTicTacToe["default"], null)), document.getElementById('root'));
 
-},{"./Components/lhn":1,"./Components/pageMessage":2}]},{},[4]);
+},{"./Components/lhn":1,"./Components/pageMessage":2,"./Components/pageTicTacToe":3}]},{},[5]);
