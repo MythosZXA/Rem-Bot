@@ -27,19 +27,22 @@ export default function PageMessage() {
 	}
 
 	return(
-		<div class="page" id="pageMessage">
-			<form action="./message" method="post" onSubmit={sendMessage}>
-				<select class="form-input" ref={selectChannel}></select>
-				<input
-					class="form-input"
-					name="message"
-					placeholder="Message"
-					size="100"
-					autocomplete="off"
-					value={message}
-					ref={inputMessage}
-					onChange={event => setMessage(event.target.value)}/>
+		<div class="page-container" id="containerMessage">
+			<div class="page-message">
+				<form action="/message" method="post" onSubmit={sendMessage}>
+					<select class="form-input" ref={selectChannel}></select>
+					<input
+						class="form-input"
+						name="message"
+						placeholder="Message"
+						size="100"
+						autocomplete="off"
+						value={message}
+						ref={inputMessage}
+						onChange={event => setMessage(event.target.value)}
+					/>
 				</form>
+			</div>
 		</div>
 	)
 }

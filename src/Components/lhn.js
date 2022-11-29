@@ -16,9 +16,9 @@ export default function LHN() {
 		event.target.classList.toggle('selected');
 
 		// hide previous page
-		document.querySelector('div.page.active')?.classList.toggle('active');
+		document.querySelector('div.page-container.active')?.classList.toggle('active');
 		// display selected page
-		document.getElementById(`page${event.target.innerHTML}`)?.classList.toggle('active');
+		document.getElementById(`container${event.target.innerHTML}`)?.classList.toggle('active');
 
 		// close lhn
 		document.querySelector('button.nav-button').click();
