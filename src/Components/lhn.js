@@ -1,12 +1,7 @@
-const { useState } = React;
-
 export default function LHN() {
-	const [active, setActive] = useState(true);
-
 	function toggleLHN() {
-		document.querySelector('div.lhn').style.transform = `translateX(${active ? '-400px' : '0'})`;
+		document.querySelector('div.lhn').classList.toggle('active');
 		document.querySelector('button.nav-button').classList.toggle('active');
-		setActive(!active);
 	}
 
 	function selectTab(event) {
@@ -33,7 +28,7 @@ export default function LHN() {
 			<button class="nav-button active" onClick={toggleLHN}>
 				<span/>
 			</button>
-			<div class="lhn">
+			<div class="lhn active">
 				<ul class="nav-list">
 					{renderTab('Home', true)}
 					{renderTab('Receipt')}

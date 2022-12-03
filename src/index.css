@@ -1,9 +1,14 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
 .root {
 	position: relative;
 	height:100%;
 	width:100%;
 	background-color: dimgray;
-	background-size: 101% 101%;
+	background-size: 100% 100%;
 	overflow: hidden;
 }
 
@@ -39,6 +44,12 @@
 	border-radius: 0 40px 40px 0;
 	background-image: url('https://i.imgur.com/oO1SZAs.jpg');
 	background-position: top;
+	transform: translateX(-400px);
+	transition: transform 1s;
+}
+
+.lhn.active {
+	transform: translateX(0);
 	transition: transform 1s;
 }
 
@@ -86,32 +97,44 @@
 
 .page-ttt {
 	padding-top: 20%;
-	display: grid;
-	justify-content: center;
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
 }
 /* pages end */
 
-.board-row {
+.ttt-board {
+	display: grid;
+}
+
+.ttt-board span {
 	height: 100px;
 	width: 300px;
 }
 
-.board-square {
+.ttt-board span button {
 	height: 100px;
 	width: 100px;
 	font-size: 24px;
+	cursor: pointer;
 }
 
-.board-select-row {
+.ttt-marker {
 	height: 100px;
-	width: 400px;
-	margin-top: 40px;
-	display: flex;
-	justify-content: space-around;
+	width: 100px;
+	border: none;
+	border-radius: 50%;
+	font-size: 24px;
+	cursor: pointer;
 }
 
-.board-select {
-	border-radius: 50%;
+.ttt-marker.X.selected {
+	background-color: pink;
+}
+
+
+.ttt-marker.O.selected {
+	background-color: cyan;
 }
 
 form {

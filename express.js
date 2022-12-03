@@ -64,17 +64,10 @@ function setupServer(rem, remDB) {
 
 	app.post('/ttt', (req, res) => {
 		const squareClicked = req.body.clicked;
-		switch (tictactoe[squareClicked]) {
-			case 'X':
-				tictactoe[squareClicked] = 'O';
-				break;
-			case 'O':
-			case '.':
-				tictactoe[squareClicked] = 'X';
-				break;
-		}
+		const marker = req.body.marker;
+		tictactoe[squareClicked] = marker;
 		clients.forEach(client => client.res.write(`data: ${JSON.stringify(tictactoe)}\n\n`));
-		res.send({ result: 'good!' })
+		res.send(200);
 	});
 }
 
