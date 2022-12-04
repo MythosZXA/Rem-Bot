@@ -36,7 +36,7 @@ export default function PageTicTacToe() {
 	function selectMarker(event) {
 		// unselected previous marker
 		if (markerEle) {
-			marker.classList.toggle('selected');
+			markerEle.classList.toggle('selected');
 		}
 		// select new marker
 		event.target.classList.toggle('selected');
