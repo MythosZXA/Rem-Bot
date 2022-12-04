@@ -28,7 +28,7 @@ export default function PageTicTacToe() {
 			},
 			body: JSON.stringify({
 				clicked: numSquare,
-				marker: markerEle.innerText
+				markerEle: markerEle.innerText
 			})
 		});
 	}
