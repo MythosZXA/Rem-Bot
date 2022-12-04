@@ -59,6 +59,7 @@ async function sleep(message, arg, remDB) {
 
 async function test(message) {
 	if (message.author.id != process.env.toan) return;
+	console.log(message.guild.iconURL());
 }
 
 async function wakeraf(message, arg, remDB, channels) {

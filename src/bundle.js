@@ -176,6 +176,11 @@ function PageTicTacToe() {
       setListening(true);
     }
   }, []);
+  function resetBoard() {
+    fetch('/ttt-reset', {
+      method: 'POST'
+    });
+  }
   function selectSquare(numSquare) {
     if (!markerEle) return;
     fetch('/ttt', {
@@ -185,7 +190,7 @@ function PageTicTacToe() {
       },
       body: JSON.stringify({
         clicked: numSquare,
-        markerEle: markerEle.innerText
+        marker: markerEle.innerText
       })
     });
   }
@@ -204,6 +209,11 @@ function PageTicTacToe() {
     id: "containerTicTacToe"
   }, /*#__PURE__*/React.createElement("div", {
     "class": "page-ttt"
+  }, /*#__PURE__*/React.createElement("button", {
+    "class": "form-button",
+    onClick: resetBoard
+  }, "Reset"), /*#__PURE__*/React.createElement("div", {
+    "class": "ttt-section"
   }, /*#__PURE__*/React.createElement("button", {
     "class": "ttt-marker X",
     onClick: selectMarker
@@ -248,7 +258,7 @@ function PageTicTacToe() {
   }, board[8]))), /*#__PURE__*/React.createElement("button", {
     "class": "ttt-marker O",
     onClick: selectMarker
-  }, "O")));
+  }, "O"))));
 }
 
 },{}],4:[function(require,module,exports){

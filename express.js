@@ -67,7 +67,13 @@ function setupServer(rem, remDB) {
 		const marker = req.body.marker;
 		tictactoe[squareClicked] = marker;
 		clients.forEach(client => client.res.write(`data: ${JSON.stringify(tictactoe)}\n\n`));
-		res.send(200);
+		res.sendStatus(200);
+	});
+
+	app.post('/ttt-reset', (req, res) => {
+		tictactoe.fill('.');
+		clients.forEach(client => client.res.write(`data: ${JSON.stringify(tictactoe)}\n\n`));
+		res.sendStatus(200);
 	});
 }
 
