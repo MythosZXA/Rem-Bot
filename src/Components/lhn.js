@@ -37,6 +37,9 @@ export default function LHN() {
 					{renderTab('5')}
 				</ul>
 			</div>
+			<div class="right-login">
+
+			</div>
 		</React.Fragment>
 	)
 }

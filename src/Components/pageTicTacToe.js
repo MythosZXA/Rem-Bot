@@ -2,7 +2,7 @@ const { useState, useEffect } = React;
 
 export default function PageTicTacToe() {
   const [board, setBoard] = useState((new Array(9)).fill('.'));
-	const [marker, setMarker] = useState();
+	const [markerEle, setMarkerEle] = useState();
 	const [listening, setListening] = useState(false);
 
 	useEffect(() => {
@@ -19,7 +19,7 @@ export default function PageTicTacToe() {
 	}, []);
 
 	function selectSquare(numSquare) {
-		if (!marker) return;
+		if (!markerEle) return;
 		
 		fetch('/ttt', {
 			method: 'POST',
@@ -28,20 +28,20 @@ export default function PageTicTacToe() {
 			},
 			body: JSON.stringify({
 				clicked: numSquare,
-				marker: marker.innerText
+				marker: markerEle.innerText
 			})
 		});
 	}
 
 	function selectMarker(event) {
 		// unselected previous marker
-		if (marker) {
+		if (markerEle) {
 			marker.classList.toggle('selected');
 		}
 		// select new marker
 		event.target.classList.toggle('selected');
 		// update state
-		setMarker(event.target);
+		setMarkerEle(event.target);
 	}
 
   return(

@@ -38,7 +38,9 @@ function LHN() {
     "class": "lhn active"
   }, /*#__PURE__*/React.createElement("ul", {
     "class": "nav-list"
-  }, renderTab('Home', true), renderTab('Receipt'), renderTab('Message'), renderTab('TicTacToe'), renderTab('5'))));
+  }, renderTab('Home', true), renderTab('Receipt'), renderTab('Message'), renderTab('TicTacToe'), renderTab('5'))), /*#__PURE__*/React.createElement("div", {
+    "class": "right-login"
+  }));
 }
 
 },{}],2:[function(require,module,exports){
@@ -158,8 +160,8 @@ function PageTicTacToe() {
     setBoard = _useState2[1];
   var _useState3 = useState(),
     _useState4 = _slicedToArray(_useState3, 2),
-    marker = _useState4[0],
-    setMarker = _useState4[1];
+    markerEle = _useState4[0],
+    setMarkerEle = _useState4[1];
   var _useState5 = useState(false),
     _useState6 = _slicedToArray(_useState5, 2),
     listening = _useState6[0],
@@ -175,7 +177,7 @@ function PageTicTacToe() {
     }
   }, []);
   function selectSquare(numSquare) {
-    if (!marker) return;
+    if (!markerEle) return;
     fetch('/ttt', {
       method: 'POST',
       headers: {
@@ -183,19 +185,19 @@ function PageTicTacToe() {
       },
       body: JSON.stringify({
         clicked: numSquare,
-        marker: marker.innerText
+        marker: markerEle.innerText
       })
     });
   }
   function selectMarker(event) {
     // unselected previous marker
-    if (marker) {
+    if (markerEle) {
       marker.classList.toggle('selected');
     }
     // select new marker
     event.target.classList.toggle('selected');
     // update state
-    setMarker(event.target);
+    setMarkerEle(event.target);
   }
   return /*#__PURE__*/React.createElement("div", {
     "class": "page-container",
