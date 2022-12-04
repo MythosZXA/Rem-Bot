@@ -185,14 +185,14 @@ function PageTicTacToe() {
       },
       body: JSON.stringify({
         clicked: numSquare,
-        marker: markerEle.innerText
+        markerEle: markerEle.innerText
       })
     });
   }
   function selectMarker(event) {
     // unselected previous marker
     if (markerEle) {
-      marker.classList.toggle('selected');
+      markerEle.classList.toggle('selected');
     }
     // select new marker
     event.target.classList.toggle('selected');
