@@ -12,12 +12,15 @@
 	overflow: hidden;
 }
 
+/* login */
 .left-login {
-	display: inline-block;
+	z-index: 105;
+	position: absolute;
 	height: 100%;
 	width: 50%;
 	background-image: url('https://i.imgur.com/oO1SZAs.jpg');
 	background-position: top;
+	transition: all 1s;
 }
 
 .left-login ul{
@@ -25,12 +28,57 @@
 }
 
 .right-login {
-	display: inline-block;
-	display: none;
+	z-index: 105;
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	align-items: center;
+	margin-left: 50%;
 	height: 100%;
 	width: 50%;
-	background-color: cyan;
+	background-color: bisque;
 }
+
+.right-login.auth {
+	transform: translateX(100%);
+	transition: all 1s;
+}
+
+.right-login span { /* server image */
+	height: 200px;
+	width: 200px;
+	margin-top: 15%;
+	margin-bottom: 10%;
+	border-radius: 25%;
+	background-image: url('https://cdn.discordapp.com/icons/773660297696772096/4429a4cab28533327e3134b415de2616.webp');
+	background-size: cover;
+}
+
+.right-login p {
+	display: none;
+}
+
+.right-login input {
+	margin-bottom: 10px;
+	border: 1px solid;
+	border-radius: 50px;
+	padding: 5px;
+	font-size: 14px;
+	text-align: center;
+}
+
+.right-login button {
+	margin: 0 5px;
+	border: 1px solid;
+	border-radius: 50px;
+	padding: 5px;
+}
+
+.right-login button:active {
+	transform: translateY(1px);
+}
+/* login end */
 
 /* lhn */
 .nav-button {
@@ -65,7 +113,7 @@
 	background-image: url('https://i.imgur.com/oO1SZAs.jpg');
 	background-position: top;
 	transform: translateX(-400px);
-	transition: transform 1s;
+	transition: all 1s;
 }
 
 .lhn.active {
@@ -73,13 +121,13 @@
 	transition: transform 1s;
 }
 
-.nav-list {
+.lhn ul{
 	margin-top: 40%;
 	padding: 0;
   list-style-type: none;
 }
 
-.nav-item {
+.lhn ul li {
 	margin: 5px 0;
 	border: 1px solid;
 	border-radius: 50px;
@@ -87,17 +135,18 @@
 	font-size: 18px;
 }
 
-.nav-item:not(.selected):hover {
+.lhn ul li:not(.selected):hover {
 	background-color: pink;
 }
 
-.nav-item.selected {
+.lhn ul li.selected {
 	background-color: cyan;
 }
 /* lhn end */
 
 /* pages */
 .page-container {
+	z-index: 90;
 	position: absolute;
 	height: 100%;
 	width: 100%;
@@ -108,6 +157,33 @@
 .page-container.active {
 	transform: translateY(0);
 }
+
+/* page home */
+.page-home {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 5%;
+}
+
+.profile-card {
+	display: flex;
+	align-items: center;
+	height: 250px;
+	width: 500px;
+	border-radius: 50px;
+	background-color: white;
+}
+
+.profile-image {
+	position: absolute;
+	height: 150px;
+	width: 150px;
+	margin-left: 1%;
+	border-radius: 50%;
+	background-color: gray;
+}
+/* page home end */
 
 /* page message */
 .page-message {
@@ -226,21 +302,6 @@ table.receipt.active {
 	border-radius: 6px;
 	padding: 8px 24px;
 	animation: slideLeft .1s;
-}
-
-table.message {
-	margin-top: 10%;
-	visibility: hidden;
-	transform: translateY(1500px);
-	transition:
-		transform .5s,
-		visibility 0s linear .5s;
-}
-
-table.message.active {
-	visibility: visible;
-	transform: translateY(0px);
-	transition: transform .5s;
 }
 
 @keyframes slideLeft {

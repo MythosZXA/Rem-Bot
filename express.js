@@ -7,10 +7,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./src'));
 
 const clientFunctions = require('./Functions/clientFunctions');
+const memberCodes = new Map();
 let clients = [];
 let tictactoe = ['.','.','.','.','.','.','.','.','.'];
 
-function setupServer(rem, remDB) {
+async function setupServer(rem, remDB) {
+	const server = await rem.guilds.fetch('773660297696772096');
+
 	app.get('/', (req, res) => {
 		res.sendFile(__dirname + '/src/index.html');
 	});
@@ -46,10 +49,29 @@ function setupServer(rem, remDB) {
 		});
 	});
 
-	remDB.forEach((tableObj, tableName) => {
-		app.get(`/${tableName}`, (req, res) => {
-			res.send(tableObj);
-		});
+	// remDB.forEach((tableObj, tableName) => {
+	// 	app.get(`/${tableName}`, (req, res) => {
+	// 		res.send(tableObj);
+	// 	});
+	// });
+
+	app.post('/login', (req, res) => {
+		if (req.body.reqType === 'N') { // nickname request
+			const nickname = req.body.nickname.toLowerCase();
+			const member = server.members.cache.find(member => member?.nickname?.toLowerCase() === nickname);
+			if (!member) {
+				res.sendStatus(404);
+			} else {
+				const randomCode = (Math.floor(Math.random() * (1000000 - 100000) + 100000)).toString();
+				member.send(randomCode);
+				memberCodes.set(nickname, randomCode);
+				res.sendStatus(202);
+			}
+		} else { // code request
+			const recievedCode = req.body.code;
+			const correctCode = memberCodes.get(req.body.nickname.toLowerCase());
+			recievedCode === correctCode ? res.sendStatus(200) : res.sendStatus(401);
+		}
 	});
 
 	app.post('/receipt', (req, res) => {
