@@ -30,19 +30,22 @@ function LoginLHN() {
     _useState6 = _slicedToArray(_useState5, 2),
     nickname = _useState6[0],
     setNickname = _useState6[1];
-  function toggleLHN() {
-    document.querySelector('div.lhn').classList.toggle('active');
-    document.querySelector('button.nav-button').classList.toggle('active');
+
+  // login
+  function checkEnter(event) {
+    if (event.key === 'Enter') login();
   }
   function resetLogin() {
     setInput('');
     setReqType('N');
     setNickname();
+    document.querySelector('div.right-login p').setAttribute('class', '');
     document.querySelector('div.right-login input').setAttribute('placeholder', 'DC Nickname');
   }
   function login() {
     return _login.apply(this, arguments);
-  }
+  } // login end
+  // lhn
   function _login() {
     _login = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var res;
@@ -64,27 +67,38 @@ function LoginLHN() {
               });
             case 2:
               res = _context.sent;
-              if (reqType === 'N') {
-                setReqType('C');
-                setNickname(input);
-                document.querySelector('div.right-login input').setAttribute('placeholder', '6-Digit Code');
-              }
+              // default class and reflow for animation
+              document.querySelector('div.right-login p').setAttribute('class', '');
+              document.querySelector('div.right-login p').offsetWidth;
+
+              // status handling
               _context.t0 = res.status;
-              _context.next = _context.t0 === 200 ? 7 : _context.t0 === 202 ? 10 : _context.t0 === 401 ? 11 : _context.t0 === 404 ? 12 : 13;
+              _context.next = _context.t0 === 200 ? 8 : _context.t0 === 202 ? 11 : _context.t0 === 401 ? 15 : _context.t0 === 404 ? 18 : 21;
               break;
-            case 7:
+            case 8:
+              // log in
               document.querySelector('div.left-login').setAttribute('class', 'lhn');
               document.querySelector('div.right-login').classList.add('auth');
-              return _context.abrupt("break", 13);
-            case 10:
-              return _context.abrupt("break", 13);
+              return _context.abrupt("break", 21);
             case 11:
-              return _context.abrupt("break", 13);
-            case 12:
-              return _context.abrupt("break", 13);
-            case 13:
+              // valid nickname
+              setReqType('C');
+              setNickname(input);
+              document.querySelector('div.right-login input').setAttribute('placeholder', '6-Digit Code');
+              return _context.abrupt("break", 21);
+            case 15:
+              // invalid code
+              document.querySelector('div.right-login p').innerText = 'Incorrect code';
+              document.querySelector('div.right-login p').setAttribute('class', 'error');
+              return _context.abrupt("break", 21);
+            case 18:
+              // invalid nickname
+              document.querySelector('div.right-login p').innerText = 'Nickname not found';
+              document.querySelector('div.right-login p').setAttribute('class', 'error');
+              return _context.abrupt("break", 21);
+            case 21:
               setInput('');
-            case 14:
+            case 22:
             case "end":
               return _context.stop();
           }
@@ -92,6 +106,10 @@ function LoginLHN() {
       }, _callee);
     }));
     return _login.apply(this, arguments);
+  }
+  function toggleLHN() {
+    document.querySelector('div.lhn').classList.toggle('active');
+    document.querySelector('button.nav-button').classList.toggle('active');
   }
   function selectTab(event) {
     var _document$querySelect, _document$getElementB;
@@ -114,6 +132,8 @@ function LoginLHN() {
       onClick: selectTab
     }, label);
   }
+  // lhn end
+
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
     "class": "nav-button",
     onClick: toggleLHN
@@ -123,11 +143,14 @@ function LoginLHN() {
     "class": "nav-list"
   }, renderTab('Home', true), renderTab('Receipt'), renderTab('Message'), renderTab('TicTacToe'), renderTab('5'))), /*#__PURE__*/React.createElement("div", {
     "class": "right-login"
-  }, /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("p", null, "Text"), /*#__PURE__*/React.createElement("input", {
+  }, /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("p", null, "Message"), /*#__PURE__*/React.createElement("input", {
     value: input,
     placeholder: "DC Nickname",
     onChange: function onChange(event) {
       return setInput(event.target.value);
+    },
+    onKeyPress: function onKeyPress(event) {
+      if (event.key === 'Enter') login();
     }
   }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
     onClick: resetLogin

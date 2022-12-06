@@ -4,16 +4,13 @@ export default function LoginLHN() {
 	const [input, setInput] = useState();
 	const [reqType, setReqType] = useState('N');
 	const [nickname, setNickname] = useState();
-
-	function toggleLHN() {
-		document.querySelector('div.lhn').classList.toggle('active');
-		document.querySelector('button.nav-button').classList.toggle('active');
-	}
-
+	
+	// login
 	function resetLogin() {
 		setInput('');
 		setReqType('N');
 		setNickname();
+		document.querySelector('div.right-login p').setAttribute('class', '');
 		document.querySelector('div.right-login input').setAttribute('placeholder', 'DC Nickname');
 	}
 
@@ -30,26 +27,39 @@ export default function LoginLHN() {
 			})
 		});
 
-		if (reqType === 'N') {
-			setReqType('C');
-			setNickname(input);
-			document.querySelector('div.right-login input').setAttribute('placeholder', '6-Digit Code');
-		}
+		// default class and reflow for animation
+		document.querySelector('div.right-login p').setAttribute('class', '');
+		document.querySelector('div.right-login p').offsetWidth;
 
+		// status handling
 		switch (res.status) {
-			case 200:
+			case 200:	// log in
 				document.querySelector('div.left-login').setAttribute('class', 'lhn');
 				document.querySelector('div.right-login').classList.add('auth');
 				break;
-			case 202:
+			case 202:	// valid nickname
+				setReqType('C');
+				setNickname(input);
+				document.querySelector('div.right-login input').setAttribute('placeholder', '6-Digit Code');
 				break;
-			case 401:
+			case 401:	// invalid code
+				document.querySelector('div.right-login p').innerText = 'Incorrect code';
+				document.querySelector('div.right-login p').setAttribute('class', 'error');
 				break;
-			case 404:
+			case 404: // invalid nickname
+				document.querySelector('div.right-login p').innerText = 'Nickname not found';
+				document.querySelector('div.right-login p').setAttribute('class', 'error');
 				break;
 		}
 
 		setInput('');
+	}
+	// login end
+
+	// lhn
+	function toggleLHN() {
+		document.querySelector('div.lhn').classList.toggle('active');
+		document.querySelector('button.nav-button').classList.toggle('active');
 	}
 
 	function selectTab(event) {
@@ -70,6 +80,7 @@ export default function LoginLHN() {
 	function renderTab(label, firstTab) {
 		return <li class={`${firstTab ? 'selected' : ''}`} onClick={selectTab}>{label}</li>
 	}
+	// lhn end
 
 	return(
 		<React.Fragment>
@@ -87,11 +98,12 @@ export default function LoginLHN() {
 			</div>
 			<div class="right-login">
 				<span/>
-				<p>Text</p>
+				<p>Message</p>
 				<input
 					value={input}
 					placeholder='DC Nickname'
 					onChange={event => setInput(event.target.value)}
+					onKeyPress={event => { if (event.key === 'Enter') login() }}
 				/>
 				<div>
 					<button onClick={resetLogin}>Reset</button>
