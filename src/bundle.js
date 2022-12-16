@@ -26,19 +26,11 @@ function LoginLHN() {
     _useState4 = _slicedToArray(_useState3, 2),
     reqType = _useState4[0],
     setReqType = _useState4[1];
-  var _useState5 = useState(),
-    _useState6 = _slicedToArray(_useState5, 2),
-    nickname = _useState6[0],
-    setNickname = _useState6[1];
 
   // login
-  function checkEnter(event) {
-    if (event.key === 'Enter') login();
-  }
   function resetLogin() {
     setInput('');
     setReqType('N');
-    setNickname();
     document.querySelector('div.right-login p').setAttribute('class', '');
     document.querySelector('div.right-login input').setAttribute('placeholder', 'DC Nickname');
   }
@@ -48,7 +40,7 @@ function LoginLHN() {
   // lhn
   function _login() {
     _login = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      var res;
+      var res, resBody;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -57,48 +49,55 @@ function LoginLHN() {
               return fetch('/login', {
                 method: 'POST',
                 headers: {
-                  "Content-Type": "application/json"
+                  "Content-Type": "application/json",
+                  "Accept": "application/json"
                 },
                 body: JSON.stringify({
                   reqType: reqType,
-                  nickname: nickname ? nickname : input,
-                  code: input
+                  input: input
                 })
               });
             case 2:
               res = _context.sent;
-              // default class and reflow for animation
+              // default class and reflow for error animation
               document.querySelector('div.right-login p').setAttribute('class', '');
               document.querySelector('div.right-login p').offsetWidth;
 
               // status handling
               _context.t0 = res.status;
-              _context.next = _context.t0 === 200 ? 8 : _context.t0 === 202 ? 11 : _context.t0 === 401 ? 15 : _context.t0 === 404 ? 18 : 21;
+              _context.next = _context.t0 === 200 ? 8 : _context.t0 === 202 ? 16 : _context.t0 === 401 ? 19 : _context.t0 === 404 ? 22 : 25;
               break;
             case 8:
-              // log in
+              _context.next = 10;
+              return res.json();
+            case 10:
+              resBody = _context.sent;
+              document.querySelector('span.profile-avatar').style.backgroundImage = "url(".concat(resBody.avatarURL, ")");
+              // hide login screen
               document.querySelector('div.left-login').setAttribute('class', 'lhn');
               document.querySelector('div.right-login').classList.add('auth');
-              return _context.abrupt("break", 21);
-            case 11:
+              resetLogin();
+              return _context.abrupt("break", 26);
+            case 16:
               // valid nickname
               setReqType('C');
-              setNickname(input);
-              document.querySelector('div.right-login input').setAttribute('placeholder', '6-Digit Code');
-              return _context.abrupt("break", 21);
-            case 15:
-              // invalid code
-              document.querySelector('div.right-login p').innerText = 'Incorrect code';
+              document.querySelector('div.right-login input').setAttribute('placeholder', '6-Digit Pin');
+              return _context.abrupt("break", 26);
+            case 19:
+              // invalid pin
+              document.querySelector('div.right-login p').innerText = 'Incorrect pin';
               document.querySelector('div.right-login p').setAttribute('class', 'error');
-              return _context.abrupt("break", 21);
-            case 18:
+              return _context.abrupt("break", 26);
+            case 22:
               // invalid nickname
               document.querySelector('div.right-login p').innerText = 'Nickname not found';
               document.querySelector('div.right-login p').setAttribute('class', 'error');
-              return _context.abrupt("break", 21);
-            case 21:
+              return _context.abrupt("break", 26);
+            case 25:
+              return _context.abrupt("break", 26);
+            case 26:
               setInput('');
-            case 22:
+            case 27:
             case "end":
               return _context.stop();
           }
@@ -126,6 +125,18 @@ function LoginLHN() {
     // close lhn
     document.querySelector('button.nav-button').click();
   }
+  function logout() {
+    fetch('/logout', {
+      method: 'POST'
+    });
+    // default home tab
+    document.querySelector('div.lhn ul li:first-child').click();
+    // clear profile
+    document.querySelector('span.profile-avatar').style.backgroundImage = '';
+    // show login screen
+    document.querySelector('div.lhn').setAttribute('class', 'left-login');
+    document.querySelector('div.right-login').classList.remove('auth');
+  }
   function renderTab(label, firstTab) {
     return /*#__PURE__*/React.createElement("li", {
       "class": "".concat(firstTab ? 'selected' : ''),
@@ -141,7 +152,9 @@ function LoginLHN() {
     "class": "left-login"
   }, /*#__PURE__*/React.createElement("ul", {
     "class": "nav-list"
-  }, renderTab('Home', true), renderTab('Receipt'), renderTab('Message'), renderTab('TicTacToe'), renderTab('5'))), /*#__PURE__*/React.createElement("div", {
+  }, renderTab('Home', true), renderTab('Receipt'), renderTab('Message'), renderTab('TicTacToe'), /*#__PURE__*/React.createElement("li", {
+    onClick: logout
+  }, "Logout"))), /*#__PURE__*/React.createElement("div", {
     "class": "right-login"
   }, /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("p", null, "Message"), /*#__PURE__*/React.createElement("input", {
     value: input,
@@ -169,7 +182,6 @@ exports["default"] = PageHome;
 var _React = React,
   useEffect = _React.useEffect;
 function PageHome() {
-  useEffect(function () {}, []);
   return /*#__PURE__*/React.createElement("div", {
     "class": "page-container active",
     id: "containerHome"
@@ -178,7 +190,7 @@ function PageHome() {
   }, /*#__PURE__*/React.createElement("div", {
     "class": "profile-card"
   }, /*#__PURE__*/React.createElement("span", {
-    "class": "profile-image"
+    "class": "profile-avatar"
   }))));
 }
 
@@ -311,6 +323,10 @@ function PageTicTacToe() {
       events.onmessage = function (event) {
         var parsedData = JSON.parse(event.data);
         setBoard(parsedData);
+      };
+      events.onerror = function (event) {
+        console.log('Rem is down. Connection lost');
+        events.close();
       };
       setListening(true);
     }

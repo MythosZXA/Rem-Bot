@@ -38,6 +38,7 @@
 	height: 100%;
 	width: 50%;
 	background-color: bisque;
+	transition: all 1s;
 }
 
 .right-login.auth {
@@ -125,6 +126,8 @@
 	width: 300px;
 	border-radius: 0 40px 40px 0;
 	background-image: url('https://i.imgur.com/oO1SZAs.jpg');
+	background-color: rgba(0, 0, 0, .2);
+	background-blend-mode: multiply;
 	background-position: top;
 	transform: translateX(-400px);
 	transition: all 1s;
@@ -147,6 +150,12 @@
 	border-radius: 50px;
 	padding: 10px 0 10px 10%;
 	font-size: 18px;
+}
+
+.lhn ul li:last-child {
+	margin-top: 50px;
+	padding-left: 0;
+	text-align: center;
 }
 
 .lhn ul li:not(.selected):hover {
@@ -189,13 +198,13 @@
 	background-color: white;
 }
 
-.profile-image {
+.profile-avatar {
 	position: absolute;
 	height: 150px;
 	width: 150px;
 	margin-left: 1%;
 	border-radius: 50%;
-	background-color: gray;
+	background-size: cover;
 }
 /* page home end */
 

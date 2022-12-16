@@ -1,5 +1,9 @@
 const { MessageEmbed } = require('discord.js');
 
+function db(message, arg, remDB) {
+	console.log(remDB.get(arg[2]));
+}
+
 function help(message) {
 	const helpChannel = message.client.channels.cache.find(channel => channel.name === 'help');
 	const helpEmbed = new MessageEmbed()
@@ -75,6 +79,7 @@ async function wakeraf(message, arg, remDB, channels) {
 }
 
 module.exports = {
+	db,
 	help,
 	message,
 	soundboard,

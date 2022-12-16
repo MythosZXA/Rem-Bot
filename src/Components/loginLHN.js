@@ -3,13 +3,11 @@ const { useState } = React
 export default function LoginLHN() {
 	const [input, setInput] = useState();
 	const [reqType, setReqType] = useState('N');
-	const [nickname, setNickname] = useState();
 	
 	// login
 	function resetLogin() {
 		setInput('');
 		setReqType('N');
-		setNickname();
 		document.querySelector('div.right-login p').setAttribute('class', '');
 		document.querySelector('div.right-login input').setAttribute('placeholder', 'DC Nickname');
 	}
@@ -18,37 +16,42 @@ export default function LoginLHN() {
 		const res = await fetch('/login', {
 			method: 'POST',
 			headers: {
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
+				"Accept": "application/json"
 			},
 			body: JSON.stringify({
 				reqType: reqType,
-				nickname: nickname ? nickname : input,
-				code: input
+				input: input
 			})
 		});
 
-		// default class and reflow for animation
+		// default class and reflow for error animation
 		document.querySelector('div.right-login p').setAttribute('class', '');
 		document.querySelector('div.right-login p').offsetWidth;
 
 		// status handling
 		switch (res.status) {
 			case 200:	// log in
+				const resBody = await res.json();
+				document.querySelector('span.profile-avatar').style.backgroundImage = `url(${resBody.avatarURL})`;
+				// hide login screen
 				document.querySelector('div.left-login').setAttribute('class', 'lhn');
 				document.querySelector('div.right-login').classList.add('auth');
+				resetLogin();
 				break;
 			case 202:	// valid nickname
 				setReqType('C');
-				setNickname(input);
-				document.querySelector('div.right-login input').setAttribute('placeholder', '6-Digit Code');
+				document.querySelector('div.right-login input').setAttribute('placeholder', '6-Digit Pin');
 				break;
-			case 401:	// invalid code
-				document.querySelector('div.right-login p').innerText = 'Incorrect code';
+			case 401:	// invalid pin
+				document.querySelector('div.right-login p').innerText = 'Incorrect pin';
 				document.querySelector('div.right-login p').setAttribute('class', 'error');
 				break;
 			case 404: // invalid nickname
 				document.querySelector('div.right-login p').innerText = 'Nickname not found';
 				document.querySelector('div.right-login p').setAttribute('class', 'error');
+				break;
+			default:
 				break;
 		}
 
@@ -77,6 +80,17 @@ export default function LoginLHN() {
 		document.querySelector('button.nav-button').click();
 	}
 
+	function logout() {
+		fetch('/logout', { method: 'POST' });
+		// default home tab
+		document.querySelector('div.lhn ul li:first-child').click();
+		// clear profile
+		document.querySelector('span.profile-avatar').style.backgroundImage = '';
+		// show login screen
+		document.querySelector('div.lhn').setAttribute('class', 'left-login');
+		document.querySelector('div.right-login').classList.remove('auth');
+	}
+
 	function renderTab(label, firstTab) {
 		return <li class={`${firstTab ? 'selected' : ''}`} onClick={selectTab}>{label}</li>
 	}
@@ -93,7 +107,7 @@ export default function LoginLHN() {
 					{renderTab('Receipt')}
 					{renderTab('Message')}
 					{renderTab('TicTacToe')}
-					{renderTab('5')}
+					<li onClick={logout}>Logout</li>
 				</ul>
 			</div>
 			<div class="right-login">

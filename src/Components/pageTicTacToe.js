@@ -14,6 +14,11 @@ export default function PageTicTacToe() {
 				setBoard(parsedData);
 			};
 
+			events.onerror = event => {
+				console.log('Rem is down. Connection lost');
+				events.close();
+			};
+
 			setListening(true);
 		}
 	}, []);

@@ -1,13 +1,16 @@
 // express
 const express = require('express');
 const app = express();
+const cookieParser = require('cookie-parser');
+const crypto = require('crypto');
 app.listen(process.env.PORT);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./src'));
+app.use(cookieParser());
 
 const clientFunctions = require('./Functions/clientFunctions');
-const memberCodes = new Map();
+const session = new Map();
 let clients = [];
 let tictactoe = ['.','.','.','.','.','.','.','.','.'];
 
@@ -56,27 +59,68 @@ async function setupServer(rem, remDB) {
 	// });
 
 	app.post('/login', (req, res) => {
-		if (req.body.nickname.toLowerCase() === 'admin') {
-			res.sendStatus(200);
-			return;
-		}
-		
-		if (req.body.reqType === 'N') { // nickname request
-			const nickname = req.body.nickname.toLowerCase();
-			const member = server.members.cache.find(member => member?.nickname?.toLowerCase() === nickname);
-			if (!member) {
-				res.sendStatus(404);
-			} else {
-				const randomCode = (Math.floor(Math.random() * (1000000 - 100000) + 100000)).toString();
-				member.send(randomCode);
-				memberCodes.set(nickname, randomCode);
-				res.sendStatus(202);
+		switch (req.body.reqType) {
+			case 'N': {
+				const nickname = req.body.input.toLowerCase();
+				const member = server.members.cache.find(member => member?.nickname?.toLowerCase() === nickname);
+
+				if (nickname === 'remadmin') {
+					res.send({});
+					return;
+				}
+				if (!member) {
+					res.sendStatus(404);
+					return;
+				}
+
+				const randomPin = Math.floor(Math.random() * (1000000 - 100000) + 100000).toString();
+				session.set(nickname, randomPin);
+				member.send(randomPin);
+				res.cookie('nickname', nickname, {
+					secure: true,
+					httpOnly: true,
+					sameSite: 'strict'
+				})
+				.sendStatus(202);
+				break;
 			}
-		} else { // code request
-			const recievedCode = req.body.code;
-			const correctCode = memberCodes.get(req.body.nickname.toLowerCase());
-			recievedCode === correctCode ? res.sendStatus(200) : res.sendStatus(401);
+			case 'C': {
+				const nickname = req.cookies.nickname.toLowerCase();
+				const recievedPin = req.body.input;
+				const correctPin = session.get(nickname);
+
+				if (recievedPin !== correctPin) {
+					res.sendStatus(401);
+					return;
+				}
+
+				const member = server.members.cache.find(member => member?.nickname?.toLowerCase() === nickname);
+				const avatarURL = member.displayAvatarURL();
+				const sessionID = crypto.randomUUID();
+				session.delete(nickname);
+				session.set(sessionID, nickname);
+				res.cookie('sessionID', sessionID, {
+					secure: true,
+					httpOnly: true,
+					sameSite: 'strict'
+				})
+				.send({
+					avatarURL: avatarURL
+				});
+				break;
+			}
+			default:
+				break;
 		}
+
+		req.on('close', () => {
+			console.log('Connection closed');
+			session.delete(req.cookies.sessionID);
+		});
+	});
+
+	app.post('/logout', (req, res) => {
+		session.delete(req.cookies.sessionID);
 	});
 
 	app.post('/receipt', (req, res) => {

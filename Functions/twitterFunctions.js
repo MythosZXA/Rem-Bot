@@ -39,7 +39,7 @@ function checkForNewTweets(remDB, channels) {
 				tweet.created_at = latestTweet.created_at;
 			}
 		});
-	}, 1000 * 60 * 1);
+	}, 1000 * 60 * 5);
 }
 
 /**
