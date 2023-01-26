@@ -57,29 +57,27 @@ export default function PageTicTacToe() {
 
   return(
     <div class="page-container" id="containerTicTacToe">
-			<div class="page-ttt">
-				<button class="form-button" onClick={resetBoard}>Reset</button>
-				<div class="ttt-section">
-					<button class="ttt-marker X" onClick={selectMarker}>X</button>
-					<div class="ttt-board">
-						<span>
-							<button onClick={() => selectSquare(0)}>{board[0]}</button>
-							<button onClick={() => selectSquare(1)}>{board[1]}</button>
-							<button onClick={() => selectSquare(2)}>{board[2]}</button>
-						</span>
-						<span>
-							<button onClick={() => selectSquare(3)}>{board[3]}</button>
-							<button onClick={() => selectSquare(4)}>{board[4]}</button>
-							<button onClick={() => selectSquare(5)}>{board[5]}</button>
-						</span>
-						<span>
-							<button onClick={() => selectSquare(6)}>{board[6]}</button>
-							<button onClick={() => selectSquare(7)}>{board[7]}</button>
-							<button onClick={() => selectSquare(8)}>{board[8]}</button>
-						</span>
-					</div>
-					<button class="ttt-marker O" onClick={selectMarker}>O</button>
+			<button class="form-button" onClick={resetBoard}>Reset</button>
+			<div class="ttt-section">
+				<button class="ttt-marker X" onClick={selectMarker}>X</button>
+				<div class="ttt-board">
+					<span>
+						<button onClick={() => selectSquare(0)}>{board[0]}</button>
+						<button onClick={() => selectSquare(1)}>{board[1]}</button>
+						<button onClick={() => selectSquare(2)}>{board[2]}</button>
+					</span>
+					<span>
+						<button onClick={() => selectSquare(3)}>{board[3]}</button>
+						<button onClick={() => selectSquare(4)}>{board[4]}</button>
+						<button onClick={() => selectSquare(5)}>{board[5]}</button>
+					</span>
+					<span>
+						<button onClick={() => selectSquare(6)}>{board[6]}</button>
+						<button onClick={() => selectSquare(7)}>{board[7]}</button>
+						<button onClick={() => selectSquare(8)}>{board[8]}</button>
+					</span>
 				</div>
+				<button class="ttt-marker O" onClick={selectMarker}>O</button>
 			</div>
     </div>
   )

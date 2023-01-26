@@ -29,10 +29,16 @@ async function processReceipt(receiptData) {
 	rentChannel.send(taggedMembers + Formatters.codeBlock(displayString));
 }
 
-function remMessage(messageData) {
-	const channelName = 'console';
-	const destinationChannel = rem.serverChannels.get(channelName);
-	destinationChannel.send(messageData.message);
+async function remMessage(messageData) {
+	const destinationName = messageData.chatName;
+	const server = await rem.guilds.fetch('773660297696772096');
+	const serverMember = server.members.cache.find(member => 
+		member.nickname === destinationName);
+	if (serverMember) {
+		serverMember.send(messageData.message);
+	} else {
+		rem.serverChannels.get(destinationName).send(messageData.message);
+	}
 }
 
 module.exports = {

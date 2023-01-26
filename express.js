@@ -28,6 +28,13 @@ async function setupServer(rem, remDB) {
 		res.send({ channels: textChannels });
 	});
 
+	app.get('/serverMembers', async (req, res) => {
+		const server = await rem.guilds.fetch('773660297696772096');
+		const members = server.members.cache;
+		const realMembers = members.filter(member => !member.user.bot);
+		res.send({ members: realMembers });
+	})
+
 	app.get('/events', (req, res, next) => {
 		const headers = {
 			'Content-Type': 'text/event-stream',
@@ -60,12 +67,12 @@ async function setupServer(rem, remDB) {
 
 	app.post('/login', (req, res) => {
 		switch (req.body.reqType) {
-			case 'N': {
+			case 'N': { // Nickname request
 				const nickname = req.body.input.toLowerCase();
 				const member = server.members.cache.find(member => member?.nickname?.toLowerCase() === nickname);
 
 				if (nickname === 'remadmin') {
-					res.send({});
+					res.send({ avatarURL: rem.user.avatarURL()});
 					return;
 				}
 				if (!member) {
@@ -77,14 +84,14 @@ async function setupServer(rem, remDB) {
 				session.set(nickname, randomPin);
 				member.send(randomPin);
 				res.cookie('nickname', nickname, {
-					secure: true,
-					httpOnly: true,
-					sameSite: 'strict'
+					secure: true, // Http(s)
+					httpOnly: true, // Client JS code can't access
+					sameSite: 'strict' // Same port
 				})
 				.sendStatus(202);
 				break;
 			}
-			case 'C': {
+			case 'C': { // Code request
 				const nickname = req.cookies.nickname.toLowerCase();
 				const recievedPin = req.body.input;
 				const correctPin = session.get(nickname);

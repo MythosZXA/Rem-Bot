@@ -128,7 +128,7 @@ function LoginLHN() {
   function logout() {
     fetch('/logout', {
       method: 'POST'
-    });
+    }); // fix
     // default home tab
     document.querySelector('div.lhn ul li:first-child').click();
     // clear profile
@@ -186,12 +186,10 @@ function PageHome() {
     "class": "page-container active",
     id: "containerHome"
   }, /*#__PURE__*/React.createElement("div", {
-    "class": "page-home"
-  }, /*#__PURE__*/React.createElement("div", {
     "class": "profile-card"
   }, /*#__PURE__*/React.createElement("span", {
     "class": "profile-avatar"
-  }))));
+  })));
 }
 
 },{}],3:[function(require,module,exports){
@@ -219,10 +217,15 @@ var _React = React,
 function PageMessage() {
   var _useState = useState(''),
     _useState2 = _slicedToArray(_useState, 2),
-    message = _useState2[0],
-    setMessage = _useState2[1];
+    chatName = _useState2[0],
+    setChatName = _useState2[1];
+  var _useState3 = useState(''),
+    _useState4 = _slicedToArray(_useState3, 2),
+    message = _useState4[0],
+    setMessage = _useState4[1];
   var inputMessage = useRef(null);
-  var selectChannel = useRef(null);
+
+  // populate chat select with server members
   useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     var response, responseObj;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -230,53 +233,140 @@ function PageMessage() {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return fetch('./textChannels');
+            return fetch('./serverMembers');
           case 2:
             response = _context.sent;
-            if (!(response.status === 200)) {
-              _context.next = 10;
+            if (!(response.status !== 200)) {
+              _context.next = 6;
               break;
             }
-            _context.next = 6;
-            return response.json();
+            console.log('Failed to retrieve server members');
+            return _context.abrupt("return");
           case 6:
+            _context.next = 8;
+            return response.json();
+          case 8:
             responseObj = _context.sent;
-            responseObj.channels.forEach(function (channel) {
-              var option = document.createElement('option');
-              option.text = channel.name;
-              selectChannel.current.add(option);
+            responseObj.members.forEach(function (member) {
+              // avatar
+              var span = document.createElement('span');
+              span.style.backgroundImage = "url(".concat(member.displayAvatarURL, ")");
+              // name
+              var p = document.createElement('p');
+              p.textContent = member.nickname;
+              // chat tab
+              var li = document.createElement('li');
+              li.appendChild(span);
+              li.appendChild(p);
+              li.addEventListener('click', selectChat);
+              // add tab to list
+              var listMembers = document.querySelector('span.chat-select ul');
+              listMembers.appendChild(li);
             });
-            _context.next = 11;
-            break;
           case 10:
-            console.log('Failed to retrieve channels');
-          case 11:
           case "end":
             return _context.stop();
         }
       }
     }, _callee);
   })), []);
-  function sendMessage(event) {
-    (0, _commonFunctions.sendForm)(event);
-    setMessage('');
-    inputMessage.current.focus();
+
+  // populate chat select with text channels
+  useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    var response, responseObj;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return fetch('./textChannels');
+          case 2:
+            response = _context2.sent;
+            if (!(response.status !== 200)) {
+              _context2.next = 6;
+              break;
+            }
+            console.log('Failed to retrieve channels');
+            return _context2.abrupt("return");
+          case 6:
+            _context2.next = 8;
+            return response.json();
+          case 8:
+            responseObj = _context2.sent;
+            responseObj.channels.forEach(function (channel) {
+              // chat tab
+              var li = document.createElement('li');
+              li.textContent = channel.name;
+              li.addEventListener('click', selectChat);
+              // add tab to list
+              var listMembers = document.querySelector('span.chat-select div ul:last-child');
+              listMembers.appendChild(li);
+            });
+          case 10:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  })), []);
+  function selectChat() {
+    var _document$querySelect;
+    // unselect old chat
+    (_document$querySelect = document.querySelector('span.chat-select div ul li.selected')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.toggle('selected');
+    // select new chat
+    this.classList.toggle('selected');
+    // update selected chat name
+    setChatName(this.innerText);
+  }
+  function sendMessage() {
+    return _sendMessage.apply(this, arguments);
+  }
+  function _sendMessage() {
+    _sendMessage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+      var res;
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.next = 2;
+              return fetch('/message', {
+                method: 'POST',
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                  chatName: chatName,
+                  message: message
+                })
+              });
+            case 2:
+              res = _context3.sent;
+              setMessage('');
+              inputMessage.current.focus();
+            case 5:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      }, _callee3);
+    }));
+    return _sendMessage.apply(this, arguments);
   }
   return /*#__PURE__*/React.createElement("div", {
     "class": "page-container",
     id: "containerMessage"
-  }, /*#__PURE__*/React.createElement("div", {
-    "class": "page-message"
-  }, /*#__PURE__*/React.createElement("form", {
-    action: "/message",
-    method: "post",
-    onSubmit: sendMessage
-  }, /*#__PURE__*/React.createElement("select", {
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    "class": "chat-select"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "checkbox",
+    id: "toggleSelect"
+  }), /*#__PURE__*/React.createElement("label", {
+    "for": "toggleSelect"
+  }, /*#__PURE__*/React.createElement("span", null)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("ul", null), /*#__PURE__*/React.createElement("ul", null))), /*#__PURE__*/React.createElement("span", {
+    "class": "chat-message"
+  }, /*#__PURE__*/React.createElement("input", {
     "class": "form-input",
-    ref: selectChannel
-  }), /*#__PURE__*/React.createElement("input", {
-    "class": "form-input",
-    name: "message",
     placeholder: "Message",
     size: "100",
     autocomplete: "off",
@@ -284,6 +374,9 @@ function PageMessage() {
     ref: inputMessage,
     onChange: function onChange(event) {
       return setMessage(event.target.value);
+    },
+    onKeyPress: function onKeyPress(event) {
+      if (event.key === 'Enter') sendMessage();
     }
   }))));
 }
@@ -362,8 +455,6 @@ function PageTicTacToe() {
   return /*#__PURE__*/React.createElement("div", {
     "class": "page-container",
     id: "containerTicTacToe"
-  }, /*#__PURE__*/React.createElement("div", {
-    "class": "page-ttt"
   }, /*#__PURE__*/React.createElement("button", {
     "class": "form-button",
     onClick: resetBoard
@@ -413,7 +504,7 @@ function PageTicTacToe() {
   }, board[8]))), /*#__PURE__*/React.createElement("button", {
     "class": "ttt-marker O",
     onClick: selectMarker
-  }, "O"))));
+  }, "O")));
 }
 
 },{}],5:[function(require,module,exports){

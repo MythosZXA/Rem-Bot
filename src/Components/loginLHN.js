@@ -81,7 +81,7 @@ export default function LoginLHN() {
 	}
 
 	function logout() {
-		fetch('/logout', { method: 'POST' });
+		fetch('/logout', { method: 'POST' }); // fix
 		// default home tab
 		document.querySelector('div.lhn ul li:first-child').click();
 		// clear profile
