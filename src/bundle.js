@@ -310,25 +310,106 @@ function PageMessage() {
     }, _callee2);
   })), []);
   function selectChat() {
-    var _document$querySelect;
-    // unselect old chat
-    (_document$querySelect = document.querySelector('span.chat-select div ul li.selected')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.toggle('selected');
-    // select new chat
-    this.classList.toggle('selected');
-    // update selected chat name
-    setChatName(this.innerText);
+    return _selectChat.apply(this, arguments);
+  }
+  function _selectChat() {
+    _selectChat = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+      var _document$querySelect,
+        _this = this;
+      var chatMessage, messageHistory;
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              // unselect old chat
+              (_document$querySelect = document.querySelector('span.chat-select div ul li.selected')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.toggle('selected');
+              // select new chat
+              this.classList.toggle('selected');
+              // update selected chat name
+              setChatName(this.innerText);
+
+              // clear previous chat
+              chatMessage = document.querySelector('span.chat-message');
+              while (chatMessage.childElementCount !== 1) {
+                chatMessage.removeChild(chatMessage.lastChild);
+              }
+              // load chat messages
+              _context3.next = 7;
+              return retrieveMessageHistory(this.innerText);
+            case 7:
+              messageHistory = _context3.sent;
+              messageHistory.forEach(function (message) {
+                // avatar
+                var span = document.createElement('span');
+                span.classList.add(message[0] ? 'right' : 'left');
+                if (!message[0]) span.style.backgroundImage = _this.childNodes[0].style.backgroundImage;
+                // message
+                var p = document.createElement('p');
+                p.classList.add(message[0] ? 'right' : 'left');
+                p.textContent = message[1];
+                // message block
+                var div = document.createElement('div');
+                div.appendChild(span);
+                div.appendChild(p);
+                // add message block to chat
+                chatMessage.appendChild(div);
+              });
+            case 9:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      }, _callee3, this);
+    }));
+    return _selectChat.apply(this, arguments);
+  }
+  function retrieveMessageHistory(_x) {
+    return _retrieveMessageHistory.apply(this, arguments);
+  }
+  function _retrieveMessageHistory() {
+    _retrieveMessageHistory = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(chatName) {
+      var response;
+      return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              _context4.next = 2;
+              return fetch('/messageHistory', {
+                method: 'POST',
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                  chatName: chatName
+                })
+              });
+            case 2:
+              response = _context4.sent;
+              _context4.next = 5;
+              return response.json();
+            case 5:
+              return _context4.abrupt("return", _context4.sent);
+            case 6:
+            case "end":
+              return _context4.stop();
+          }
+        }
+      }, _callee4);
+    }));
+    return _retrieveMessageHistory.apply(this, arguments);
   }
   function sendMessage() {
     return _sendMessage.apply(this, arguments);
   }
   function _sendMessage() {
-    _sendMessage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    _sendMessage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
       var res;
-      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      return _regeneratorRuntime().wrap(function _callee5$(_context5) {
         while (1) {
-          switch (_context3.prev = _context3.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
-              _context3.next = 2;
+              _context5.next = 2;
               return fetch('/message', {
                 method: 'POST',
                 headers: {
@@ -341,15 +422,15 @@ function PageMessage() {
                 })
               });
             case 2:
-              res = _context3.sent;
+              res = _context5.sent;
               setMessage('');
               inputMessage.current.focus();
             case 5:
             case "end":
-              return _context3.stop();
+              return _context5.stop();
           }
         }
-      }, _callee3);
+      }, _callee5);
     }));
     return _sendMessage.apply(this, arguments);
   }
@@ -365,7 +446,7 @@ function PageMessage() {
     "for": "toggleSelect"
   }, /*#__PURE__*/React.createElement("span", null)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("ul", null), /*#__PURE__*/React.createElement("ul", null))), /*#__PURE__*/React.createElement("span", {
     "class": "chat-message"
-  }, /*#__PURE__*/React.createElement("input", {
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("input", {
     "class": "form-input",
     placeholder: "Message",
     size: "100",
@@ -378,7 +459,7 @@ function PageMessage() {
     onKeyPress: function onKeyPress(event) {
       if (event.key === 'Enter') sendMessage();
     }
-  }))));
+  })))));
 }
 
 },{"../commonFunctions":5}],4:[function(require,module,exports){

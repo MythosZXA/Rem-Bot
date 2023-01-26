@@ -33,7 +33,7 @@ async function setupServer(rem, remDB) {
 		const members = server.members.cache;
 		const realMembers = members.filter(member => !member.user.bot);
 		res.send({ members: realMembers });
-	})
+	});
 
 	app.get('/events', (req, res, next) => {
 		const headers = {
@@ -133,6 +133,20 @@ async function setupServer(rem, remDB) {
 	app.post('/receipt', (req, res) => {
 		clientFunctions.processReceipt(req.body);
 		res.redirect('/');
+	});
+
+	app.post('/messageHistory', async (req, res) => {
+		const server = await rem.guilds.fetch('773660297696772096');
+		const chatName = req.body.chatName;
+		const serverMember = server.members.cache.find(member => 
+			member.nickname === chatName);
+		const dmChannel = await serverMember.user.createDM();
+		const messageHistory = await dmChannel.messages.fetch({ limit: 10 });
+		const arr = [];
+		messageHistory.forEach(message => {
+			arr.push([message.author.bot, message.content]);
+		});
+		res.send(arr);
 	});
 
 	app.post('/message', (req, res) => {

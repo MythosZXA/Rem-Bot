@@ -183,6 +183,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	padding-top: 10%;
 	height: 100%;
 	width: 100%;
 	transform: translateY(100%);
@@ -309,10 +310,10 @@ div:has(> .chat-select) {
 
 .chat-select ul li span {
 	float: left;
-	height: 30px;
-	width: 30px;
 	margin: 0 10px;
 	border-radius: 50%;
+	height: 30px;
+	width: 30px;
 	background-size: cover;
 	transform: translateY(-6px);
 }
@@ -324,6 +325,50 @@ div:has(> .chat-select) {
 	background-color: white;
 	height: 400px;
 	width: 800px;
+	overflow-y: scroll;
+}
+
+.chat-message div:first-child {
+	position: fixed;
+	margin: 0;
+	width: auto;
+	background-color: white;
+}
+
+.chat-message div {
+	margin: 5px 0;
+	height: 50px;
+	width: 100%;
+}
+
+.chat-message div span {
+	margin: 5px 10px;
+	border-radius: 50%;
+	height: 30px;
+	width: 30px;
+	background-image: url("https://cdn.discordapp.com/avatars/87682544018931712/9e3ec46b696a206bcd158841a41921b6.webp");
+	background-size: cover;
+}
+
+.chat-message div span.left {
+	float: left;
+}
+
+.chat-message div span.right {
+	float: right;
+	background-image: url("https://cdn.discordapp.com/avatars/773657778593202217/c4970366a906ddb3fd98cf2383157b00.webp");
+}
+
+.chat-message div p {
+	margin: 15px 0;
+}
+
+.chat-message div p.left {
+	float: left;
+}
+
+.chat-message div p.right {
+	float: right;
 }
 /* page message end */
 
@@ -421,7 +466,7 @@ table.receipt.active {
 }
 
 .form-input {
-	margin: 5px;
+	margin: 7px;
 	border-radius: 6px;
 	padding: 8px 24px;
 	animation: slideLeft .1s;
