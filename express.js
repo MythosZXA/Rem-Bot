@@ -21,6 +21,10 @@ async function setupServer(rem, remDB) {
 		res.sendFile(__dirname + '/src/index.html');
 	});
 
+	app.get('/portfolio', (req, res) => {
+		res.sendFile(__dirname + '/src/Portfolio/portfolio.html');
+	})
+
 	app.get('/textChannels', async (req, res) => {
 		const server = await rem.guilds.fetch('773660297696772096');
 		const channels = await server.channels.fetch();

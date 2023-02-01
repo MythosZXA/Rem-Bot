@@ -1,0 +1,139 @@
+* {
+	margin: 0;
+	padding: 0;
+	color: white;
+}
+
+.root {
+	display: flex;
+	height: 100%;
+	background-color: rgb(8, 8, 8);
+}
+
+.side-bar {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	width: 300px;
+	background-color: rgb(24, 24, 24);
+}
+
+.side-bar input {
+	opacity: 0;
+	height: 0;
+	width: 0;
+}
+
+div:has(.side-bar-home:checked) ~ .page.home,
+div:has(.side-bar-about:checked) ~ .page.about,
+div:has(.side-bar-services:checked) ~ .page.services,
+div:has(.side-bar-portfolio:checked) ~ .page.portfolio,
+div:has(.side-bar-contact:checked) ~ .page.contact {
+  opacity: 1;
+	transition: .5s;
+}
+
+.side-bar ul {
+	width: 90%;
+	list-style-type: none;
+}
+
+.side-bar ul li {
+	margin: 20px 0;
+	text-align: center;
+	font-size: xx-large;
+	cursor: pointer;
+}
+
+.side-bar ul hr {
+	border-radius: 50%;
+	height: 2px;
+	background-color: antiquewhite;
+}
+
+.page {
+	position: absolute;
+	margin-left: 300px;
+	height: 100%;
+	width: calc(100% - 300px);
+	opacity: 0;
+	transition: opacity .5s;
+}
+
+.page.home {
+	
+}
+
+.page.contact {
+	
+}
+
+.title {
+ 	padding: 30px;
+	font-size: 25px;
+}
+
+.title h1::before {
+	display: block;
+	position: absolute;
+	top: 100px;
+	content: '';
+	height: 4px;
+	width: 50px;
+	background-color: orangered;
+}
+
+.title h1::after {
+	display: block;
+	content: '';
+	height: 4px;
+	width: 100px;
+	background-color: orangered;
+}
+
+.vertical,
+#divContacts div {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.horizontal-around {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.section {
+	height: 250px;
+}
+
+#divContacts path {
+	color: orangered;
+}
+
+input[type="text"] {
+	flex-basis: 23%;
+	border-radius: 15px;
+	padding: 12px;
+	background-color: rgb(24, 24, 24);
+}
+
+textarea {
+	display: block;
+	margin: 20px auto;
+	border-radius: 20px;
+	padding: 12px;
+	height: 200px;
+	width: 89.5%;
+	background-color: rgb(24, 24, 24);
+}
+
+.submit {
+	margin-left: 5%;
+	border-radius: 15px;
+	padding: 12px;
+	background-color: orangered;
+}

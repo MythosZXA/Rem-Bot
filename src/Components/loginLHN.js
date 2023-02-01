@@ -123,6 +123,7 @@ export default function LoginLHN() {
 					<button onClick={resetLogin}>Reset</button>
 					<button onClick={login}>Login</button>
 				</div>
+				<button onClick={() => {location.href='/portfolio'}}>Portfolio</button>
 			</div>
 		</React.Fragment>
 	)

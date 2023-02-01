@@ -8,7 +8,8 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ] src/index.js -o src/bundle.js"
+    "buildM": "browserify -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ] src/index.js -o src/bundle.js",
+    "buildP": "browserify -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ] src/Portfolio/portfolio.js -o src/Portfolio/bundle.js"
   },
   "keywords": [],
   "author": "",
@@ -33,6 +34,7 @@
     "libsodium-wrappers": "^0.7.9",
     "mysql2": "^2.3.3",
     "node.js": "0.0.1-security",
+    "react-icons": "^4.7.1",
     "request": "^2.88.2",
     "sequelize": "*",
     "webpack": "^5.74.0",
