@@ -78,6 +78,14 @@ async function wakeraf(message, arg, remDB, channels) {
 	}, 1000);
 }
 
+function serveru(message) {
+	message.client.user.setActivity(' ');
+}
+
+function serverd(message) {
+	message.client.user.setActivity();
+}
+
 module.exports = {
 	db,
 	help,
@@ -85,5 +93,7 @@ module.exports = {
 	soundboard,
 	sleep,
 	test,
-	wakeraf
+	wakeraf,
+	serveru,
+	serverd
 };
