@@ -1,8 +1,30 @@
-const { useState } = React
+const { useState, useEffect } = React
 
 export default function LoginLHN() {
 	const [input, setInput] = useState();
 	const [reqType, setReqType] = useState('N');
+
+	// login if there is a sessionID cookie
+	useEffect(async () => {
+		const res = await fetch('/login', {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+				"Accept": "application/json"
+			},
+			body: JSON.stringify({
+				reqType: 'S'
+			})
+		});
+		if (res.status === 401) return;
+
+		const resBody = await res.json();
+		document.querySelector('span.profile-avatar').style.backgroundImage = `url(${resBody.avatarURL})`;
+		// hide login screen
+		document.querySelector('div.left-login').setAttribute('class', 'lhn');
+		document.querySelector('div.right-login').classList.add('auth');
+		resetLogin();
+	}, []);
 	
 	// login
 	function resetLogin() {
@@ -81,7 +103,7 @@ export default function LoginLHN() {
 	}
 
 	function logout() {
-		fetch('/logout', { method: 'POST' }); // fix
+		fetch('/logout', { method: 'POST' });
 		// default home tab
 		document.querySelector('div.lhn ul li:first-child').click();
 		// clear profile

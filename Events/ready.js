@@ -17,20 +17,20 @@ module.exports = {
 		
 		// update leaderboards on startup
 		// leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
-		leaderboardFunctions.updateGamblingLeaderboard(rem, remDB, channels);
+		// leaderboardFunctions.updateGamblingLeaderboard(rem, remDB, channels);
 
 		// check for special days when tomorrow comes
-		specialDaysFunctions.checkHoliday(channels);
-		specialDaysFunctions.checkBirthday(server, remDB, channels);
+		// specialDaysFunctions.checkHoliday(channels);
+		// specialDaysFunctions.checkBirthday(server, remDB, channels);
 
 		// update on new day
-		leaderboardFunctions.checkStreakCondition(rem, remDB, channels);
-		twitterFunctions.checkForNewTweets(remDB, channels);
-		voiceFunctions.setupSoundboard(channels);
+		// leaderboardFunctions.checkStreakCondition(rem, remDB, channels);
+		// twitterFunctions.checkForNewTweets(remDB, channels);
+		// voiceFunctions.setupSoundboard(channels);
 
 		// setups
-		rem.commands.get('roulette').start(rem, remDB, channels);
-		rem.commands.get('timer').setupTimers(rem, remDB);
+		// rem.commands.get('roulette').start(rem, remDB, channels);
+		// rem.commands.get('timer').setupTimers(rem, remDB);
 
 		// server
 		require('../express').setupServer(rem, remDB);

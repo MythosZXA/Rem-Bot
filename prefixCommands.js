@@ -1,5 +1,11 @@
 const { MessageEmbed } = require('discord.js');
 
+function code(message, arg) {
+	arg.shift(); // removes prefix
+	arg.shift(); // removes command
+	eval(arg.join(" ")); // rebuilds message
+}
+
 function db(message, arg, remDB) {
 	console.log(remDB.get(arg[2]));
 }
@@ -87,6 +93,7 @@ function serverd(message) {
 }
 
 module.exports = {
+	code,
 	db,
 	help,
 	message,

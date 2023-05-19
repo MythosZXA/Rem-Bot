@@ -63,7 +63,48 @@ div:has(.side-bar-contact:checked) ~ .page.contact {
 }
 
 .page.home {
-	
+	display: flex;
+	align-items: center;
+}
+
+.page.home .info {
+	flex: 2;
+}
+
+div:has(> .picture) {
+	flex: 1;
+}
+
+.page.home .picture {
+	height: 350px;
+	width: 300px;
+	background-image: url('https://i.imgur.com/rJnYqNL.jpg');
+	background-size: cover;
+	background-position: center;
+}
+
+.page.home .picture::before {
+	display: block;
+	content: '';
+	position: relative;
+	height: 80;
+	width: 80;
+	border-left: 20px solid;
+	border-top: 20px solid;
+	left: -70px;
+	top: -70px;
+}
+
+.page.home .picture::after {
+	display: block;
+	content: '';
+	position: relative;
+	height: 80;
+	width: 80;
+	border-right: 20px solid;
+	border-bottom: 20px solid;
+	right: -270px;
+	bottom: -230px;
 }
 
 .page.contact {

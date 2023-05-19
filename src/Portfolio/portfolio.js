@@ -44,8 +44,13 @@ function SideBar() {
 function PageHome() {
 	return(
 		<div class="page home">
-			<div class="title">
-				<h1>Home</h1>
+			<div class="info">
+				<h1>Hello, my name is Toan Tran</h1>
+				<h1>L2</h1>
+				<h3>text</h3>
+			</div>
+			<div>
+				<div class="picture"/>
 			</div>
 		</div>
 	)

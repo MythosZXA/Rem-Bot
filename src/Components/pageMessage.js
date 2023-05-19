@@ -68,27 +68,30 @@ export default function PageMessage() {
 		}
 		// load chat messages
 		const messageHistory = await retrieveMessageHistory(this.innerText);
-		messageHistory.forEach(message => {
-			// avatar
-			const span = document.createElement('span');
-			span.classList.add(message[0] ? 'right' : 'left');
-			if (!message[0]) span.style.backgroundImage = this.childNodes[0].style.backgroundImage;
-			// message
-			const p = document.createElement('p');
-			p.classList.add(message[0] ? 'right' : 'left');
-			p.textContent = message[1];
-			// message block
-			const div = document.createElement('div');
-			div.appendChild(span);
-			div.appendChild(p);
-			// add message block to chat
-			chatMessage.appendChild(div);
-		});
+		if (messageHistory) {
+			messageHistory.forEach(message => {
+				// avatar
+				const span = document.createElement('span');
+				span.classList.add(message[0] ? 'right' : 'left');
+				if (!message[0]) span.style.backgroundImage = this.childNodes[0].style.backgroundImage;
+				// message
+				const p = document.createElement('p');
+				p.classList.add(message[0] ? 'right' : 'left');
+				p.textContent = message[1];
+				// message block
+				const div = document.createElement('div');
+				div.appendChild(span);
+				div.appendChild(p);
+				// add message block to chat
+				chatMessage.appendChild(div);
+			});
+		}
 	}
 
 	async function retrieveMessageHistory(chatName) {
 		const response = await fetch('/messageHistory', {
 			method: 'POST',
+			credentials: 'include',
 			headers: {
 				"Content-Type": "application/json",
 				"Accept": "application/json"
@@ -97,7 +100,11 @@ export default function PageMessage() {
 				chatName: chatName
 			})
 		});
-		return await response.json()
+		if (response.status === 200) {
+			return await response.json();
+		} else {
+			return false;
+		}
 	}
 
 	async function sendMessage() {

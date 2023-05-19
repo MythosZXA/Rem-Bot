@@ -11,6 +11,7 @@ app.use(cookieParser());
 
 const clientFunctions = require('./Functions/clientFunctions');
 const session = new Map();
+const admins = new Set();
 let clients = [];
 let tictactoe = ['.','.','.','.','.','.','.','.','.'];
 
@@ -71,12 +72,31 @@ async function setupServer(rem, remDB) {
 
 	app.post('/login', (req, res) => {
 		switch (req.body.reqType) {
+			case 'S': // Session restore request
+				const sessionID = req.cookies.sessionID;
+				const nickname = session.get(sessionID);
+				if (!nickname) {
+					res.sendStatus(401);
+					return;
+				}
+
+				const member = server.members.cache.find(member => member?.nickname?.toLowerCase() === nickname);
+				const avatarURL = member.displayAvatarURL();
+				res.send({ avatarURL: avatarURL });
+				break;
 			case 'N': { // Nickname request
 				const nickname = req.body.input.toLowerCase();
 				const member = server.members.cache.find(member => member?.nickname?.toLowerCase() === nickname);
 
 				if (nickname === 'remadmin') {
-					res.send({ avatarURL: rem.user.avatarURL()});
+					const sessionID = crypto.randomUUID();
+					admins.add(sessionID);
+					res.cookie('sessionID', sessionID, {
+						secure: true,
+						httpOnly: true,
+						sameSite: 'strict'
+					})
+					.send({ avatarURL: rem.user.avatarURL() });
 					return;
 				}
 				if (!member) {
@@ -115,23 +135,23 @@ async function setupServer(rem, remDB) {
 					httpOnly: true,
 					sameSite: 'strict'
 				})
-				.send({
-					avatarURL: avatarURL
-				});
+				.send({ avatarURL: avatarURL });
 				break;
 			}
 			default:
 				break;
 		}
 
-		req.on('close', () => {
-			console.log('Connection closed');
-			session.delete(req.cookies.sessionID);
-		});
+		// req.on('close', () => {
+		// 	console.log('Connection closed');
+		// 	session.delete(req.cookies.sessionID);
+		// });
 	});
 
 	app.post('/logout', (req, res) => {
 		session.delete(req.cookies.sessionID);
+		admins.delete(req.cookies.sessionID);
+		res.sendStatus(200);
 	});
 
 	app.post('/receipt', (req, res) => {
@@ -140,6 +160,11 @@ async function setupServer(rem, remDB) {
 	});
 
 	app.post('/messageHistory', async (req, res) => {
+		if (!admins.has(req.cookies.sessionID)) {
+			res.sendStatus(401);
+			return;
+		}
+
 		const server = await rem.guilds.fetch('773660297696772096');
 		const chatName = req.body.chatName;
 		const serverMember = server.members.cache.find(member => 

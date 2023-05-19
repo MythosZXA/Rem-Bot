@@ -94,9 +94,24 @@
 
 .right-login button {
 	margin: 0 5px;
-	border: 1px solid;
-	border-radius: 50px;
+	border: none;
 	padding: 5px;
+	background: none;
+	font-size: 20px;
+	transition: .5s;
+}
+
+.right-login button::after {
+	display: block;
+	border: solid 1px;
+	border-radius: 50%;
+	content: '';
+}
+
+.right-login button:hover {
+	cursor: pointer;
+	font-size: 30px;
+	transition: .5s;
 }
 
 .right-login button:active {
