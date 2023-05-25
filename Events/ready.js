@@ -1,8 +1,3 @@
-const leaderboardFunctions = require('../Functions/leaderboardFunctions');
-const specialDaysFunctions = require('../Functions/specialDaysFunctions');
-const twitterFunctions = require('../Functions/twitterFunctions');
-const voiceFunctions = require('../Functions/voiceFunctions');
-
 module.exports = {
 	name: 'ready',
 	once: true,
@@ -15,21 +10,22 @@ module.exports = {
 		// caches users for easier access
 		server.members.fetch();
 		
-		// update leaderboards on startup
-		// leaderboardFunctions.updateHeroLeaderboard(rem, sequelize, Sequelize.DataTypes);
-		// leaderboardFunctions.updateGamblingLeaderboard(rem, remDB, channels);
-
 		// check for special days when tomorrow comes
 		// specialDaysFunctions.checkHoliday(channels);
 		// specialDaysFunctions.checkBirthday(server, remDB, channels);
 
 		// update on new day
-		// leaderboardFunctions.checkStreakCondition(rem, remDB, channels);
 		// twitterFunctions.checkForNewTweets(remDB, channels);
-		// voiceFunctions.setupSoundboard(channels);
 
 		// setups
-		// rem.commands.get('roulette').start(rem, remDB, channels);
+		// rem.commands.get('timer').setupTimers(rem, remDB);
+
+		// server
+		// check for special days when tomorrow comes
+		// specialDaysFunctions.checkHoliday(channels);
+		// specialDaysFunctions.checkBirthday(server, remDB, channels);
+
+		// setups
 		// rem.commands.get('timer').setupTimers(rem, remDB);
 
 		// server

@@ -6,7 +6,7 @@ module.exports = {
 		// add user to db
 		const users = remDB.get('users');
 		users.push({
-			userID: member.id,
+			id: member.id,
 			username: member.user.tag,
 			birthday: null,
 			coins: 0,

@@ -23,7 +23,7 @@ function checkBirthday(server, remDB, channels) {
 			const userDate = parseInt(birthdayFormat[1]);
 			// if it's the user's birthday
 			if (userMonth == currentMonth && userDate == currentDate) {
-				const bdMember = await server.members.fetch(guildUser.userID);
+				const bdMember = await server.members.fetch(guildUser.id);
 				// send birthday message
 				const picture = new MessageAttachment('https://i.imgur.com/7IqikPC.jpg');
 				const generalChannel = channels.get('general');

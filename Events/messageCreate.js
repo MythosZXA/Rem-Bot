@@ -1,4 +1,4 @@
-const prefixCommands = require('../prefixCommands');
+const prefixCommands = require('../prefixCommands.js');
 
 module.exports = {
 	name: 'messageCreate',

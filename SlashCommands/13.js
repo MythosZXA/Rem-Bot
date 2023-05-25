@@ -1,7 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageButton, MessageActionRow } = require('discord.js');
-const { Users } = require('../sequelize');
-const leaderboardFunctions = require('../Functions/leaderboardFunctions');
 
 const undoButton = new MessageButton()
 	.setCustomId('undo')
@@ -36,8 +34,8 @@ const cardTypes = [
 let tableChannel;
 let p1 = [], p2 = [], p3 = [], p4 = [];
 let p1DeckMessage, p2DeckMessage, p3DeckMessage, p4DeckMessage;
-let playerMembers = [], investedPlayerUsers = [], placement = [];
-let recentMessage, moneyPool;
+let playerMembers = [], placement = [];
+let recentMessage;
 
 async function execute(interaction) {
 	tableChannel = await interaction.guild.channels.fetch('933842239505969252');
@@ -69,8 +67,6 @@ async function execute(interaction) {
 	}
 	// check if inputted nicknames are valid players
 	if (!(await validatePlayers(interaction))) return;                // invalid players, exit
-	// check if this game has bets
-	if (!(await betSetup(interaction))) return;                       // bet setup failed, exit
 	// give roles/assign channels
 	await playerMembers[0].roles.add('934200192020910170');
 	await playerMembers[1].roles.add('934200300313640980');
@@ -103,8 +99,7 @@ async function execute(interaction) {
 	interaction.reply(
 		'Started a game of 13 with ' +
     `${playerMembers[0].nickname}, ${playerMembers[1].nickname}, ` +
-    `${playerMembers[2].nickname}, ${playerMembers[3].nickname}\n` +
-    `${investedPlayerUsers.length > 0 ? 'I have collected 150 coins from everyone' : ''}`
+    `${playerMembers[2].nickname}, ${playerMembers[3].nickname}\n`
 	);
 }
 
@@ -135,61 +130,6 @@ async function validatePlayers(interaction) {
 	return true;
 }
 
-async function betSetup(interaction) {
-	// check if this is a bet game
-	const betGame = interaction.options._hoistedOptions[3].value;
-	if (!betGame) return true;                                        // no bets, exit (normal game)
-	// check if players have enough coins
-	let sufficientCoins = true;
-	await new Promise (resolve => {
-		if (playerMembers.length === 0) resolve();
-		playerMembers.forEach(async (member, index) => {
-			const userID = member.id;
-			const guildUser = await Users.findOne({ where: { userID: userID }, raw: true });
-			if (guildUser.coins < 150) {                                   // flag insufficient coins
-				interaction.reply({
-					content: 'Someone doesn\'t have enough coins!',
-					ephemeral: true,
-				});
-				sufficientCoins = false;
-			}
-			// add player if not duplicate
-			const duplicate = investedPlayerUsers.find(player => player?.userID === guildUser.userID);
-			if (!duplicate) investedPlayerUsers.push(guildUser);
-			if (index === playerMembers.length - 1) resolve();
-		});
-	});
-	if (!sufficientCoins) {                                           // insufficient coins, exit
-		playerMembers = [];
-		return false;
-	}
-	// check if there are more than 1 bets
-	if (investedPlayerUsers.length === 1) {                                  // 1 bet, exit
-		const remjudge = interaction.client.emojis.cache.find(emoji => emoji.name === 'remjudge');
-		interaction.reply({
-			content: `You cannot bet with yourself ${remjudge}`,
-			ephemeral: true,
-		});
-		playerMembers = [];
-		return false;
-	}
-	// deduct coins from players
-	await new Promise (resolve => {
-		if (investedPlayerUsers.length === 0) resolve();
-		investedPlayerUsers.forEach(async (guildUser, index) => {
-			const userID = guildUser.userID;
-			await Users.increment(
-				{ coins: -150 },
-				{ where: { userID: userID } },
-			);
-			if (index === investedPlayerUsers.length - 1) resolve();
-		});
-	});
-	moneyPool = investedPlayerUsers.length * 150;
-	leaderboardFunctions.updateGamblingLeaderboard(interaction.client);
-	return true;
-}
-
 function deckSort(playerCards) {
 	// sort 3-10 cards
 	for (let i = 3; i <= 10; i++) {
@@ -212,7 +152,7 @@ function deckSort(playerCards) {
 			}
 		}
 	}
-	// sort 2 cards
+	// sort 2 (pig) cards
 	for (let i = 0; i <= 3; i++) {
 		const cardIndex = playerCards.findIndex(card =>
 			card.includes(`2-${cardTypes[i]}`));
@@ -299,31 +239,16 @@ async function play(interaction) {
 
 async function simulateWin(interaction) {
 	// distribute coins
-	const userID = interaction.user.id;
 	const memberNickname = interaction.member?.nickname;
 	let placementString = '';
 	const playerPlacement = placement.findIndex(member => member === interaction.member);
 	switch (playerPlacement) {
 		case 0:
 			placementString = 'You came in 1st place';
-			if (investedPlayerUsers.length !== 0) {
-				await Users.increment(
-					{ coins: +(moneyPool * .7) },
-					{ where: { userID: userID } },
-				);
-				placementString += `, winning ${moneyPool * .7} coins`;
-			}
 			tableChannel.send(`${memberNickname} won 1st place!`);
 			break;
 		case 1:
 			placementString = 'You came in 2nd place';
-			if (investedPlayerUsers.length !== 0) {
-				await Users.increment(
-					{ coins: +(moneyPool * .3) },
-					{ where: { userID: userID } },
-				);
-				placementString += `, winning ${moneyPool * .3} coins`;
-			}
 			tableChannel.send(`${memberNickname} won 2nd place!`);
 			break;
 		case 2:
@@ -340,7 +265,6 @@ async function simulateWin(interaction) {
 		content: placementString,
 		ephemeral: true,
 	});
-	leaderboardFunctions.updateGamblingLeaderboard(interaction.client);
 }
 
 function undo(interaction) {
@@ -392,22 +316,6 @@ function cancel(interaction) {
 		});
 		return;
 	}
-	// refund coins if this is a bet game
-	if (placement.length === 0) {                           // refund entry fee if no winner
-		investedPlayerUsers.forEach(guildUser => {
-			const userID = guildUser.userID;
-			Users.increment(
-				{ coins: +150 },
-				{ where: { userID: userID } },
-			);
-		});
-	} else if (placement.length === 1) {                    // need another winner, exit
-		interaction.reply({
-			content: 'The money pool has not been depleted!',
-			ephemeral: true,
-		});
-		return;
-	}
 	// cancel game by removing roles and resetting variables
 	tableChannel.bulkDelete(80);
 	p1DeckMessage.delete().then(() => p1DeckMessage = undefined);
@@ -446,10 +354,6 @@ module.exports = {
 				.addStringOption(option =>
 					option.setName('player4_nickname')
 						.setDescription('The nickname of the fourth player')
-						.setRequired(true))
-				.addBooleanOption(option =>
-					option.setName('bet_game')
-						.setDescription('Are players pooling their coins into this game?')
 						.setRequired(true)))
 		.addSubcommand(subcommand =>
 			subcommand.setName('play')

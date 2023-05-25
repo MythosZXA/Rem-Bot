@@ -1,5 +1,5 @@
 {
-  "name": "Rem-Bot",
+  "name": "rem-bot",
   "version": "1.0.0",
   "engines": {
     "node": "16.x"
@@ -35,7 +35,6 @@
     "mysql2": "^2.3.3",
     "node.js": "0.0.1-security",
     "react-icons": "^4.7.1",
-    "request": "^2.88.2",
     "sequelize": "*",
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",

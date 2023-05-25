@@ -1,39 +1,20 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define('users', {
-		userID: {
+		id: {
 			type: DataTypes.STRING,
 			primaryKey: true,
 			allowNull: false,
+			unique: true,
 		},
 		username: {
 			type: DataTypes.STRING,
-			unique: true,
 			allowNull: false,
+			unique: true,
 		},
 		birthday: {
 			type: DataTypes.STRING,
 			defaultValue: null,
-		},
-		coins: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0,
-			allowNull: false,
-		},
-		rpsWins: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0,
-			allowNull: false,
-		},
-		streak: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0,
-			allowNull: false,
-		},
-		checkedIn: {
-			type: DataTypes.STRING,
-			defaultValue: 'false',
-			allowNull: false,
-		},
+		}
 	}, {
 		timestamps: false,
 	});
