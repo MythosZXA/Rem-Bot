@@ -3,10 +3,10 @@
 
 // enable environment variables
 require('dotenv').config();
-// discord client
-const rem = require('./discord').setupRem();
 // eslint-disable-next-line no-unused-vars
 const { INET } = require('sequelize');
+// discord client
+const rem = require('./discord').setupRem();
 // set commands
 const fs = require('fs');
 const { default: Collection } = require('@discordjs/collection');
@@ -25,7 +25,7 @@ let remDB, channels;
 const eventFiles = fs.readdirSync('./Events').filter(file => file.endsWith('.js'));
 for (const fileName of eventFiles) {
 	const event = require(`./Events/${fileName}`);
-	if (event.once) {		// discord ready event
+	if (event.once) {		// discord "ready" event
 		rem.once(event.name, async (...args) => {
 			await event.execute(...args);
 			remDB = rem.remDB;
@@ -34,7 +34,7 @@ for (const fileName of eventFiles) {
 	} else if (event.many) {		// other discord events
 		rem.on(event.name, (...args) => event.execute(...args, rem, remDB, channels));
 	} else {		// node process events
-		process.on(event.name, (...args) => event.execute(rem, remDB, ...args));
+		process.on(event.name, (...args) => event.execute(rem, ...args));
 	}
 }
 

@@ -1,16 +1,14 @@
-const { Users } = require('../sequelize');
-
 module.exports = {
 	name: 'guildMemberRemove',
 	many: true,
-	execute(member, rem, remDB) {
-		if (member.user.bot) return;		// bot left, exit
+	execute(member, rem) {
+		// bot left, exit
+		if (member.user.bot) return;
+
 		// remove user (locally) from db
-		const users = remDB.get('users');
-		const userIndex = users.findIndex(user => user.id === member.id);
-		users.splice(userIndex, 1);
+		rem.remDB.get('users').delete(member.id)
+
 		// remove user (directly) from db
-		try { Users.destroy({ where: { id: member.id } }); }
-		catch(error) { console.log(error); }
+		require('../sequelize').dropUser(member.id);
 	}
 };

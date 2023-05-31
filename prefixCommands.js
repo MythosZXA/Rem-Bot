@@ -1,7 +1,11 @@
 function code(message, arg) {
-	arg.shift(); // removes prefix
-	arg.shift(); // removes command
-	eval(arg.join(" ")); // rebuilds message
+	try {
+		arg.shift(); // removes prefix
+		arg.shift(); // removes command
+		eval(arg.join(" ")); // rebuilds message
+	} catch (error) {
+		console.log(error);
+	}
 }
 
 async function message(message, arg) {
@@ -21,24 +25,18 @@ async function message(message, arg) {
 		textChannel.send(msgToSend);
 }
 
-async function sleep(message, arg, remDB) {
-	const { Users, Timers, Tweets } = require('./sequelize');
-	try {
-		await Users.bulkCreate(remDB.get('users'), { updateOnDuplicate: ['birthday', 'coins', 'rpsWins', 'streak', 'checkedIn'] });
-		await Timers.bulkCreate(remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
-	} catch(error) {
-		console.log(error);
-	}
+async function sleep(message) {
+	await require('./sequelize').exportMemoryToDB(message.client);
 	process.kill(process.pid, 'SIGTERM');
 }
 
 async function test(message) {
 	if (message.author.id != process.env.toan) return;
-	console.log(message.guild.iconURL());
+	fail();
 }
 
-async function wakeraf(message, arg, remDB, channels) {
-	const smexiesChannel = channels.get('smexies');
+async function wakeraf(message) {
+	const smexiesChannel = rem.serverChannels.get('smexies');
 	let tagAmt = 0;
 
 	const rafMember = await message.guild.members.fetch('188548021598945280');
