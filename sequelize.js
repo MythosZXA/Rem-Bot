@@ -16,7 +16,7 @@ const sequelize = new Sequelize(
 	}
 );
 
-// create/import all the models & use to download db into map
+// import all the DB data into memory
 const User = require('./Classes/User');
 async function importDBToMemory() {
 	const dir = './Models';
@@ -25,7 +25,12 @@ async function importDBToMemory() {
 	for (const file of modelFiles) {
 		const modelName = file.split('.')[0];
 		const model = require(`./Models/${file}`)(sequelize, Sequelize.DataTypes);
-		const tuplesArray = await model.findAll({ raw: true });
+		let tuplesArray;
+		if (modelName === 'transactions') {
+			tuplesArray = await model.findAll({ raw: true, order: [['date', 'DESC']] });
+		} else {
+			tuplesArray = await model.findAll({ raw: true });
+		}
 
 		switch (modelName) {
 			case "users":
@@ -43,7 +48,9 @@ async function importDBToMemory() {
 	return remDB;
 }
 
+// export all the memory data into DB
 const Timers = require('./Models/timers')(sequelize, Sequelize.DataTypes);
+const Transactions = require('./Models/transactions')(sequelize, Sequelize.DataTypes);
 const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
 async function exportMemoryToDB(rem) {
 	// convert User class into array of obj to store in DB
@@ -54,6 +61,7 @@ async function exportMemoryToDB(rem) {
 
 	try {
 		await Users.bulkCreate(users, { updateOnDuplicate: ['birthday'] });
+		await Transactions.bulkCreate(rem.remDB.get('transactions'), { updateOnDuplicate: ['date', 'payer', 'payer', 'description'] });
 		await Timers.bulkCreate(rem.remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
 		console.log('DB Saved');
 	} catch (error) {

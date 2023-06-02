@@ -1,4 +1,6 @@
 function code(message, arg) {
+	if (message.member.id !== process.env.toan) return;
+	
 	try {
 		arg.shift(); // removes prefix
 		arg.shift(); // removes command
