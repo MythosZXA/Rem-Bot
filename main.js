@@ -19,8 +19,6 @@ for (const file of commandFiles) {
 
 // start up
 rem.login(process.env.token);
-// globals, set by event 'ready'
-let remDB, channels;
 // event listeners
 const eventFiles = fs.readdirSync('./Events').filter(file => file.endsWith('.js'));
 for (const fileName of eventFiles) {
@@ -28,11 +26,9 @@ for (const fileName of eventFiles) {
 	if (event.once) {		// discord "ready" event
 		rem.once(event.name, async (...args) => {
 			await event.execute(...args);
-			remDB = rem.remDB;
-			channels = rem.serverChannels;
 		});
 	} else if (event.many) {		// other discord events
-		rem.on(event.name, (...args) => event.execute(...args, rem, remDB, channels));
+		rem.on(event.name, (...args) => event.execute(...args, rem));
 	} else {		// node process events
 		process.on(event.name, (...args) => event.execute(rem, ...args));
 	}

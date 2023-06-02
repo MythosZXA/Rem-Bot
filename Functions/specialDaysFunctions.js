@@ -4,12 +4,10 @@ const { MessageAttachment } = require('discord.js');
  * Every day at midnight, check if any user's birthday, and if so, send a birthday message to
  * the general channel
  * @param server - the Discord server
- * @param remDB - the database for this project
- * @param channels - a Map of all the channels in the server
  */
-function checkBirthday(server, remDB, channels) {
+function checkBirthday(server, rem) {
 	setTimeout(async () => {
-		const guildUsers = remDB.get('users');
+		const guildUsers = rem.remDB.get('users');
 		// get today's month and date
 		const currentTime = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
 		const currentMonth = new Date(currentTime).getMonth() + 1;
@@ -26,7 +24,7 @@ function checkBirthday(server, remDB, channels) {
 				const bdMember = await server.members.fetch(guildUser.id);
 				// send birthday message
 				const picture = new MessageAttachment('https://i.imgur.com/7IqikPC.jpg');
-				const generalChannel = channels.get('general');
+				const generalChannel = rem.serverChannels.get('general');
 				generalChannel.send({
 					content: `🎉🎉Happy Birthday ${bdMember}!!!🎉🎉`,
 					files: [picture]
@@ -35,7 +33,7 @@ function checkBirthday(server, remDB, channels) {
 		});
 		// check again tomorrow
 		console.log(`Hours until midnight: ${secsToMidnight() / 60 / 60}`);
-		checkBirthday(server, remDB, channels);
+		checkBirthday(server, rem);
 	}, (1000 * secsToMidnight()) + (1000 * 5));
 }
 

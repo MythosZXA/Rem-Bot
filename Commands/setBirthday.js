@@ -3,10 +3,9 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 /**
  * It takes in a user's birthday, validates it, and then saves it to the database
  * @param interaction - The interaction object that contains the user's input
- * @param remDB - The database for this project
  * @returns the success/error message
  */
-async function execute(interaction, rem, remDB) {
+async function execute(interaction, rem) {
 	try {
 		// validate input format
 		const regex = new RegExp('[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}');
@@ -21,7 +20,7 @@ async function execute(interaction, rem, remDB) {
 		if (!validateBirthdate(interaction, birthdayString)) { return; }		// birthday invalid, exit
 		// set or update user birthday
 		const userID = interaction.user.id;
-		const users = remDB.get('users');
+		const users = rem.remDB.get('users');
 		const user = users.find(user => user.userID === userID);
 		user.birthday = birthdayString;
 		// send confirmation message
