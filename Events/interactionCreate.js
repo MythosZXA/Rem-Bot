@@ -1,15 +1,17 @@
 module.exports = {
 	name: 'interactionCreate',
 	many: true,
-	async execute(interaction, rem, remDB, channels) {
+	async execute(interaction, rem) {
 		if (interaction.isApplicationCommand()) {		// slash commands
-			const consoleChannel = channels.get('console');
+			const consoleChannel = rem.serverChannels.get('console');
 			consoleChannel.send(`${interaction.user.tag} used: ${interaction.commandName} (${interaction.commandId})`);
+
 			const command = rem.commands.get(interaction.commandName);
 			if (!command) return;		// if there isn't a file with the command name
+
 			// execute command, catch error if unsuccessful
 			try {
-				command.execute(interaction, rem, remDB, channels);
+				command.execute(interaction, rem);
 			} catch (error) {
 				console.error(error);
 				interaction.reply({ 
@@ -40,7 +42,7 @@ module.exports = {
 						case 'rock':
 						case 'paper':
 						case 'scissors':
-							rpsCmds.play(interaction, rem, remDB, channels);
+							rpsCmds.play(interaction, rem);
 							break;
 						case 'decline':
 						// opponent cancels

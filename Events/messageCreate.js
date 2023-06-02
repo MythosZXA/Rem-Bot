@@ -3,8 +3,8 @@ const prefixCommands = require('../prefixCommands.js');
 module.exports = {
 	name: 'messageCreate',
 	many: true,
-	execute(message, rem, remDB, channels) {
-		const consoleChannel = channels.get('console');
+	execute(message, rem) {
+		const consoleChannel = rem.serverChannels.get('console');
 		
 		console.log(`${message.author.username}: ${message.content}`);
 		if (message.author.bot) return;		// rem sent a message, exit

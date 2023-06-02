@@ -15,7 +15,7 @@ const admins = new Set();
 let clients = [];
 let tictactoe = ['.','.','.','.','.','.','.','.','.'];
 
-async function setupServer(rem, remDB) {
+async function setupServer(rem) {
 	const server = await rem.guilds.fetch('773660297696772096');
 
 	app.get('/', (req, res) => {
@@ -63,12 +63,6 @@ async function setupServer(rem, remDB) {
 			clients = clients.filter(client => client.id !== clientId);
 		});
 	});
-
-	// remDB.forEach((tableObj, tableName) => {
-	// 	app.get(`/${tableName}`, (req, res) => {
-	// 		res.send(tableObj);
-	// 	});
-	// });
 
 	app.post('/login', (req, res) => {
 		switch (req.body.reqType) {

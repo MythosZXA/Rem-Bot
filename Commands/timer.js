@@ -6,7 +6,7 @@ const { Timers } = require('../sequelize');
  * amount of time
  * @param interaction - Interaction event that holds hours, minutes, and message
  */
-async function execute(interaction, rem, remDB) {
+async function execute(interaction, rem) {
 	const duration = calculateDuration(interaction);
 	if (!validateDuration(interaction, duration)) return;
 
@@ -16,7 +16,7 @@ async function execute(interaction, rem, remDB) {
 		ephemeral: true,
 	});
 	// save info to db for the instance that Rem restarts mid-timer
-	const timers = remDB.get('timers');
+	const timers = rem.remDB.get('timers');
 	const expirationDatetime = new Date();
 	expirationDatetime.setMinutes(expirationDatetime.getMinutes() + duration);
 	const timerMessage = interaction.options.getString('message');
@@ -81,10 +81,9 @@ function validateDuration(interaction, duration) {
  * It sets up timers for all unexpired timers in the database, and sends a message to the user for all
  * expired timers in the database
  * @param rem - the Discord client
- * @param remDB - the database for this project
  */
-function setupTimers(rem, remDB) {
-	const timers = remDB.get('timers');
+function setupTimers(rem) {
+	const timers = rem.remDB.get('timers');
 	const expiredTimers = timers.filter(timer => timer.expiration_time < (new Date).getTime());
 	const unexpiredTimers = timers.filter(timer => timer.expiration_time >= (new Date).getTime());
 
