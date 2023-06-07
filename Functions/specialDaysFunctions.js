@@ -1,36 +1,45 @@
 const { MessageAttachment } = require('discord.js');
+const smexiesIDs = ['188548021598945280', '176147405417218048', '557793240791908352'];
 
 /**
- * Every day at midnight, check if any user's birthday, and if so, send a birthday message to
- * the general channel
- * @param server - the Discord server
+ * The function checks for users with birthdays set and sends them a birthday message if it's their
+ * birthday, and then schedules the function to run again the next day.
+ * @param server - It is a parameter that represents the Discord server where the bot is running.
+ * @param rem - Discord client. It is used to access the bot's database and server channels.
  */
 function checkBirthday(server, rem) {
-	setTimeout(async () => {
-		const guildUsers = rem.remDB.get('users');
+	setTimeout(() => {
+		// filter users with birthday set
+		const users  = rem.remDB.get('users');
+		const birthdayUsers = [...users].filter(userArr => userArr[1].birthday);
+
 		// get today's month and date
-		const currentTime = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
-		const currentMonth = new Date(currentTime).getMonth() + 1;
-		const currentDate = new Date(currentTime).getDate();
+		const currentDay = new Date();
+		const currentMonth = currentDay.getMonth() + 1;
+		const currentDate = currentDay.getDate();
+
 		// compare each birthday to today's date
-		guildUsers.forEach(async guildUser => {
-			if (!guildUser.birthday) return;		// no birthday set, no message
+		birthdayUsers.forEach(async userArr => {
 			// get current user birth month and date
-			const birthdayFormat = guildUser.birthday.split('/');
+			const birthdayFormat = userArr[1].birthday.split('/');
 			const userMonth = parseInt(birthdayFormat[0]);
 			const userDate = parseInt(birthdayFormat[1]);
-			// if it's the user's birthday
+
+			// if it's the user's birthday, send birthday message
 			if (userMonth == currentMonth && userDate == currentDate) {
-				const bdMember = await server.members.fetch(guildUser.id);
-				// send birthday message
+				const bdMember = await server.members.fetch(userArr[1].id);
+				const channelSmexies = rem.serverChannels.get('smexies');
 				const picture = new MessageAttachment('https://i.imgur.com/7IqikPC.jpg');
-				const generalChannel = rem.serverChannels.get('general');
-				generalChannel.send({
-					content: `🎉🎉Happy Birthday ${bdMember}!!!🎉🎉`,
+
+				// send to channel or DM
+				const channelBool = smexiesIDs.includes(userArr[1].id);
+				(channelBool ? channelSmexies : bdMember).send({
+					content: `🎉🎉 Happy Birthday${channelBool ? ` ${bdMember}` : ''}!!! 🎉🎉`,
 					files: [picture]
 				});
 			}
 		});
+
 		// check again tomorrow
 		console.log(`Hours until midnight: ${secsToMidnight() / 60 / 60}`);
 		checkBirthday(server, rem);

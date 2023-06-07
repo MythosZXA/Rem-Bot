@@ -1,3 +1,5 @@
+const specialDaysFunctions = require('../Functions/specialDaysFunctions');
+
 module.exports = {
 	name: 'ready',
 	once: true,
@@ -12,7 +14,7 @@ module.exports = {
 		
 		// check for special days when tomorrow comes
 		// specialDaysFunctions.checkHoliday(channels);
-		// specialDaysFunctions.checkBirthday(server);
+		specialDaysFunctions.checkBirthday(server, rem);
 
 		// update on new day
 		// twitterFunctions.checkForNewTweets(rem);
