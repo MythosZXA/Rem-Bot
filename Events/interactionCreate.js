@@ -23,30 +23,23 @@ module.exports = {
 			
 		} else if (interaction.isButton()) {                  // button interactions
 			const interactionMember = interaction.member;
+			const originalMember = interaction.message.originalMember;
 			const buttonType = interaction.message.buttonType;
 			const buttonName = interaction.customId;
 			switch (buttonType) {
 				case '13':                                        // 13 buttons
-					const rpsCmds = rem.commands.get('rps');
-					// validate rps button pressers
-					const opponentMember = interaction.message.opponentMember;
-					if (interactionMember !== opponentMember) {
-						interaction.reply({                           // presser isn't a participant, exit
-							content: 'You are not the opponent of this game',
+					const thirteenCmds = rem.commands.get('13');
+					// validate 13 button pressers
+					if (interactionMember !== originalMember) {
+						interaction.reply({
+							content: 'You cannot interact with this button',
 							ephemeral: true,
 						});
 						return;
 					}
-					// execute buttons
 					switch (buttonName) {
-						case 'rock':
-						case 'paper':
-						case 'scissors':
-							rpsCmds.play(interaction, rem);
-							break;
-						case 'decline':
-						// opponent cancels
-							rpsCmds.cancelGame(interaction.message);
+						case 'undo':
+							thirteenCmds.undo(interaction);
 							break;
 					}
 					break;
