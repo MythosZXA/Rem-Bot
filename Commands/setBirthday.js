@@ -17,12 +17,14 @@ async function execute(interaction, rem) {
 			});
 			return;
 		}
+
 		if (!validateBirthdate(interaction, birthdayString)) { return; }		// birthday invalid, exit
+
 		// set or update user birthday
 		const userID = interaction.user.id;
-		const users = rem.remDB.get('users');
-		const user = users.find(user => user.userID === userID);
+		const user = rem.remDB.get('users').get(userID);
 		user.birthday = birthdayString;
+		
 		// send confirmation message
 		interaction.reply({
 			content: 'Birthday set!',
@@ -147,7 +149,7 @@ module.exports = {
 		.setDescription('If you want a birthday message from Rem on your birthday')
 		.addStringOption(option => 
 			option.setName('birthday')
-				.setDescription('mm/dd/yyyy')
+				.setDescription('MM/DD/YYYY')
 				.setRequired(true)),
 	execute,
 };
