@@ -34,7 +34,6 @@ async function sleep(message) {
 
 async function test(message) {
 	if (message.author.id != process.env.toan) return;
-	fail();
 }
 
 async function wakeraf(message) {
