@@ -60,7 +60,7 @@ async function exportMemoryToDB(rem) {
 	});
 
 	try {
-		await Users.bulkCreate(users, { updateOnDuplicate: ['birthday'] });
+		await Users.bulkCreate(users, { updateOnDuplicate: ['username', 'birthday'] });
 		await Transactions.bulkCreate(rem.remDB.get('transactions'), { updateOnDuplicate: ['date', 'payer', 'payer', 'description'] });
 		await Timers.bulkCreate(rem.remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
 		console.log('DB Saved');
