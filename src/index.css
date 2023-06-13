@@ -40,9 +40,9 @@
 .right-login {
 	z-index: 105;
 	position: absolute;
+	transform: translateX(100%);
 	display: grid;
 	align-items: center;
-	margin-left: 50%;
 	height: 100%;
 	width: 50%;
 	background-color: #2d2d2d;
@@ -54,7 +54,7 @@
 }
 
 .right-login.auth {
-	transform: translateX(100%);
+	transform: translateX(200%);
 	transition: all 1s;
 }
 
