@@ -207,9 +207,9 @@ function LoginLHN() {
     }
   }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
     onClick: resetLogin
-  }, "Reset"), /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement("span", null, "Reset")), /*#__PURE__*/React.createElement("button", {
     onClick: login
-  }, "Login"))));
+  }, /*#__PURE__*/React.createElement("span", null, "Login"))), /*#__PURE__*/React.createElement("p", null, "\u30EC\u30E0")));
 }
 
 },{}],2:[function(require,module,exports){

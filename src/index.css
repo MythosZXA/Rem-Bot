@@ -40,15 +40,17 @@
 .right-login {
 	z-index: 105;
 	position: absolute;
-	display: flex;
-	flex-direction: column;
-	justify-content: start;
+	display: grid;
 	align-items: center;
 	margin-left: 50%;
 	height: 100%;
 	width: 50%;
 	background-color: #2d2d2d;
 	transition: all 1s;
+}
+
+.right-login * {
+	justify-self: center;
 }
 
 .right-login.auth {
@@ -66,7 +68,7 @@
 	background-size: cover;
 }
 
-.right-login p {
+.right-login p:first-of-type {
 	visibility: hidden;
 }
 
@@ -94,29 +96,88 @@
 }
 
 .right-login button {
+	position: relative;
 	margin: 0 5px;
-	border: none;
+	border: 2px solid cyan;
 	padding: 5px;
 	background: none;
 	font-size: 20px;
-	transition: .5s;
 }
 
-.right-login button::after {
-	display: block;
-	border: solid 1px;
-	border-radius: 50%;
-	content: '';
+.right-login button span {
+	z-index: 1;
+	position: relative;
+	color: cyan;
+	background: none;
+	transition: .2s linear;
+}
+
+.right-login button:before, .right-login button:after {
+	content: "";
+	position: absolute;
+	background: #2d2d2d;
+	transition: all .2s linear;
+}
+
+.right-login button:before {
+	top: 8px;
+	left: -3px;
+	width: calc(100% + 6px);
+	height: calc(100% - 16px);
+}
+ 
+.right-login button:after {
+	top: -3px;
+	left: 8px;
+	width: calc(100% - 16px);
+	height: calc(100% + 6px);
 }
 
 .right-login button:hover {
-	cursor: pointer;
+	cursor: crosshair;
+	border: 2px solid pink;
 	font-size: 30px;
 	transition: .5s;
 }
 
+.right-login button:hover span {
+	color: pink;
+	transition: .2s linear;
+}
+
+.right-login button:hover:before {
+	top: 16px;
+	height: calc(100% - 32px);
+}
+ 
+.right-login button:hover:after {
+	left: 16px;
+	width: calc(100% - 32px);
+}
+
 .right-login button:active {
-	transform: translateY(1px);
+	transform: scale(.85);
+}
+
+.right-login p:last-of-type {
+	text-shadow: 0 0 20px cyan;
+	color: cyan;
+	font-size: 150px;
+	animation: breathe 2s linear infinite;
+}
+
+@keyframes breathe {
+	0% {
+		text-shadow: 0 0 20px cyan;
+	}
+
+	50% {
+		text-shadow: 0 0 10px cyan;
+	}
+
+	100% {
+		text-shadow: 0 0 20px cyan;
+	}
 }
 /* login end */
 

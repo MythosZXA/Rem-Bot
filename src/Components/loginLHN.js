@@ -142,10 +142,11 @@ export default function LoginLHN() {
 					onKeyPress={event => { if (event.key === 'Enter') login() }}
 				/>
 				<div>
-					<button onClick={resetLogin}>Reset</button>
-					<button onClick={login}>Login</button>
+					<button onClick={resetLogin}><span>Reset</span></button>
+					<button onClick={login}><span>Login</span></button>
 				</div>
 				{/* <button onClick={() => {location.href='/portfolio'}}>Portfolio</button> */}
+				<p>レム</p>
 			</div>
 		</React.Fragment>
 	)
