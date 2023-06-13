@@ -209,11 +209,7 @@ function LoginLHN() {
     onClick: resetLogin
   }, "Reset"), /*#__PURE__*/React.createElement("button", {
     onClick: login
-  }, "Login")), /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      location.href = '/portfolio';
-    }
-  }, "Portfolio")));
+  }, "Login"))));
 }
 
 },{}],2:[function(require,module,exports){
