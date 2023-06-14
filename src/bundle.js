@@ -30,7 +30,7 @@ function LoginLHN() {
 
   // login if there is a sessionID cookie
   useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var res, resBody;
+    var res, delay, resBody;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
@@ -48,21 +48,30 @@ function LoginLHN() {
         case 2:
           res = _context.sent;
           if (!(res.status === 401)) {
-            _context.next = 5;
+            _context.next = 7;
             break;
           }
           return _context.abrupt("return");
-        case 5:
-          _context.next = 7;
-          return res.json();
         case 7:
+          // delay a bit to avoid awkward instant login
+          delay = function delay(ms) {
+            return new Promise(function (resolve) {
+              return setTimeout(resolve, ms);
+            });
+          };
+          _context.next = 10;
+          return delay(1000);
+        case 10:
+          _context.next = 12;
+          return res.json();
+        case 12:
           resBody = _context.sent;
           document.querySelector('span.profile-avatar').style.backgroundImage = "url(".concat(resBody.avatarURL, ")");
           // hide login screen
           document.querySelector('div.left-login').setAttribute('class', 'lhn');
           document.querySelector('div.right-login').classList.add('auth');
           resetLogin();
-        case 12:
+        case 17:
         case "end":
           return _context.stop();
       }
