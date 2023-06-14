@@ -134,18 +134,21 @@ export default function LoginLHN() {
 			</div>
 			<div class="right-login">
 				<span/>
-				<p>Message</p>
-				<input
-					value={input}
-					placeholder='DC Nickname'
-					onChange={event => setInput(event.target.value)}
-					onKeyPress={event => { if (event.key === 'Enter') login() }}
-				/>
-				<div>
-					<button onClick={resetLogin}>Reset</button>
-					<button onClick={login}>Login</button>
+				<div class="login-body">
+					<p>Message</p>
+					<input
+						value={input}
+						placeholder='DC Nickname'
+						onChange={event => setInput(event.target.value)}
+						onKeyPress={event => { if (event.key === 'Enter') login() }}
+					/>
+					<div>
+						<button onClick={resetLogin}><span>Reset</span></button>
+						<button onClick={login}><span>Login</span></button>
+					</div>
 				</div>
-				<button onClick={() => {location.href='/portfolio'}}>Portfolio</button>
+				{/* <button onClick={() => {location.href='/portfolio'}}>Portfolio</button> */}
+				<p>レム</p>
 			</div>
 		</React.Fragment>
 	)
