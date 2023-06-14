@@ -201,12 +201,20 @@
 	background-color: cyan;
 }
 
+.nav-button.active:hover {
+	background-color: pink;
+}
+
 .nav-button span::after {
 	content: '\2261';
 	color: white;
 }
 
 .nav-button.active span::after {
+	color: cyan;
+}
+
+.nav-button.active:hover span::after {
 	color: black;
 }
 
@@ -218,7 +226,7 @@
 	border-radius: 0 40px 40px 0;
 	background-position: top;
 	background-image: url('https://imgur.com/2v46tZ0.jpg');
-	background-color: rgba(0, 0, 0, .2);
+	background-color: rgba(0, 0, 0, .7);
 	background-size: cover;
 	background-blend-mode: multiply;
 	transform: translateX(-400px);
@@ -237,11 +245,12 @@
 }
 
 .lhn ul li {
-	margin: 5px 0;
-	border: 1px solid;
+	margin: 10px 5px;
+	border: 1px solid cyan;
 	border-radius: 50px;
 	padding: 10px 0 10px 10%;
 	font-size: 18px;
+	color: cyan;
 }
 
 .lhn ul li:last-child {
@@ -252,10 +261,12 @@
 
 .lhn ul li:not(.selected):hover {
 	background-color: pink;
+	color: black;
 }
 
 .lhn ul li.selected {
 	background-color: cyan;
+	color: black;
 }
 /* lhn end */
 
