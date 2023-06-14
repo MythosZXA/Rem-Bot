@@ -27,7 +27,7 @@
 	position: absolute;
 	height: 100%;
 	width: 50%;
-	background-position: right;
+	background-position: 100% 0%;
 	background-image: url('https://imgur.com/2v46tZ0.jpg');
 	background-size: cover;
 	transition: all 1s;

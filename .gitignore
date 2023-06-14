@@ -1,7 +1,4 @@
 node_modules
 .env
 
-package-lock.json
-
-src/bundle.js
-src/Portfolio/bundle.js
+bundle.js
