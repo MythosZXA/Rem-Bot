@@ -229,6 +229,20 @@ function LoginLHN() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports["default"] = pageClosers;
+function pageClosers() {
+  return /*#__PURE__*/React.createElement("div", {
+    "class": "page-container",
+    id: "containerClosers"
+  });
+}
+
+},{}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports["default"] = PageHome;
 var _React = React,
   useEffect = _React.useEffect;
@@ -243,7 +257,7 @@ function PageHome() {
   })));
 }
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -512,7 +526,7 @@ function PageMessage() {
   })))));
 }
 
-},{"../commonFunctions":5}],4:[function(require,module,exports){
+},{"../commonFunctions":6}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -638,7 +652,7 @@ function PageTicTacToe() {
   }, "O")));
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -692,14 +706,15 @@ function _sendForm() {
   return _sendForm.apply(this, arguments);
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 var _loginLHN = _interopRequireDefault(require("./Components/loginLHN"));
 var _pageHome = _interopRequireDefault(require("./Components/pageHome"));
 var _pageMessage = _interopRequireDefault(require("./Components/pageMessage"));
 var _pageTicTacToe = _interopRequireDefault(require("./Components/pageTicTacToe"));
+var _pageClosers = _interopRequireDefault(require("./Components/pageClosers"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-ReactDOM.render( /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_loginLHN["default"], null), /*#__PURE__*/React.createElement(_pageHome["default"], null), /*#__PURE__*/React.createElement(_pageMessage["default"], null), /*#__PURE__*/React.createElement(_pageTicTacToe["default"], null)), document.getElementById('root'));
+ReactDOM.render( /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_loginLHN["default"], null), /*#__PURE__*/React.createElement(_pageHome["default"], null), /*#__PURE__*/React.createElement(_pageMessage["default"], null), /*#__PURE__*/React.createElement(_pageTicTacToe["default"], null), /*#__PURE__*/React.createElement(_pageClosers["default"], null)), document.getElementById('root'));
 
-},{"./Components/loginLHN":1,"./Components/pageHome":2,"./Components/pageMessage":3,"./Components/pageTicTacToe":4}]},{},[6]);
+},{"./Components/loginLHN":1,"./Components/pageClosers":2,"./Components/pageHome":3,"./Components/pageMessage":4,"./Components/pageTicTacToe":5}]},{},[7]);

@@ -513,6 +513,16 @@ div:has(> .chat-select) {
 	background-color: cyan;
 }
 /* page ttt end */
+
+/* page closers */
+#containerClosers {
+	background-image: url('https://i.redd.it/4hooqm15wpl31.jpg');
+	background-color: rgba(0, 0, 0, .7);
+	background-size: cover;
+	background-position: top;
+	background-blend-mode: multiply;
+}
+/* page closers end */
 /* pages end */
 
 table.receipt {
