@@ -234,7 +234,9 @@ function pageClosers() {
   return /*#__PURE__*/React.createElement("div", {
     "class": "page-container",
     id: "containerClosers"
-  });
+  }, /*#__PURE__*/React.createElement("ul", {
+    "class": "closers-list"
+  }, /*#__PURE__*/React.createElement("li", null, "Black Lambs"), /*#__PURE__*/React.createElement("li", null, "Wolfdogs"), /*#__PURE__*/React.createElement("li", null, "Wildhuter"), /*#__PURE__*/React.createElement("li", null, "Rattus")), /*#__PURE__*/React.createElement("div", null));
 }
 
 },{}],3:[function(require,module,exports){
