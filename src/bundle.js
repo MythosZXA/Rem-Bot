@@ -201,7 +201,7 @@ function LoginLHN() {
     "class": "left-login"
   }, /*#__PURE__*/React.createElement("ul", {
     "class": "nav-list"
-  }, renderTab('Home', true), renderTab('Receipt'), renderTab('Message'), renderTab('TicTacToe'), /*#__PURE__*/React.createElement("li", {
+  }, renderTab('Home', true), renderTab('Receipt'), renderTab('Message'), renderTab('TicTacToe'), renderTab('Closers'), /*#__PURE__*/React.createElement("li", {
     onClick: logout
   }, "Logout"))), /*#__PURE__*/React.createElement("div", {
     "class": "right-login"

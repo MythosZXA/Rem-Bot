@@ -134,6 +134,7 @@ export default function LoginLHN() {
 					{renderTab('Receipt')}
 					{renderTab('Message')}
 					{renderTab('TicTacToe')}
+					{renderTab('Closers')}
 					<li onClick={logout}>Logout</li>
 				</ul>
 			</div>
