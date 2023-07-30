@@ -37,7 +37,7 @@ async function test(message) {
 }
 
 async function wakeraf(message) {
-	const smexiesChannel = rem.serverChannels.get('smexies');
+	const smexiesChannel = message.client.serverChannels.get('smexies');
 	let tagAmt = 0;
 
 	const rafMember = await message.guild.members.fetch('188548021598945280');
