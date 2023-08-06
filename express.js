@@ -22,6 +22,11 @@ async function setupServer(rem) {
 		res.sendFile(__dirname + '/src/index.html');
 	});
 
+	app.get('/dailies_closers', (req, res) => {
+		const dailiesArray = rem.remDB.get('dailies_closers');
+		res.send({ dailiesArray: dailiesArray });
+	});
+
 	app.get('/portfolio', (req, res) => {
 		res.sendFile(__dirname + '/src/Portfolio/portfolio.html');
 	})
