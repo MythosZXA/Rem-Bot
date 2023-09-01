@@ -22,8 +22,13 @@ async function setupServer(rem) {
 		res.sendFile(__dirname + '/src/index.html');
 	});
 
-	app.get('/dailies_closers', (req, res) => {
-		const dailiesArray = rem.remDB.get('dailies_closers');
+	app.get('/closers_areas', (req, res) => {
+		const areasArray = rem.remDB.get('closers_areas');
+		res.send({ areasArray: areasArray });
+	});
+
+	app.get('/closers_dailies', (req, res) => {
+		const dailiesArray = rem.remDB.get('closers_dailies');
 		res.send({ dailiesArray: dailiesArray });
 	});
 

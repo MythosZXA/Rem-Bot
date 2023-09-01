@@ -246,37 +246,35 @@ var _React = React,
 function pageClosers() {
   var _useState = useState([]),
     _useState2 = _slicedToArray(_useState, 2),
-    dailiesArray = _useState2[0],
-    setDailiesArray = _useState2[1];
-  var _useState3 = useState(null),
+    areas = _useState2[0],
+    setAreas = _useState2[1];
+  var _useState3 = useState([]),
     _useState4 = _slicedToArray(_useState3, 2),
-    selectedChar = _useState4[0],
-    setSelectedChar = _useState4[1];
-
-  // load dailies array
+    dailiesArray = _useState4[0],
+    setDailiesArray = _useState4[1];
+  var _useState5 = useState(null),
+    _useState6 = _slicedToArray(_useState5, 2),
+    selectedChar = _useState6[0],
+    setSelectedChar = _useState6[1];
   useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var response, responseObj;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          _context.next = 2;
-          return fetch('/dailies_closers');
-        case 2:
-          response = _context.sent;
-          if (!(response.status !== 200)) {
-            _context.next = 6;
-            break;
-          }
-          console.log('Failed to retrieve Closers dailies');
-          return _context.abrupt("return");
-        case 6:
+          _context.t0 = setAreas;
+          _context.next = 3;
+          return fetchAreas();
+        case 3:
+          _context.t1 = _context.sent.map(function (objArea) {
+            return objArea.name;
+          });
+          (0, _context.t0)(_context.t1);
+          _context.t2 = setDailiesArray;
           _context.next = 8;
-          return response.json();
+          return fetchDailies();
         case 8:
-          responseObj = _context.sent;
-          setDailiesArray(responseObj.dailiesArray);
-          console.log(responseObj.dailiesArray);
-        case 11:
+          _context.t3 = _context.sent;
+          (0, _context.t2)(_context.t3);
+        case 10:
         case "end":
           return _context.stop();
       }
@@ -286,14 +284,146 @@ function pageClosers() {
   // render when dailies change
   useEffect(function () {
     var wantedDiv = document.querySelector('div#containerCLosers div');
-    // add stuff to this ele
+    dailiesArray.forEach(function (daily) {});
   }, [dailiesArray]);
   return /*#__PURE__*/React.createElement("div", {
     "class": "page-container",
     id: "containerClosers"
   }, /*#__PURE__*/React.createElement("ul", {
-    "class": "closers-list"
-  }, /*#__PURE__*/React.createElement("li", null, "Black Lambs"), /*#__PURE__*/React.createElement("li", null, "Wolfdogs"), /*#__PURE__*/React.createElement("li", null, "Wildhuter"), /*#__PURE__*/React.createElement("li", null, "Rattus")), /*#__PURE__*/React.createElement("div", null));
+    "class": "closers-list",
+    id: "ulClosers"
+  }, /*#__PURE__*/React.createElement("li", null, "Black Lambs"), /*#__PURE__*/React.createElement("li", null, "Wolfdogs"), /*#__PURE__*/React.createElement("li", null, "Wildhuter"), /*#__PURE__*/React.createElement("li", null, "Rattus")), areas.length > 0 && /*#__PURE__*/React.createElement("div", {
+    id: "divClosersCenter"
+  }, /*#__PURE__*/React.createElement(SideBar, {
+    areas: areas
+  }), /*#__PURE__*/React.createElement(Areas, {
+    areas: areas
+  })));
+}
+function SideBar(_ref2) {
+  var areas = _ref2.areas;
+  useEffect(function () {
+    // click event for each tab
+    var displayArea = function displayArea(event) {
+      // hide previous area
+      var activeArea = document.querySelector('div.container-area.active');
+      if (activeArea) activeArea.classList.remove('active');
+
+      // display selected area
+      var radioIndex = event.target.id[event.target.id.length - 1];
+      document.getElementById("divArea".concat(radioIndex)).classList.add('active');
+    };
+
+    // add click event to each tab, default area 0
+    areas.forEach(function (tab, i) {
+      var radio = document.getElementById("radioArea".concat(i));
+      radio.addEventListener("click", displayArea);
+      return function () {
+        radio.removeEventListener('click', displayArea);
+      };
+    });
+    document.getElementById("radioArea0").click();
+  }, []);
+  return /*#__PURE__*/React.createElement("div", {
+    id: "divAreaSelect"
+  }, /*#__PURE__*/React.createElement("ul", null, areas.map(function (tab, i) {
+    return /*#__PURE__*/React.createElement("li", {
+      key: i
+    }, /*#__PURE__*/React.createElement("input", {
+      type: "radio",
+      id: "radioArea".concat(i),
+      name: "radioArea"
+    }), /*#__PURE__*/React.createElement("label", {
+      htmlFor: "radioArea".concat(i)
+    }, tab));
+  })));
+}
+function Areas(_ref3) {
+  var areas = _ref3.areas;
+  return /*#__PURE__*/React.createElement(React.Fragment, null, areas.map(function (tab, i) {
+    return /*#__PURE__*/React.createElement("div", {
+      "class": "container-area",
+      id: "divArea".concat(i),
+      key: i
+    }, /*#__PURE__*/React.createElement("div", {
+      "class": "sector-group"
+    }, /*#__PURE__*/React.createElement("input", {
+      type: "checkbox",
+      id: "checkbox".concat(i, "a")
+    }), /*#__PURE__*/React.createElement("label", {
+      htmlFor: "checkbox".concat(i, "1")
+    }, "Checkbox 1")), /*#__PURE__*/React.createElement("input", {
+      type: "checkbox"
+    }), /*#__PURE__*/React.createElement("input", {
+      type: "checkbox"
+    }));
+  }));
+}
+function fetchDailies() {
+  return _fetchDailies.apply(this, arguments);
+}
+function _fetchDailies() {
+  _fetchDailies = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    var response, responseObj;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          _context2.next = 2;
+          return fetch('/closers_dailies');
+        case 2:
+          response = _context2.sent;
+          if (!(response.status !== 200)) {
+            _context2.next = 6;
+            break;
+          }
+          console.log('Failed to retrieve Closers dailies');
+          return _context2.abrupt("return");
+        case 6:
+          _context2.next = 8;
+          return response.json();
+        case 8:
+          responseObj = _context2.sent;
+          return _context2.abrupt("return", responseObj.dailiesArray);
+        case 10:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2);
+  }));
+  return _fetchDailies.apply(this, arguments);
+}
+function fetchAreas() {
+  return _fetchAreas.apply(this, arguments);
+}
+function _fetchAreas() {
+  _fetchAreas = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var response, responseObj;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
+        case 0:
+          _context3.next = 2;
+          return fetch('/closers_areas');
+        case 2:
+          response = _context3.sent;
+          if (!(response.status !== 200)) {
+            _context3.next = 6;
+            break;
+          }
+          console.log('Failed to retrieve Closers areas');
+          return _context3.abrupt("return");
+        case 6:
+          _context3.next = 8;
+          return response.json();
+        case 8:
+          responseObj = _context3.sent;
+          return _context3.abrupt("return", responseObj.areasArray);
+        case 10:
+        case "end":
+          return _context3.stop();
+      }
+    }, _callee3);
+  }));
+  return _fetchAreas.apply(this, arguments);
 }
 
 },{}],3:[function(require,module,exports){

@@ -1,0 +1,12 @@
+module.exports = (sequelize, DataTypes) => {
+	return sequelize.define('closers_areas', {
+		name: {
+			type: DataTypes.STRING,
+			primaryKey: true,
+			allowNull: false
+		}
+	}, 
+	{
+		timestamps: false
+	});
+};
