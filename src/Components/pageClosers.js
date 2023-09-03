@@ -6,8 +6,8 @@ export default function pageClosers() {
 	const [selectedChar, setSelectedChar]= useState(null);
 
 	useEffect(async () => {
-		setAreas((await fetchAreas()).map(objArea => objArea.name));
-		setDailiesArray(await fetchDailies());
+		setAreas((await fetchData('closers_areas')).map(objArea => objArea.name));
+		// setDailiesArray(await fetchData('closers_dailies'));
 	}, []);
 
 	// render when dailies change
@@ -19,8 +19,8 @@ export default function pageClosers() {
 	}, [dailiesArray]);
 
 	return(
-		<div class="page-container" id="containerClosers">
-			<ul class="closers-list" id="ulClosers">
+		<div className="page-container" id="containerClosers">
+			<ul className="closers-list" id="ulClosers">
 				<li>Black Lambs</li>
 				<li>Wolfdogs</li>
 				<li>Wildhuter</li>
@@ -74,40 +74,58 @@ function SideBar({areas}) {
 }
 
 function Areas({areas}) {
+	const [sectors, setSectors] = useState([]);
+
+	useEffect(async () => {
+		setSectors(await fetchData('closers_sectors'));
+	}, []);
+
+	const renderSectors = (areaID) => {
+		const returnArr = [];
+		const areaSectors = sectors.filter(sector => sector.area_id === areaID);
+		for (let row = 1; ; row++) {
+			let rowSectors = areaSectors.filter(sector => sector.row === row);
+			if (rowSectors.length) {
+				returnArr.push(
+					<div className="row-sector">
+						{renderRow(rowSectors)}
+					</div>
+				)
+			} else {
+				break;
+			}
+		}
+
+		return returnArr;
+	}
+
+	const renderRow = (rowSectors) => {
+		return rowSectors.map(sector => (
+			<div className="sector-group">
+				<input type="checkbox" id={`cbSector${sector.area_id}-${sector.id}`}/>
+				<label htmlFor={`cbSector${sector.area_id}-${sector.id}`}>{sector.name}</label>
+			</div>
+		));
+	};
+
 	return (
 		<React.Fragment>
 			{areas.map((tab, i) => (
-				<div class="container-area" id={`divArea${i}`} key={i}>
-					<div class="sector-group">
-						<input type="checkbox" id={`checkbox${i}a`}/>
-						<label htmlFor={`checkbox${i}1`}>Checkbox 1</label>
-					</div>
-					<input type="checkbox"/>
-					<input type="checkbox"/>
+				<div className="container-area" id={`divArea${i}`} key={i}>
+					{renderSectors(i)}
 				</div>
 			))}
 		</React.Fragment>
 	);
 }
 
-async function fetchDailies() {
-	const response = await fetch('/closers_dailies');
+async function fetchData(endpoint) {
+	const response = await fetch(`/${endpoint}`);
 	if (response.status !== 200) {
-		console.log('Failed to retrieve Closers dailies');
+		console.log(`Failed to retrieve ${endpoint}`);
 		return;
 	}
 
 	const responseObj = await response.json();
-	return responseObj.dailiesArray;
-}
-
-async function fetchAreas() {
-	const response = await fetch('/closers_areas');
-	if (response.status !== 200) {
-		console.log('Failed to retrieve Closers areas');
-		return;
-	}
-
-	const responseObj = await response.json();
-	return responseObj.areasArray;
+	return responseObj.dataArray;
 }

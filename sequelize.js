@@ -28,8 +28,6 @@ async function importDBToMemory() {
 		let tuplesArray;
 		if (modelName === 'transactions') {
 			tuplesArray = await model.findAll({ raw: true, order: [['date', 'DESC']] });
-		} else if (modelName === 'closers_areas') {
-			tuplesArray = await model.findAll({ raw: true, order: [['order', 'ASC']] });
 		} else {
 			tuplesArray = await model.findAll({ raw: true });
 		}

@@ -24,12 +24,17 @@ async function setupServer(rem) {
 
 	app.get('/closers_areas', (req, res) => {
 		const areasArray = rem.remDB.get('closers_areas');
-		res.send({ areasArray: areasArray });
+		res.send({ dataArray: areasArray });
 	});
 
 	app.get('/closers_dailies', (req, res) => {
 		const dailiesArray = rem.remDB.get('closers_dailies');
-		res.send({ dailiesArray: dailiesArray });
+		res.send({ dataArray: dailiesArray });
+	});
+
+	app.get('/closers_sectors', (req, res) => {
+		const sectorsArray = rem.remDB.get('closers_sectors');
+		res.send({ dataArray: sectorsArray });
 	});
 
 	app.get('/portfolio', (req, res) => {

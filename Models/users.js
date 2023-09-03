@@ -8,11 +8,11 @@ module.exports = (sequelize, DataTypes) => {
 		username: {
 			type: DataTypes.STRING,
 			allowNull: false,
-			unique: true,
+			unique: true
 		},
 		birthday: {
 			type: DataTypes.STRING,
-			defaultValue: null,
+			defaultValue: null
 		}
 	}, {
 		timestamps: false,

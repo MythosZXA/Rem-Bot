@@ -574,18 +574,26 @@ div:has(> .chat-select) {
 
 .container-area {
 	display: flex;
-	justify-content: space-around;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-evenly;
 }
 
 .container-area:not(.active) {
 	display: none;
 }
 
+.row-sector {
+	display: flex;
+	justify-content: space-evenly;
+	width: 100%;
+}
+
 .sector-group {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+	color: cyan;
 }
 
 .sector-group label {

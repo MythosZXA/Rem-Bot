@@ -1,8 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define('closers_areas', {
+		id: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			allowNull: false,
+			autoIncrement: true
+		},
 		name: {
 			type: DataTypes.STRING,
-			primaryKey: true,
 			allowNull: false
 		}
 	}, 
