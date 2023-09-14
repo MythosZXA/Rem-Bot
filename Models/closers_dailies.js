@@ -14,15 +14,14 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			allowNull: false
 		},
-		gatewave_party: {
-			type: DataTypes.TINYINT,
-			allowNull: false,
-			defaultValue: 0,
+		sector_id: {
+			type: DataTypes.INTEGER,
+			allowNull: false
 		},
-		gatewave_single: {
+		cleared: {
 			type: DataTypes.TINYINT,
 			allowNull: false,
-			defaultValue: 0,
+			defaultValue: 0
 		}
 	}, 
 	{

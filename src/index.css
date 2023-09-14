@@ -545,15 +545,21 @@ div:has(> .chat-select) {
 #divClosersCenter {
 	display: grid;
 	grid-template-columns: 250px auto;
+	height: 60%;
 	margin: 100px 10% 0 10%;
 	border: solid 1px cyan;
 }
 
 #divAreaSelect {
 	border-right: solid 1px cyan;
+	display: flex;
 }
 
 #divAreaSelect ul {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	flex-grow: 1;
 	text-align: center;
 	color: cyan;
 }
