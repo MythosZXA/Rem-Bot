@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
 	return sequelize.define('closers_agents', {
 		name: {
 			type: DataTypes.STRING,
-			primaryKey: true,
+			unique: true,
 			allowNull: false
 		},
 		squad: {

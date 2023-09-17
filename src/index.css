@@ -25,6 +25,16 @@ ul {
 	list-style-type: none;
 }
 
+.hidden-input {
+	opacity: 0;
+	height: 0;
+	width: 0;
+}
+
+.hidden-input:checked + label {
+	color: pink;
+}
+
 /* login */
 .left-login {
 	z-index: 105;
@@ -530,23 +540,41 @@ div:has(> .chat-select) {
 	display: flex;
 	justify-content: space-around;
 	margin-top: 100px;
+	font-size: 20px;
 }
 
-#ulClosers li {
-	height: 25px;;
+#ulClosers > li {
+	height: 25px;
 	width: 125px;
-	border: solid 1px cyan;
-	border-radius: 50px;
-	padding: 5px 0 0 0;
 	text-align: center;
 	color: cyan;
+}
+
+.dropdown-box {
+	visibility: hidden;
+	border: solid 1px cyan;
+}
+
+.dropdown-box li {
+	padding: 5px 0;
+}
+
+.dropdown-box li:hover {
+	font-size: 26px;
+}
+
+
+
+div:hover + .dropdown-box,
+.dropdown-box:hover {
+	visibility: visible;
 }
 
 #divClosersCenter {
 	display: grid;
 	grid-template-columns: 250px auto;
 	height: 60%;
-	margin: 100px 10% 0 10%;
+	margin: 200px 10% 0 10%;
 	border: solid 1px cyan;
 }
 
@@ -566,12 +594,6 @@ div:has(> .chat-select) {
 
 #divAreaSelect li {
 	margin: 5px 0;
-}
-
-#divAreaSelect input[type="radio"] {
-	opacity: 0;
-	height: 0;
-	width: 0;
 }
 
 #divAreaSelect label {

@@ -20,12 +20,7 @@ export default function pageClosers() {
 
 	return(
 		<div className="page-container" id="containerClosers">
-			<ul className="closers-list" id="ulClosers">
-				<li>Black Lambs</li>
-				<li>Wolfdogs</li>
-				<li>Wildhuter</li>
-				<li>Rattus</li>
-			</ul>
+			<AgentSelect/>
 			{areas.length > 0 && (
 				<div id="divClosersCenter">
 					<SideBar areas={areas}/>
@@ -33,6 +28,46 @@ export default function pageClosers() {
 				</div>
 			)}
 		</div>
+	)
+}
+
+function AgentSelect() {
+	const [agents, setAgents] = useState([]);
+	const renderSelect = (squadName) => {
+		const squadAgents = agents.filter(agent => agent.squad === squadName);
+
+		return(
+			<li>
+				<div>
+					{squadName}
+				</div>
+				<ul className="dropdown-box">
+					{squadAgents.map((agent, i) => (
+						<li>
+							<input type="radio" className="hidden-input" id={`radio${agent.name}`} name="radioAgent"/>
+							<label htmlFor={`radio${agent.name}`}>{agent.name}</label>
+						</li>
+					))}
+				</ul>
+			</li>
+		)
+	}
+
+	useEffect(async () => {
+		setAgents((await fetchData('closers_agents')));
+	}, [])
+
+	return (
+		<ul className="closers-list" id="ulClosers">
+			{agents.length > 0 && (
+				<React.Fragment>
+					{renderSelect("Black Lambs")}
+					{renderSelect("Wolfdog")}
+					{renderSelect("Wildhuter")}
+					{renderSelect("Rattus")}
+				</React.Fragment>
+			)}
+		</ul>
 	)
 }
 
@@ -64,7 +99,7 @@ function SideBar({areas}) {
 			<ul>
 				{areas.map((tab, i) => (
 					<li key={i}>
-						<input type="radio" id={`radioArea${i}`} name="radioArea"/>
+						<input type="radio" className="hidden-input" id={`radioArea${i}`} name="radioArea"/>
 						<label htmlFor={`radioArea${i}`}>{tab}</label>
 					</li>
 				))}

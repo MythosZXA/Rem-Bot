@@ -22,17 +22,24 @@ async function setupServer(rem) {
 		res.sendFile(__dirname + '/src/index.html');
 	});
 
-	app.get('/closers_data', (req, res) => {
+	app.get('/closers_agents', (req, res) => {
 		const agentsArray = rem.remDB.get('closers_agents');
+		res.send({ dataArray: agentsArray });
+	});
+
+	app.get('/closers_areas', (req, res) => {
 		const areasArray = rem.remDB.get('closers_areas');
+		res.send({ dataArray: areasArray });
+	});
+
+	app.get('/closers_dailies', (req, res) => {
 		const dailiesArray = rem.remDB.get('closers_dailies');
+		res.send({ dataArray: dailiesArray });
+	});
+
+	app.get('/closers_sectors', (req, res) => {
 		const sectorsArray = rem.remDB.get('closers_sectors');
-		res.send({
-			agents: agentsArray,
-			areas: areasArray,
-			dailies: dailiesArray,
-			sectors: sectorsArray
-		 });
+		res.send({ dataArray: sectorsArray });
 	});
 
 	app.get('/portfolio', (req, res) => {

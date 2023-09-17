@@ -283,10 +283,7 @@ function pageClosers() {
   return /*#__PURE__*/React.createElement("div", {
     className: "page-container",
     id: "containerClosers"
-  }, /*#__PURE__*/React.createElement("ul", {
-    className: "closers-list",
-    id: "ulClosers"
-  }, /*#__PURE__*/React.createElement("li", null, "Black Lambs"), /*#__PURE__*/React.createElement("li", null, "Wolfdogs"), /*#__PURE__*/React.createElement("li", null, "Wildhuter"), /*#__PURE__*/React.createElement("li", null, "Rattus")), areas.length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(AgentSelect, null), areas.length > 0 && /*#__PURE__*/React.createElement("div", {
     id: "divClosersCenter"
   }, /*#__PURE__*/React.createElement(SideBar, {
     areas: areas
@@ -294,8 +291,51 @@ function pageClosers() {
     areas: areas
   })));
 }
-function SideBar(_ref2) {
-  var areas = _ref2.areas;
+function AgentSelect() {
+  var _useState7 = useState([]),
+    _useState8 = _slicedToArray(_useState7, 2),
+    agents = _useState8[0],
+    setAgents = _useState8[1];
+  var renderSelect = function renderSelect(squadName) {
+    var squadAgents = agents.filter(function (agent) {
+      return agent.squad === squadName;
+    });
+    return /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("div", null, squadName), /*#__PURE__*/React.createElement("ul", {
+      className: "dropdown-box"
+    }, squadAgents.map(function (agent, i) {
+      return /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("input", {
+        type: "radio",
+        className: "hidden-input",
+        id: "radio".concat(agent.name),
+        name: "radioAgent"
+      }), /*#__PURE__*/React.createElement("label", {
+        htmlFor: "radio".concat(agent.name)
+      }, agent.name));
+    })));
+  };
+  useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          _context2.t0 = setAgents;
+          _context2.next = 3;
+          return fetchData('closers_agents');
+        case 3:
+          _context2.t1 = _context2.sent;
+          (0, _context2.t0)(_context2.t1);
+        case 5:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2);
+  })), []);
+  return /*#__PURE__*/React.createElement("ul", {
+    className: "closers-list",
+    id: "ulClosers"
+  }, agents.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, renderSelect("Black Lambs"), renderSelect("Wolfdog"), renderSelect("Wildhuter"), renderSelect("Rattus")));
+}
+function SideBar(_ref3) {
+  var areas = _ref3.areas;
   useEffect(function () {
     // click event for each tab
     var displayArea = function displayArea(event) {
@@ -325,6 +365,7 @@ function SideBar(_ref2) {
       key: i
     }, /*#__PURE__*/React.createElement("input", {
       type: "radio",
+      className: "hidden-input",
       id: "radioArea".concat(i),
       name: "radioArea"
     }), /*#__PURE__*/React.createElement("label", {
@@ -332,27 +373,27 @@ function SideBar(_ref2) {
     }, tab));
   })));
 }
-function Areas(_ref3) {
-  var areas = _ref3.areas;
-  var _useState7 = useState([]),
-    _useState8 = _slicedToArray(_useState7, 2),
-    sectors = _useState8[0],
-    setSectors = _useState8[1];
-  useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-      while (1) switch (_context2.prev = _context2.next) {
+function Areas(_ref4) {
+  var areas = _ref4.areas;
+  var _useState9 = useState([]),
+    _useState10 = _slicedToArray(_useState9, 2),
+    sectors = _useState10[0],
+    setSectors = _useState10[1];
+  useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) switch (_context3.prev = _context3.next) {
         case 0:
-          _context2.t0 = setSectors;
-          _context2.next = 3;
+          _context3.t0 = setSectors;
+          _context3.next = 3;
           return fetchData('closers_sectors');
         case 3:
-          _context2.t1 = _context2.sent;
-          (0, _context2.t0)(_context2.t1);
+          _context3.t1 = _context3.sent;
+          (0, _context3.t0)(_context3.t1);
         case 5:
         case "end":
-          return _context2.stop();
+          return _context3.stop();
       }
-    }, _callee2);
+    }, _callee3);
   })), []);
   var renderSectors = function renderSectors(areaID) {
     var returnArr = [];
@@ -401,32 +442,32 @@ function fetchData(_x2) {
   return _fetchData.apply(this, arguments);
 }
 function _fetchData() {
-  _fetchData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(endpoint) {
+  _fetchData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(endpoint) {
     var response, responseObj;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) switch (_context3.prev = _context3.next) {
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
         case 0:
-          _context3.next = 2;
+          _context4.next = 2;
           return fetch("/".concat(endpoint));
         case 2:
-          response = _context3.sent;
+          response = _context4.sent;
           if (!(response.status !== 200)) {
-            _context3.next = 6;
+            _context4.next = 6;
             break;
           }
           console.log("Failed to retrieve ".concat(endpoint));
-          return _context3.abrupt("return");
+          return _context4.abrupt("return");
         case 6:
-          _context3.next = 8;
+          _context4.next = 8;
           return response.json();
         case 8:
-          responseObj = _context3.sent;
-          return _context3.abrupt("return", responseObj.dataArray);
+          responseObj = _context4.sent;
+          return _context4.abrupt("return", responseObj.dataArray);
         case 10:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
-    }, _callee3);
+    }, _callee4);
   }));
   return _fetchData.apply(this, arguments);
 }
