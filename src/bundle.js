@@ -250,12 +250,14 @@ function pageClosers() {
     setAreas = _useState2[1];
   var _useState3 = useState([]),
     _useState4 = _slicedToArray(_useState3, 2),
-    dailiesArray = _useState4[0],
-    setDailiesArray = _useState4[1];
-  var _useState5 = useState(null),
+    dailies = _useState4[0],
+    setDailies = _useState4[1];
+  var _useState5 = useState('Seha'),
     _useState6 = _slicedToArray(_useState5, 2),
-    selectedChar = _useState6[0],
-    setSelectedChar = _useState6[1];
+    selectedAgent = _useState6[0],
+    setSelectedAgent = _useState6[1];
+
+  // initialize
   useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
@@ -268,22 +270,33 @@ function pageClosers() {
             return objArea.name;
           });
           (0, _context.t0)(_context.t1);
-        case 5:
+          _context.t2 = setDailies;
+          _context.next = 8;
+          return fetchData('closers_dailies');
+        case 8:
+          _context.t3 = _context.sent;
+          (0, _context.t2)(_context.t3);
+        case 10:
         case "end":
           return _context.stop();
       }
     }, _callee);
   })), []);
 
+  // render when selected agent change
+  useEffect(function () {}, [selectedAgent]);
+
   // render when dailies change
   useEffect(function () {
     var wantedDiv = document.querySelector('div#containerCLosers div');
-    dailiesArray.forEach(function (daily) {});
-  }, [dailiesArray]);
+    dailies.forEach(function (daily) {});
+  }, [dailies]);
   return /*#__PURE__*/React.createElement("div", {
     className: "page-container",
     id: "containerClosers"
-  }, /*#__PURE__*/React.createElement(AgentSelect, null), areas.length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(AgentSelect, {
+    setSelectedAgent: setSelectedAgent
+  }), /*#__PURE__*/React.createElement("h2", null, selectedAgent), areas.length > 0 && /*#__PURE__*/React.createElement("div", {
     id: "divClosersCenter"
   }, /*#__PURE__*/React.createElement(SideBar, {
     areas: areas
@@ -291,7 +304,8 @@ function pageClosers() {
     areas: areas
   })));
 }
-function AgentSelect() {
+function AgentSelect(_ref2) {
+  var setSelectedAgent = _ref2.setSelectedAgent;
   var _useState7 = useState([]),
     _useState8 = _slicedToArray(_useState7, 2),
     agents = _useState8[0],
@@ -309,10 +323,13 @@ function AgentSelect() {
         id: "radio".concat(agent.name),
         name: "radioAgent"
       }), /*#__PURE__*/React.createElement("label", {
-        htmlFor: "radio".concat(agent.name)
+        htmlFor: "radio".concat(agent.name),
+        onClick: setSelectedAgent
       }, agent.name));
     })));
   };
+
+  // initialize
   useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
@@ -334,8 +351,8 @@ function AgentSelect() {
     id: "ulClosers"
   }, agents.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, renderSelect("Black Lambs"), renderSelect("Wolfdog"), renderSelect("Wildhuter"), renderSelect("Rattus")));
 }
-function SideBar(_ref3) {
-  var areas = _ref3.areas;
+function SideBar(_ref4) {
+  var areas = _ref4.areas;
   useEffect(function () {
     // click event for each tab
     var displayArea = function displayArea(event) {
@@ -373,12 +390,14 @@ function SideBar(_ref3) {
     }, tab));
   })));
 }
-function Areas(_ref4) {
-  var areas = _ref4.areas;
+function Areas(_ref5) {
+  var areas = _ref5.areas;
   var _useState9 = useState([]),
     _useState10 = _slicedToArray(_useState9, 2),
     sectors = _useState10[0],
     setSectors = _useState10[1];
+
+  // initialize
   useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
     return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) switch (_context3.prev = _context3.next) {

@@ -2,25 +2,32 @@ const { useState, useEffect } = React;
 
 export default function pageClosers() {
 	const [areas, setAreas] = useState([]);
-	const [dailiesArray, setDailiesArray] = useState([]);
-	const [selectedChar, setSelectedChar]= useState(null);
+	const [dailies, setDailies] = useState([]);
+	const [selectedAgent, setSelectedAgent]= useState('Seha');
 
+	// initialize
 	useEffect(async () => {
 		setAreas((await fetchData('closers_areas')).map(objArea => objArea.name));
-		// setDailiesArray(await fetchData('closers_dailies'));
+		setDailies(await fetchData('closers_dailies'));
 	}, []);
+
+	// render when selected agent change
+	useEffect(() => {
+
+	}, [selectedAgent]);
 
 	// render when dailies change
 	useEffect(() => {
 		const wantedDiv = document.querySelector('div#containerCLosers div');
 		
-		dailiesArray.forEach(daily => {
+		dailies.forEach(daily => {
 		});
-	}, [dailiesArray]);
+	}, [dailies]);
 
 	return(
 		<div className="page-container" id="containerClosers">
-			<AgentSelect/>
+			<AgentSelect setSelectedAgent={setSelectedAgent}/>
+			<h2>{selectedAgent}</h2>
 			{areas.length > 0 && (
 				<div id="divClosersCenter">
 					<SideBar areas={areas}/>
@@ -31,7 +38,7 @@ export default function pageClosers() {
 	)
 }
 
-function AgentSelect() {
+function AgentSelect({setSelectedAgent}) {
 	const [agents, setAgents] = useState([]);
 	const renderSelect = (squadName) => {
 		const squadAgents = agents.filter(agent => agent.squad === squadName);
@@ -45,7 +52,7 @@ function AgentSelect() {
 					{squadAgents.map((agent, i) => (
 						<li>
 							<input type="radio" className="hidden-input" id={`radio${agent.name}`} name="radioAgent"/>
-							<label htmlFor={`radio${agent.name}`}>{agent.name}</label>
+							<label htmlFor={`radio${agent.name}`} onClick={setSelectedAgent}>{agent.name}</label>
 						</li>
 					))}
 				</ul>
@@ -53,9 +60,10 @@ function AgentSelect() {
 		)
 	}
 
+	// initialize
 	useEffect(async () => {
 		setAgents((await fetchData('closers_agents')));
-	}, [])
+	}, []);
 
 	return (
 		<ul className="closers-list" id="ulClosers">
@@ -111,6 +119,7 @@ function SideBar({areas}) {
 function Areas({areas}) {
 	const [sectors, setSectors] = useState([]);
 
+	// initialize
 	useEffect(async () => {
 		setSectors(await fetchData('closers_sectors'));
 	}, []);

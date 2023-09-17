@@ -563,11 +563,15 @@ div:has(> .chat-select) {
 	font-size: 26px;
 }
 
-
-
 div:hover + .dropdown-box,
 .dropdown-box:hover {
 	visibility: visible;
+}
+
+#containerClosers > h2 {
+	transform: translateY(50px);
+	text-align: center;
+	color: cyan;
 }
 
 #divClosersCenter {
