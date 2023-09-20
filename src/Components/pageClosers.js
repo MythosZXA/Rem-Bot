@@ -1,45 +1,33 @@
 const { useState, useEffect } = React;
 
 export default function pageClosers() {
+	const [agents, setAgents] = useState({});
 	const [areas, setAreas] = useState([]);
-	const [dailies, setDailies] = useState([]);
-	const [selectedAgent, setSelectedAgent]= useState('Seha');
+	const [selectedAgent, setSelectedAgent]= useState({});
 
 	// initialize
 	useEffect(async () => {
-		setAreas((await fetchData('closers_areas')).map(objArea => objArea.name));
-		setDailies(await fetchData('closers_dailies'));
+		const [dataAgents, dataAreas] = await Promise.all([fetchData('closers_agents'), fetchData('closers_areas')]);
+
+		setAgents(dataAgents);
+		setAreas(dataAreas.map(objArea => objArea.name));
 	}, []);
-
-	// render when selected agent change
-	useEffect(() => {
-
-	}, [selectedAgent]);
-
-	// render when dailies change
-	useEffect(() => {
-		const wantedDiv = document.querySelector('div#containerCLosers div');
-		
-		dailies.forEach(daily => {
-		});
-	}, [dailies]);
 
 	return(
 		<div className="page-container" id="containerClosers">
-			<AgentSelect setSelectedAgent={setSelectedAgent}/>
-			<h2>{selectedAgent}</h2>
+			<AgentSelect agents={agents} setSelectedAgent={setSelectedAgent}/>
+			<h2>{selectedAgent.name}</h2>
 			{areas.length > 0 && (
 				<div id="divClosersCenter">
 					<SideBar areas={areas}/>
-					<Areas areas={areas}/>
+					<Areas areas={areas} selectedAgent={selectedAgent}/>
 				</div>
 			)}
 		</div>
 	)
 }
 
-function AgentSelect({setSelectedAgent}) {
-	const [agents, setAgents] = useState([]);
+function AgentSelect({agents, setSelectedAgent}) {
 	const renderSelect = (squadName) => {
 		const squadAgents = agents.filter(agent => agent.squad === squadName);
 
@@ -51,19 +39,20 @@ function AgentSelect({setSelectedAgent}) {
 				<ul className="dropdown-box">
 					{squadAgents.map((agent, i) => (
 						<li>
-							<input type="radio" className="hidden-input" id={`radio${agent.name}`} name="radioAgent"/>
-							<label htmlFor={`radio${agent.name}`} onClick={setSelectedAgent}>{agent.name}</label>
+							<input
+								type="radio"
+								className="hidden-input"
+								id={`radio${agent.name}`}
+								name="radioAgent"
+								onChange={() => setSelectedAgent(agent)}
+							/>
+							<label htmlFor={`radio${agent.name}`}>{agent.name}</label>
 						</li>
 					))}
 				</ul>
 			</li>
 		)
 	}
-
-	// initialize
-	useEffect(async () => {
-		setAgents((await fetchData('closers_agents')));
-	}, []);
 
 	return (
 		<ul className="closers-list" id="ulClosers">
@@ -116,12 +105,23 @@ function SideBar({areas}) {
 	);
 }
 
-function Areas({areas}) {
+function Areas({areas, selectedAgent}) {
 	const [sectors, setSectors] = useState([]);
+	const [dailies, setDailies] = useState({});
 
 	// initialize
 	useEffect(async () => {
-		setSectors(await fetchData('closers_sectors'));
+		const [dataDailies, dataSectors] = await Promise.all([fetchData('closers_dailies'), fetchData('closers_sectors')]);
+
+		// turn dailies data into a map utilizing agent id and sector id as key
+		const mapDailies = {};
+		dataDailies.forEach(daily => {
+			const key = `${daily.agent_id}-${daily.sector_id}`;
+			mapDailies[key] = daily;
+		});
+
+		setDailies(mapDailies);
+		setSectors(dataSectors);
 	}, []);
 
 	const renderSectors = (areaID) => {
@@ -146,17 +146,57 @@ function Areas({areas}) {
 	const renderRow = (rowSectors) => {
 		return rowSectors.map(sector => (
 			<div className="sector-group">
-				<input type="checkbox" id={`cbSector${sector.area_id}-${sector.id}`}/>
-				<label htmlFor={`cbSector${sector.area_id}-${sector.id}`}>{sector.name}</label>
+				<input type="checkbox"
+					id={`cbSector${sector.area_id}-${sector.id}`}
+          checked={isComplete(sector.id)}
+          onChange={(event) => updateDailies(event, sector.id)}
+				/>
+				<label htmlFor={`cbSector${sector.area_id}-${sector.id}`}>
+					{sector.name}
+				</label>
 			</div>
 		));
 	};
+
+	const isComplete = (sectorID) => {
+    const agentID = selectedAgent.id;
+    const key = `${agentID}-${sectorID}`;
+    return dailies[key]?.cleared === 1;
+  };
+
+  const updateDailies = (event, sectorID) => {
+		console.log(dailies)
+
+    const agentID = selectedAgent.id;
+    const key = `${agentID}-${sectorID}`;
+		setDailies((prevDailies) => {
+      return {
+        ...prevDailies,
+        [key]: {
+          ...prevDailies[key],
+          cleared: event.target.checked ? 1 : 0,
+        },
+      };
+    });
+
+    fetch('/closers_dailies_update', {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+				"Accept": "application/json"
+			},
+			body: JSON.stringify({
+				agentID: agentID,
+				sectorID: sectorID
+			})
+		});
+  };
 
 	return (
 		<React.Fragment>
 			{areas.map((tab, i) => (
 				<div className="container-area" id={`divArea${i}`} key={i}>
-					{renderSectors(i)}
+					{selectedAgent.id && renderSectors(i)}
 				</div>
 			))}
 		</React.Fragment>

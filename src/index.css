@@ -551,6 +551,8 @@ div:has(> .chat-select) {
 }
 
 .dropdown-box {
+	position: relative;
+	z-index: 1;
 	visibility: hidden;
 	border: solid 1px cyan;
 }

@@ -34,7 +34,8 @@ async function setupServer(rem) {
 
 	app.get('/closers_dailies', (req, res) => {
 		const dailiesArray = rem.remDB.get('closers_dailies');
-		res.send({ dataArray: dailiesArray });
+		const userID = req.cookies.discordID;
+		res.send({ dataArray: dailiesArray.filter(dailies => dailies.user_id === userID) });
 	});
 
 	app.get('/closers_sectors', (req, res) => {
@@ -42,9 +43,25 @@ async function setupServer(rem) {
 		res.send({ dataArray: sectorsArray });
 	});
 
+	app.post('/closers_dailies_update', (req, res) => {
+		const filter = {
+			user_id: req.cookies.discordID,
+			agent_id: req.body.agentID,
+			sector_id: req.body.sectorID
+		}
+		const targetDaily = rem.remDB.get('closers_dailies').find(daily => {
+			for (let key in filter) {
+				if (!daily[key] || daily[key] != filter[key]) return false
+			}
+			return true;
+		});
+		targetDaily.cleared = targetDaily.cleared === 1 ? 0 : 1;
+		res.sendStatus(200);
+	});
+
 	app.get('/portfolio', (req, res) => {
 		res.sendFile(__dirname + '/src/Portfolio/portfolio.html');
-	})
+	});
 
 	app.get('/textChannels', async (req, res) => {
 		const server = await rem.guilds.fetch('773660297696772096');
@@ -145,6 +162,11 @@ async function setupServer(rem) {
 				session.delete(nickname);
 				session.set(sessionID, nickname);
 				res.cookie('sessionID', sessionID, {
+					secure: true,
+					httpOnly: true,
+					sameSite: 'strict'
+				})
+				.cookie('discordID', member.id, {
 					secure: true,
 					httpOnly: true,
 					sameSite: 'strict'

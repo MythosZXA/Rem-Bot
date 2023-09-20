@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			allowNull: false
 		},
-		character: {
+		agent_id: {
 			type: DataTypes.STRING,
 			allowNull: false
 		},
