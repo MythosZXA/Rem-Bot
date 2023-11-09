@@ -49,6 +49,7 @@ async function importDBToMemory() {
 }
 
 // export all the memory data into DB
+const PaliaGifts = require('./Models/palia_gifts')(sequelize, Sequelize.DataTypes);
 const Timers = require('./Models/timers')(sequelize, Sequelize.DataTypes);
 const Transactions = require('./Models/transactions')(sequelize, Sequelize.DataTypes);
 const Users = require('./Models/users')(sequelize, Sequelize.DataTypes);
@@ -60,9 +61,10 @@ async function exportMemoryToDB(rem) {
 	});
 
 	try {
-		await Users.bulkCreate(users, { updateOnDuplicate: ['username', 'birthday'] });
-		await Transactions.bulkCreate(rem.remDB.get('transactions'), { updateOnDuplicate: ['date', 'payer', 'payer', 'description'] });
+		await PaliaGifts.bulkCreate(rem.remDB.get('palia_gifts'), { updateOnDuplicate: ['gifted', 'gift1', 'gift2', 'gift3', 'gift4'] });
 		await Timers.bulkCreate(rem.remDB.get('timers'), { updateOnDuplicate: ['expiration_time', 'message', 'user_id'] });
+		await Transactions.bulkCreate(rem.remDB.get('transactions'), { updateOnDuplicate: ['date', 'payer', 'payer', 'description'] });
+		await Users.bulkCreate(users, { updateOnDuplicate: ['username', 'birthday'] });
 		console.log('DB Saved');
 	} catch (error) {
 		console.log(error);

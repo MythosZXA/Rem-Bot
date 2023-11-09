@@ -1,0 +1,45 @@
+.page-ttt .form-button {
+	display: flex;
+	margin-top: 20%;
+}
+
+.ttt-section {
+	display: flex;
+	margin-top: 1%;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
+.ttt-board {
+	display: grid;
+	margin: 0 100px;
+}
+
+.ttt-board span {
+	height: 100px;
+	width: 300px;
+}
+
+.ttt-board span button {
+	height: 100px;
+	width: 100px;
+	font-size: 24px;
+	cursor: pointer;
+}
+
+.ttt-marker {
+	height: 100px;
+	width: 100px;
+	border: none;
+	border-radius: 50%;
+	font-size: 24px;
+	cursor: pointer;
+}
+
+.ttt-marker.X.selected {
+	background-color: pink;
+}
+
+.ttt-marker.O.selected {
+	background-color: cyan;
+}
