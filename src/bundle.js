@@ -586,7 +586,7 @@ function PagePalia() {
     var villagerGiftInfo = giftInfo.find(function (info) {
       return info.villager_id === villagerID;
     });
-    return villagerGiftInfo["gift".concat(giftNumber)];
+    return villagerGiftInfo["gift".concat(giftNumber === 0 ? "ed" : giftNumber)];
   };
 
   // Onchange function of the gift checkboxes
@@ -618,7 +618,11 @@ function PagePalia() {
                 var villagerGiftInfo = newState.find(function (info) {
                   return info.villager_id === villagerID;
                 });
-                villagerGiftInfo["gift".concat(giftNumber)] = checked ? 1 : 0;
+                if (giftNumber === 0) {
+                  villagerGiftInfo["gifted"] = villagerGiftInfo["gifted"] === 1 ? 0 : 1;
+                } else {
+                  villagerGiftInfo["gift".concat(giftNumber)] = checked ? 1 : 0;
+                }
                 return newState;
               });
             } else {
@@ -643,7 +647,11 @@ function PagePalia() {
     }, /*#__PURE__*/React.createElement("span", {
       "class": "villager-icon",
       style: {
-        backgroundImage: "url(".concat(villager.image_url, ")")
+        backgroundImage: "url(".concat(villager.image_url, ")"),
+        filter: "brightness(".concat(gifted(villager.id, 0) ? .5 : 1, ")")
+      },
+      onClick: function onClick() {
+        return updateData(null, villager.id, 0);
       }
     }), ["G1", "G2", "G3", "G4"].map(function (gift, i) {
       return /*#__PURE__*/React.createElement("label", {

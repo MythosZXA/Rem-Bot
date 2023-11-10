@@ -22,7 +22,7 @@ export default function PagePalia() {
 	// Function that determines the prefill of gift checkboxes
 	const gifted = (villagerID, giftNumber) => {
 		const villagerGiftInfo = giftInfo.find(info => info.villager_id === villagerID);
-		return villagerGiftInfo[`gift${giftNumber}`];
+		return villagerGiftInfo[`gift${giftNumber === 0 ? "ed" : giftNumber}`];
 	}
 	
 	// Onchange function of the gift checkboxes
@@ -46,7 +46,11 @@ export default function PagePalia() {
 			setGiftInfo((prevState) => {
 				const newState = [...prevState];
 				const villagerGiftInfo = newState.find(info => info.villager_id === villagerID);
-				villagerGiftInfo[`gift${giftNumber}`] = checked ? 1 : 0;
+				if (giftNumber === 0) {
+					villagerGiftInfo["gifted"] = villagerGiftInfo["gifted"] === 1 ? 0 : 1;
+				} else {
+					villagerGiftInfo[`gift${giftNumber}`] = checked ? 1 : 0;
+				}
 				return newState;
 			});
 		} else {
@@ -60,7 +64,14 @@ export default function PagePalia() {
 			(
 				villagers.map(villager => (
 					<div class="gift-row">
-						<span class="villager-icon" style={{ backgroundImage: `url(${villager.image_url})` }}/>
+						<span
+							class="villager-icon"
+							style={{ 
+								backgroundImage: `url(${villager.image_url})`,
+								filter: `brightness(${gifted(villager.id, 0) ? .5 : 1})`
+							}}
+							onClick={() => updateData(null, villager.id, 0)}
+						/>
 						{["G1", "G2", "G3", "G4"].map((gift, i) => (
 							<label class="weekly-gift-label">
 								<input
