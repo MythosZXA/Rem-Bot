@@ -33,6 +33,59 @@ async function setupServer(rem) {
 		res.send({ channels: textChannels });
 	});
 
+	app.get('/palia', (req, res) => {
+		// Get villager info
+		const villagers = rem.remDB.get('palia_villagers');
+		// Get user's palia info
+		const userID = req.cookies.discordID;
+		const giftInfo = rem.remDB.get('palia_gifts').filter(giftInfo => giftInfo.user_id === userID);
+		// Create default palia info if user had none
+		if (!giftInfo.length) {
+			villagers.forEach(villager => {
+				giftInfo.push({
+					user_id: userID,
+					villager_id: villager.id,
+					gifted: 0,
+					gift1: 0,
+					gift2: 0,
+					gift3: 0,
+					gift4: 0
+				});
+			});
+
+			// Add default info to DB
+			rem.remDB.get('palia_gifts').push(...giftInfo);
+		}
+
+		res.send({ villagers: villagers, giftInfo: giftInfo });
+	});
+
+	app.post('/palia-update', (req, res) => {
+		// Parse data from request
+		const userID = req.cookies.discordID;
+		const villagerID = req.body.villagerID;
+		const giftNumber = req.body.giftNumber;
+
+		// Update DB
+		const giftInfo = rem.remDB.get('palia_gifts').find(giftInfo => giftInfo.user_id === userID && giftInfo.villager_id === villagerID);
+		if (giftInfo) {
+			switch (giftNumber) {
+				case 0:
+					giftInfo['gifted'] = giftInfo['gifted'] === 1 ? 0 : 1;
+					break;
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+					giftInfo[`gift${giftNumber}`] = giftInfo[`gift${giftNumber}`] === 1 ? 0 : 1;
+					break;
+			}
+			res.sendStatus(200);
+		} else {
+			res.sendStatus(400);
+		}
+	});
+
 	app.get('/serverMembers', async (req, res) => {
 		const server = await rem.guilds.fetch('773660297696772096');
 		const members = server.members.cache;
@@ -129,6 +182,11 @@ async function setupServer(rem) {
 					httpOnly: true,
 					sameSite: 'strict'
 				})
+				.cookie('discordID', member.id, {
+					secure: true,
+					httpOnly: true,
+					sameSite: 'strict'
+				})
 				.send({ avatarURL: avatarURL });
 				break;
 			}
@@ -174,7 +232,7 @@ async function setupServer(rem) {
 
 	app.post('/message', (req, res) => {
 		clientFunctions.remMessage(req.body);
-		res.send({ result: 'good?' });
+		res.sendStatus(200);
 	});
 
 	app.post('/ttt', (req, res) => {

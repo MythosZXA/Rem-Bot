@@ -1,0 +1,157 @@
+div:has(> .chat-select) {
+	display: grid;
+	grid-template-columns: 300px auto;
+	height: 100%;
+	width: 100%;
+}
+
+.chat-select {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	height: 100%;
+	background-color: rgb(250, 216, 216);
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+.chat-select input {
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+.chat-select label {
+	position: absolute;
+	height: 34px;
+	width: 60px;
+}
+
+.chat-select label span {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+	border-radius: 20px;
+}
+
+.chat-select label span:before {
+  position: absolute;
+	padding: 5px;
+  transition: .4s;
+  content: "\01F4AC";
+	text-align: center;
+	font-size: 17px;
+}
+
+.chat-select input:checked + label span:before {
+	left: 4px;
+	content: '\0023';
+	text-align: center;
+	font-size: 17px;
+	font-family: cursive;
+  transform: translateX(26px);
+}
+
+.chat-select div {
+	display: flex;
+	margin-top: 35px;
+	width: 200%;
+	transform: translateX(25%);
+	transition: .4s;
+	overflow-y: scroll;
+}
+
+.chat-select input:checked ~ div {
+	transform: translateX(-25%);
+	transition: .4s;
+}
+
+.chat-select ul {
+	width: 50%;
+	list-style-type: none;
+}
+
+.chat-select ul li {
+	margin: 5px;
+	border: 1px solid;
+	border-radius: 50px;
+	padding: 10px 0;
+	transition: .5s;
+}
+
+.chat-select ul li.selected {
+	margin: 1px;
+	background-color: cyan;
+	transition: .3s;
+}
+
+.chat-select ul:last-child li {
+	text-align: center;
+}
+
+.chat-select ul li span {
+	float: left;
+	margin: 0 10px;
+	border-radius: 50%;
+	height: 30px;
+	width: 30px;
+	background-size: cover;
+	transform: translateY(-6px);
+}
+
+.chat-message {
+	display: inline-flex;
+	flex-direction: column-reverse;
+	align-items: center;
+	background-color: white;
+	height: 100%;
+	overflow-y: scroll;
+}
+
+.chat-message div:first-child {
+	position: fixed;
+	margin: 0;
+	width: auto;
+	background-color: white;
+}
+
+.chat-message div {
+	margin: 5px 0;
+	height: 50px;
+	width: 100%;
+}
+
+.chat-message div span {
+	margin: 5px 10px;
+	border-radius: 50%;
+	height: 30px;
+	width: 30px;
+	background-image: url("https://cdn.discordapp.com/avatars/87682544018931712/9e3ec46b696a206bcd158841a41921b6.webp");
+	background-size: cover;
+}
+
+.chat-message div span.left {
+	float: left;
+}
+
+.chat-message div span.right {
+	float: right;
+	background-image: url("https://cdn.discordapp.com/avatars/773657778593202217/c4970366a906ddb3fd98cf2383157b00.webp");
+}
+
+.chat-message div p {
+	margin: 15px 0;
+}
+
+.chat-message div p.left {
+	float: left;
+}
+
+.chat-message div p.right {
+	float: right;
+}

@@ -131,7 +131,7 @@ export default function LoginLHN() {
 			<div class="left-login">
 				<ul class="nav-list">
 					{renderTab('Home', true)}
-					{renderTab('Receipt')}
+					{renderTab('Palia')}
 					{renderTab('Message')}
 					{renderTab('TicTacToe')}
 					<li onClick={logout}>Logout</li>

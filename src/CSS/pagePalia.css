@@ -1,0 +1,22 @@
+#containerPalia {
+  background: url("https://assets.nintendo.com/image/upload/c_fill,w_1200/q_auto:best/f_auto/dpr_2.0/ncom/software/switch/70010000064806/1703cddd1c0350e504664a91fc4fa22b9dfa8c02d4f4ac3c2013470eb0b23f1a") top/cover rgba(0,0,0,.7);
+	background-blend-mode: multiply;
+}
+
+
+.gift-row {
+	display: flex;
+	align-items: center;
+}
+
+.villager-icon {
+	height: 70px;
+	width: 70px;
+	border-radius: 50%;
+	background-size: cover;
+}
+
+.weekly-gift-label {
+	margin: 0 10px;
+	color: cyan;
+}

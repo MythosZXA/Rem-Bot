@@ -16,19 +16,8 @@ module.exports = {
 		// specialDaysFunctions.checkHoliday(channels);
 		specialDaysFunctions.checkBirthday(server, rem);
 
-		// update on new day
-		// twitterFunctions.checkForNewTweets(rem);
-
-		// setups
-		// rem.commands.get('timer').setupTimers(rem);
-
-		// server
-		// check for special days when tomorrow comes
-		// specialDaysFunctions.checkHoliday(channels);
-		// specialDaysFunctions.checkBirthday(server, rem);
-
-		// setups
-		// rem.commands.get('timer').setupTimers(rem);
+		// palia
+		require('../Functions/palia').setupResetTimer(rem);
 
 		// server
 		require('../express').setupServer(rem);
