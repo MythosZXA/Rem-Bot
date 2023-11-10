@@ -23,7 +23,7 @@ function setupResetTimer(rem) {
 	// Setup reset timer when tomorrow comes
 	else {
 		setTimeout(() => {
-			setupResetTimer();
+			setupResetTimer(rem);
 		}, secsToMidnight() + 60)
 	}
 }
