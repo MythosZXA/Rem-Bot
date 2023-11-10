@@ -586,7 +586,7 @@ function PagePalia() {
     var villagerGiftInfo = giftInfo.find(function (info) {
       return info.villager_id === villagerID;
     });
-    return villagerGiftInfo["gift".concat(giftNumber === 0 ? "ed" : giftNumber)];
+    return villagerGiftInfo["gift".concat(giftNumber === 0 ? 'ed' : giftNumber)];
   };
 
   // Onchange function of the gift checkboxes
@@ -619,14 +619,14 @@ function PagePalia() {
                   return info.villager_id === villagerID;
                 });
                 if (giftNumber === 0) {
-                  villagerGiftInfo["gifted"] = villagerGiftInfo["gifted"] === 1 ? 0 : 1;
+                  villagerGiftInfo['gifted'] = villagerGiftInfo['gifted'] === 1 ? 0 : 1;
                 } else {
                   villagerGiftInfo["gift".concat(giftNumber)] = checked ? 1 : 0;
                 }
                 return newState;
               });
             } else {
-              console.log("Failed to update data");
+              console.log('Failed to update data');
             }
           case 4:
           case "end":
@@ -653,7 +653,7 @@ function PagePalia() {
       onClick: function onClick() {
         return updateData(null, villager.id, 0);
       }
-    }), ["G1", "G2", "G3", "G4"].map(function (gift, i) {
+    }), ['G1', 'G2', 'G3', 'G4'].map(function (gift, i) {
       return /*#__PURE__*/React.createElement("label", {
         "class": "weekly-gift-label"
       }, /*#__PURE__*/React.createElement("input", {
