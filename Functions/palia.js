@@ -16,7 +16,7 @@ function setupResetTimer(rem) {
 				giftInfo['gift4'] = 0;
 			}
 		});
-	}, secsToMidnight() - (1000 * 60 * 60)); // An hour before midnight CST (9pm PST)
+	}, secsToMidnight() - (1000 * 60 * 60 * 2)); // Two hours before midnight CST (9pm PST)
 }
 
 module.exports = {
