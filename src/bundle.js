@@ -7299,25 +7299,26 @@ function LoginLHN() {
           }
           return _context.abrupt("return");
         case 7:
+          setLoggedIn(true);
           // delay a bit to avoid awkward instant login
           delay = function delay(ms) {
             return new Promise(function (resolve) {
               return setTimeout(resolve, ms);
             });
           };
-          _context.next = 10;
+          _context.next = 11;
           return delay(1000);
-        case 10:
-          _context.next = 12;
+        case 11:
+          _context.next = 13;
           return res.json();
-        case 12:
+        case 13:
           resBody = _context.sent;
           document.querySelector('span.profile-avatar').style.backgroundImage = "url(".concat(resBody.avatarURL, ")");
           // hide login screen
           document.querySelector('div.left-login').setAttribute('class', 'lhn');
           document.querySelector('div.right-login').classList.add('auth');
           resetLogin();
-        case 17:
+        case 18:
         case "end":
           return _context.stop();
       }

@@ -24,6 +24,7 @@ export default function LoginLHN() {
 		});
 		if (res.status === 401) return;
 		else {
+			setLoggedIn(true);
 			// delay a bit to avoid awkward instant login
 			const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 			await delay(1000);

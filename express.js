@@ -1,8 +1,10 @@
-// express
+const { setupCardSocket } = require('./Sockets/card');
+
 const express = require('express');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const cookieParser = require('cookie-parser');
+const cookie = require('cookie');
 const crypto = require('crypto');
 
 const app = express();
@@ -252,10 +254,11 @@ async function setupServer(rem) {
 
 function setupSocket() {
 	io.on('connection', (socket) => {
-		console.log('socket connected');
+		const cookies = cookie.parse(socket.handshake.headers.cookie);
+		console.log(`${cookies.nickname} connected`);
 
-		socket.on('test', () => {
-			
+		socket.on('disconnect', () => {
+			console.log(`${cookies.nickname} disconnected`)
 		});
 	});
 }
