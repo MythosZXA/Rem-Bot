@@ -252,7 +252,7 @@ function LoginLHN() {
     onClick: resetLogin
   }, /*#__PURE__*/React.createElement("span", null, "Reset")), /*#__PURE__*/React.createElement("button", {
     onClick: login
-  }, /*#__PURE__*/React.createElement("span", null, "Login")))), /*#__PURE__*/React.createElement("p", null, "\u30EC\u30E0")), loggedIn && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_pageHome["default"], null), /*#__PURE__*/React.createElement(_pageTicTacToe["default"], null)));
+  }, /*#__PURE__*/React.createElement("span", null, "Login")))), /*#__PURE__*/React.createElement("p", null, "\u30EC\u30E0")), loggedIn && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_pageHome["default"], null), /*#__PURE__*/React.createElement(_pagePalia["default"], null), /*#__PURE__*/React.createElement(_pageMessage["default"], null), /*#__PURE__*/React.createElement(_pageTicTacToe["default"], null)));
 }
 
 },{"./pageHome":2,"./pageMessage":3,"./pagePalia":4,"./pageTicTacToe":5}],2:[function(require,module,exports){
