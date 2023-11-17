@@ -34,6 +34,7 @@
     "libsodium-wrappers": "^0.7.11",
     "mysql2": "^2.3.3",
     "node.js": "0.0.1-security",
+    "react-draggable": "^4.4.6",
     "react-icons": "^4.9.0",
     "sequelize": "^6.32.0",
     "webpack": "^5.86.0",
