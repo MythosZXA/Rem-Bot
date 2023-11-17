@@ -1,8 +1,13 @@
 const { useState, useEffect } = React
+import PageHome from './pageHome'
+import PagePalia from './pagePalia'
+import PageMessage from './pageMessage'
+import PageTicTacToe from './pageTicTacToe'
 
 export default function LoginLHN() {
 	const [input, setInput] = useState();
 	const [reqType, setReqType] = useState('N');
+	const [loggedIn, setLoggedIn] = useState(false);
 
 	// login if there is a sessionID cookie
 	useEffect(async () => {
@@ -59,6 +64,7 @@ export default function LoginLHN() {
 		// status handling
 		switch (res.status) {
 			case 200:	// log in
+				setLoggedIn(true);
 				const resBody = await res.json();
 				document.querySelector('span.profile-avatar').style.backgroundImage = `url(${resBody.avatarURL})`;
 				// hide login screen
@@ -107,8 +113,8 @@ export default function LoginLHN() {
 		document.querySelector('button.nav-button').click();
 	}
 
-	function logout() {
-		fetch('/logout', { method: 'POST' });
+	async function logout() {
+		const res = await fetch('/logout', { method: 'POST' });
 		// default home tab
 		document.querySelector('div.lhn ul li:first-child').click();
 		// clear profile
@@ -116,6 +122,10 @@ export default function LoginLHN() {
 		// show login screen
 		document.querySelector('div.lhn').setAttribute('class', 'left-login');
 		document.querySelector('div.right-login').classList.remove('auth');
+		
+		if (res.status === 200) {
+			setLoggedIn(false);
+		}
 	}
 
 	function renderTab(label, firstTab) {
@@ -155,6 +165,14 @@ export default function LoginLHN() {
 				{/* <button onClick={() => {location.href='/portfolio'}}>Portfolio</button> */}
 				<p>レム</p>
 			</div>
+			{loggedIn && (
+				<React.Fragment>
+					<PageHome/>
+					<PagePalia/>
+					<PageMessage/>
+					<PageTicTacToe/>
+				</React.Fragment>
+			)}
 		</React.Fragment>
 	)
 }

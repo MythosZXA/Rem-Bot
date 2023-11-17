@@ -12,19 +12,16 @@ function setupResetTimer(rem) {
 	
 				// Reset weekly if sunday
 				if (dayOfWeek === 0) {
-					giftInfo['gift1'] = 0;
-					giftInfo['gift2'] = 0;
-					giftInfo['gift3'] = 0;
-					giftInfo['gift4'] = 0;
+					['gift1','gift2','gift3','gift4'].forEach(gift => giftInfo[gift] = 0);
 				}
 			});
-		}, secsToMidnight() - (60 * 60 * 2)); // Two hours before midnight CST (9pm PST)
+		}, 1000 * (secsToMidnight() - (60 * 60 * 2))); // Two hours before midnight CST (9pm PST)
 	}
 	// Setup reset timer when tomorrow comes
 	else {
 		setTimeout(() => {
 			setupResetTimer(rem);
-		}, secsToMidnight() + 60)
+		}, 1000 * (secsToMidnight() + 60));
 	}
 }
 
