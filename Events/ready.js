@@ -21,6 +21,7 @@ module.exports = {
 
 		// server
 		require('../express').setupServer(rem);
+		require('../express').setupSocket(rem);
 
 		console.log('Rem is online.');
 	}

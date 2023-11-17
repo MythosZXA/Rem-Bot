@@ -1,9 +1,15 @@
 // express
 const express = require('express');
-const app = express();
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
-app.listen(process.env.PORT);
+
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {});
+httpServer.listen(process.env.PORT);
+// app.listen(process.env.PORT);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./src'));
@@ -145,8 +151,7 @@ async function setupServer(rem) {
 					})
 					.send({ avatarURL: rem.user.avatarURL() });
 					return;
-				}
-				if (!member) {
+				} else if (!member) {
 					res.sendStatus(404);
 					return;
 				}
@@ -193,11 +198,6 @@ async function setupServer(rem) {
 			default:
 				break;
 		}
-
-		// req.on('close', () => {
-		// 	console.log('Connection closed');
-		// 	session.delete(req.cookies.sessionID);
-		// });
 	});
 
 	app.post('/logout', (req, res) => {
@@ -250,6 +250,17 @@ async function setupServer(rem) {
 	});
 }
 
+function setupSocket() {
+	io.on('connection', (socket) => {
+		console.log('socket connected');
+
+		socket.on('test', () => {
+			
+		});
+	});
+}
+
 module.exports = {
-	setupServer
+	setupServer,
+	setupSocket
 };

@@ -1,5 +1,6 @@
 const { useState, useEffect } = React
 import PageHome from './pageHome'
+import PageCard from './pageCard'
 import PagePalia from './pagePalia'
 import PageMessage from './pageMessage'
 import PageTicTacToe from './pageTicTacToe'
@@ -141,9 +142,10 @@ export default function LoginLHN() {
 			<div class="left-login">
 				<ul class="nav-list">
 					{renderTab('Home', true)}
+					{renderTab('PageCard')}
 					{renderTab('Palia')}
 					{renderTab('Message')}
-					{renderTab('TicTacToe')}
+					{/* {renderTab('PageTicTacToe')} */}
 					<li onClick={logout}>Logout</li>
 				</ul>
 			</div>
@@ -168,9 +170,10 @@ export default function LoginLHN() {
 			{loggedIn && (
 				<React.Fragment>
 					<PageHome/>
+					<PageCard/>
 					<PagePalia/>
 					<PageMessage/>
-					<PageTicTacToe/>
+					{/* <PageTicTacToe/> */}
 				</React.Fragment>
 			)}
 		</React.Fragment>
