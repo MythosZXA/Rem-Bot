@@ -26,6 +26,7 @@
     "babel-loader": "^9.1.2",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
+    "cookie": "^0.6.0",
     "cookie-parser": "^1.4.6",
     "discord.js": "^13.16.0",
     "dotenv": "^10.0.0",
@@ -36,6 +37,8 @@
     "node.js": "0.0.1-security",
     "react-icons": "^4.9.0",
     "sequelize": "^6.32.0",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2",
     "webpack": "^5.86.0",
     "webpack-cli": "^4.10.0",
     "xmlhttprequest": "^1.8.0"
