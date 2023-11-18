@@ -29,7 +29,7 @@ export default function PagePalia() {
 	// Function that sends updated gift data to the server
 	const updateData = async (checked, villagerID, giftNumber) => {
 		// Send updated updated data to server
-		const res = await fetch('/palia-update', {
+		const res = await fetch('/paliaUpdate', {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",

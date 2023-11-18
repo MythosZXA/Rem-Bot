@@ -2,7 +2,6 @@ const { useState, useEffect } = React
 import PageHome from './pageHome'
 import PagePalia from './pagePalia'
 import PageMessage from './pageMessage'
-import PageTicTacToe from './pageTicTacToe'
 
 export default function LoginLHN() {
 	const [input, setInput] = useState();
@@ -23,6 +22,7 @@ export default function LoginLHN() {
 		});
 		if (res.status === 401) return;
 		else {
+			setLoggedIn(true);
 			// delay a bit to avoid awkward instant login
 			const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 			await delay(1000);
@@ -143,7 +143,6 @@ export default function LoginLHN() {
 					{renderTab('Home', true)}
 					{renderTab('Palia')}
 					{renderTab('Message')}
-					{renderTab('TicTacToe')}
 					<li onClick={logout}>Logout</li>
 				</ul>
 			</div>
@@ -170,7 +169,6 @@ export default function LoginLHN() {
 					<PageHome/>
 					<PagePalia/>
 					<PageMessage/>
-					<PageTicTacToe/>
 				</React.Fragment>
 			)}
 		</React.Fragment>
