@@ -1,5 +1,4 @@
 const { useState, useRef, useEffect } = React;
-import { sendForm } from "../commonFunctions";
 
 export default function PageMessage() {
 	const [chatName, setChatName] = useState('');
@@ -103,6 +102,7 @@ export default function PageMessage() {
 		if (response.status === 200) {
 			return await response.json();
 		} else {
+			console.log('Failed to message history');
 			return false;
 		}
 	}
