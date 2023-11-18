@@ -10,7 +10,7 @@ div:has(> .chat-select) {
 	flex-direction: column;
 	align-items: center;
 	height: 100%;
-	background-color: rgb(250, 216, 216);
+	background-color: dimgray;
 	overflow-x: hidden;
 	overflow-y: scroll;
 }
@@ -108,7 +108,7 @@ div:has(> .chat-select) {
 	display: inline-flex;
 	flex-direction: column-reverse;
 	align-items: center;
-	background-color: white;
+	background-color: #2d2d2d;
 	height: 100%;
 	overflow-y: scroll;
 }
@@ -150,8 +150,10 @@ div:has(> .chat-select) {
 
 .chat-message div p.left {
 	float: left;
+	color: pink;
 }
 
 .chat-message div p.right {
 	float: right;
+	color: cyan;
 }

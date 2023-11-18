@@ -7765,7 +7765,7 @@ function PageMessage() {
   return /*#__PURE__*/React.createElement("div", {
     "class": "page-container",
     id: "containerMessage"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React.createElement("span", {
     "class": "chat-select"
   }, /*#__PURE__*/React.createElement("input", {
     type: "checkbox",
@@ -7787,7 +7787,7 @@ function PageMessage() {
     onKeyPress: function onKeyPress(event) {
       if (event.key === 'Enter') sendMessage();
     }
-  })))));
+  }))));
 }
 
 },{"socket.io-client":30}],41:[function(require,module,exports){

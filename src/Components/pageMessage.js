@@ -131,32 +131,30 @@ export default function PageMessage() {
 
 	return(
 		<div class="page-container" id="containerMessage">
-			<div>
-				<span class="chat-select">
-					<input type="checkbox" id="toggleSelect"/>
-					<label for="toggleSelect">
-						<span/>
-					</label>
-					<div>
-						<ul/>
-						<ul/>
-					</div>
-				</span>
-				<span class="chat-message">
-					<div>
-						<input
-							class="form-input"
-							placeholder="Message"
-							size="100"
-							autocomplete="off"
-							value={message}
-							ref={inputMessage}
-							onChange={event => setMessage(event.target.value)}
-							onKeyPress={event => { if (event.key === 'Enter') sendMessage() }}
-						/>
-					</div>
-				</span>
-			</div>
+			<span class="chat-select">
+				<input type="checkbox" id="toggleSelect"/>
+				<label for="toggleSelect">
+					<span/>
+				</label>
+				<div>
+					<ul/>
+					<ul/>
+				</div>
+			</span>
+			<span class="chat-message">
+				<div>
+					<input
+						class="form-input"
+						placeholder="Message"
+						size="100"
+						autocomplete="off"
+						value={message}
+						ref={inputMessage}
+						onChange={event => setMessage(event.target.value)}
+						onKeyPress={event => { if (event.key === 'Enter') sendMessage() }}
+					/>
+				</div>
+			</span>
 		</div>
 	)
 }
