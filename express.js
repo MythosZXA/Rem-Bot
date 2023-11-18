@@ -34,13 +34,37 @@ async function setupServer(rem) {
 }
 
 function setupSocket(rem) {
+	// Attach io as a global
+	rem.io = io;
+
 	io.on('connection', (socket) => {
 		const cookies = cookie.parse(socket.handshake.headers.cookie);
 		console.log(`${cookies.nickname} connected`);
 
+		// Join room for specific connections
+		if (socket.handshake.query.type) {
+			socket.join(socket.handshake.query.type);
+
+			switch (socket.handshake.query.type) {
+				case 'chat':
+					socket.on('dm', async (dm) => {
+						const destinationName = dm.chatName;
+						const server = await rem.guilds.fetch('773660297696772096');
+						const serverMember = server.members.cache.find(member => 
+							member.nickname === destinationName);
+						if (serverMember) {
+							serverMember.send(dm.content);
+						} else {
+							rem.serverChannels.get(destinationName).send(dm.content);
+						}
+					});
+					break;
+			}
+		}
+
 		socket.on('disconnect', () => {
 			console.log(`${cookies.nickname} disconnected`);
-		})
+		});
 	});
 }
 

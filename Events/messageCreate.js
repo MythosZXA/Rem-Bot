@@ -8,9 +8,10 @@ module.exports = {
 		
 		console.log(`${message.author.username}: ${message.content}`);
 		if (message.author.bot) return;		// rem sent a message, exit
-		// log DMs to Rem
-		if (!message.inGuild() && message.author.id != process.env.toan) {
+		// DMs to Rem
+		if (!message.inGuild()) {
 			consoleChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`);
+			rem.io.to('chat').emit('dm', { id: message.author.id, content: message.content });
 		}
 		// misc responses
 		if (message.content.toLowerCase().includes('thanks rem')) {

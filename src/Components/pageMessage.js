@@ -1,4 +1,7 @@
 const { useState, useRef, useEffect } = React;
+import io from 'socket.io-client'
+
+let socket;
 
 export default function PageMessage() {
 	const [chatName, setChatName] = useState('');
@@ -7,6 +10,21 @@ export default function PageMessage() {
 
 	// populate chat select with server members
 	useEffect(async () => {
+		setupMemberSelect();
+		setupChannelSelect();
+
+		socket = io('/', { query: { type: 'chat' } });
+		socket.on('dm', (dm) => {
+			console.log(dm);
+			// Append the message row to chat
+		});
+
+		return () => {
+			socket.disconnect();
+		}
+	}, []);
+
+	const setupMemberSelect = async () => {
 		const response = await fetch('./serverMembers');
 		if (response.status !== 200) {
 			console.log('Failed to retrieve server members');
@@ -30,10 +48,8 @@ export default function PageMessage() {
 			const listMembers = document.querySelector('span.chat-select ul');
 			listMembers.appendChild(li);
 		});
-	}, []);
-
-	// populate chat select with text channels
-	useEffect(async () => {
+	}
+	const setupChannelSelect = async () => {
 		const response = await fetch('./textChannels');
 		if (response.status !== 200) {
 			console.log('Failed to retrieve channels');
@@ -50,7 +66,7 @@ export default function PageMessage() {
 			const listMembers = document.querySelector('span.chat-select div ul:last-child');
 			listMembers.appendChild(li);
 		});
-	}, []);
+	}
 
 	async function selectChat() {
 		// unselect old chat
@@ -107,18 +123,8 @@ export default function PageMessage() {
 		}
 	}
 
-	async function sendMessage() {
-		const res = await fetch('/message', {
-			method: 'POST',
-			headers: {
-				"Content-Type": "application/json",
-				"Accept": "application/json"
-			},
-			body: JSON.stringify({
-				chatName: chatName,
-				message: message
-			})
-		});
+	const sendMessage = () => {
+		socket.emit('dm', { chatName: chatName, content: message });
 		setMessage('');
 		inputMessage.current.focus();
 	}
