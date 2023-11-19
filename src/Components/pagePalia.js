@@ -5,7 +5,7 @@ export default function PagePalia() {
 	const [giftInfo, setGiftInfo] = useState([]);
   const [loading, setLoading] = useState(true);
 
-	// Request villager and gift information from server
+	// request villager and gift information from server
 	useEffect(async () => {
 		const response = await fetch('./palia');
 		if (response.status !== 200) {
@@ -19,16 +19,16 @@ export default function PagePalia() {
 		setLoading(false);
 	}, []);
 
-	// Function that determines the prefill of gift checkboxes
+	// function that determines the prefill of gift checkboxes
 	const gifted = (villagerID, giftNumber) => {
 		const villagerGiftInfo = giftInfo.find(info => info.villager_id === villagerID);
 		return villagerGiftInfo[`gift${giftNumber === 0 ? 'ed' : giftNumber}`];
 	}
 	
-	// Onchange function of the gift checkboxes
-	// Function that sends updated gift data to the server
+	// onchange function of the gift checkboxes
+	// function that sends updated gift data to the server
 	const updateData = async (checked, villagerID, giftNumber) => {
-		// Send updated updated data to server
+		// send updated updated data to server
 		const res = await fetch('/paliaUpdate', {
 			method: 'POST',
 			headers: {
@@ -42,7 +42,7 @@ export default function PagePalia() {
 		});
 		
 		if (res.status === 200) {
-			// Update component state
+			// update component state
 			setGiftInfo((prevState) => {
 				const newState = [...prevState];
 				const villagerGiftInfo = newState.find(info => info.villager_id === villagerID);

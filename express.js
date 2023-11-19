@@ -42,24 +42,20 @@ function setupSocket(rem) {
 		console.log(`${cookies.nickname} connected`);
 
 		// Join room for specific connections
-		if (socket.handshake.query.type) {
-			socket.join(socket.handshake.query.type);
-
-			switch (socket.handshake.query.type) {
-				case 'chat':
-					socket.on('dm', async (dm) => {
-						const destinationName = dm.chatName;
-						const server = await rem.guilds.fetch('773660297696772096');
-						const serverMember = server.members.cache.find(member => 
-							member.nickname === destinationName);
-						if (serverMember) {
-							serverMember.send(dm.content);
-						} else {
-							rem.serverChannels.get(destinationName).send(dm.content);
-						}
-					});
-					break;
-			}
+		if (socket.handshake.query.chatName) {
+			const chatName = socket.handshake.query.chatName;
+			socket.join(chatName);
+			socket.on('remMsg', async (dm) => {
+				const destinationName = dm.chatName;
+				const server = await rem.guilds.fetch('773660297696772096');
+				const serverMember = server.members.cache.find(member => 
+					member.nickname === destinationName);
+				if (serverMember) {
+					serverMember.send(dm.content);
+				} else {
+					rem.serverChannels.get(destinationName).send(dm.content);
+				}
+			});
 		}
 
 		socket.on('disconnect', () => {

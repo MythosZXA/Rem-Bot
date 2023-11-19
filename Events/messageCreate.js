@@ -8,11 +8,18 @@ module.exports = {
 		
 		console.log(`${message.author.username}: ${message.content}`);
 		if (message.author.bot) return;		// rem sent a message, exit
-		// DMs to Rem
+		// const chatName = message.channel?.name ?? message.author.displayAvatarURL();
+		// console.log(message.author.displayAvatarURL())
+		// rem.io.to(chatName).emit('dcMsg', {
+		// 	user: message.author,
+		// 	content: message.content
+		// });
+
+		// dms to Rem
 		if (!message.inGuild()) {
 			consoleChannel.send(`${message.author.username.toUpperCase()}: ${message.content}`);
-			rem.io.to('chat').emit('dm', { id: message.author.id, content: message.content });
 		}
+
 		// misc responses
 		if (message.content.toLowerCase().includes('thanks rem')) {
 			if (message.author.id === process.env.toan) {
