@@ -2,12 +2,12 @@ module.exports = {
 	name: '/palia',
 	type: 'get',
 	execute(req, res, rem) {
-		// Get villager info
+		// get villager info
 		const villagers = rem.remDB.get('palia_villagers');
-		// Get user's palia info
+		// get user's palia info
 		const userID = req.cookies.discordID;
 		const giftInfo = rem.remDB.get('palia_gifts').filter(giftInfo => giftInfo.user_id === userID);
-		// Create default palia info if user had none
+		// create default palia info if user had none
 		if (!giftInfo.length) {
 			villagers.forEach(villager => {
 				giftInfo.push({
@@ -21,7 +21,7 @@ module.exports = {
 				});
 			});
 
-			// Add default info to DB
+			// add default info to db
 			rem.remDB.get('palia_gifts').push(...giftInfo);
 		}
 

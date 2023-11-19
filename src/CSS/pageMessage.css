@@ -10,7 +10,7 @@ div:has(> .chat-select) {
 	flex-direction: column;
 	align-items: center;
 	height: 100%;
-	background-color: rgb(250, 216, 216);
+	background-color: dimgray;
 	overflow-x: hidden;
 	overflow-y: scroll;
 }
@@ -22,7 +22,8 @@ div:has(> .chat-select) {
 }
 
 .chat-select label {
-	position: absolute;
+	position: relative;
+	margin-top: 13px;
 	height: 34px;
 	width: 60px;
 }
@@ -59,7 +60,7 @@ div:has(> .chat-select) {
 
 .chat-select div {
 	display: flex;
-	margin-top: 35px;
+	margin-top: 17px;
 	width: 200%;
 	transform: translateX(25%);
 	transition: .4s;
@@ -87,7 +88,12 @@ div:has(> .chat-select) {
 .chat-select ul li.selected {
 	margin: 1px;
 	background-color: cyan;
+	color: black;
 	transition: .3s;
+}
+
+.chat-select ul li.selected p  {
+	color: black;
 }
 
 .chat-select ul:last-child li {
@@ -104,26 +110,34 @@ div:has(> .chat-select) {
 	transform: translateY(-6px);
 }
 
+.chat-select p {
+	color: pink
+}
+
 .chat-message {
 	display: inline-flex;
 	flex-direction: column-reverse;
 	align-items: center;
-	background-color: white;
+	background-color: #2d2d2d;
 	height: 100%;
 	overflow-y: scroll;
 }
 
-.chat-message div:first-child {
+.chat-message input {
 	position: fixed;
-	margin: 0;
-	width: auto;
-	background-color: white;
+	margin-bottom: 20px;
+	border-radius: 20px;
+	padding-left:  20px;
+	height: 30px;
 }
 
 .chat-message div {
 	margin: 5px 0;
-	height: 50px;
 	width: 100%;
+}
+
+.chat-message div:first-of-type {
+	margin-bottom: 60px;
 }
 
 .chat-message div span {
@@ -150,8 +164,10 @@ div:has(> .chat-select) {
 
 .chat-message div p.left {
 	float: left;
+	color: pink;
 }
 
 .chat-message div p.right {
 	float: right;
+	color: cyan;
 }

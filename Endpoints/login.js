@@ -14,6 +14,7 @@ function restoreSession(req, res, expressGlobal, server) {
 }
 
 function findMember(req, res, rem, expressGlobal, server) {
+	if (!req.body.input) res.sendStatus(404);
 	const nickname = req.body.input.toLowerCase();
 
 	// Rem login
@@ -21,7 +22,7 @@ function findMember(req, res, rem, expressGlobal, server) {
 		const sessionID = crypto.randomUUID();
 		expressGlobal.admins.add(sessionID);
 		res.cookie('sessionID', sessionID, {
-			secure: true,
+			secure: false,
 			httpOnly: true,
 			sameSite: 'strict'
 		})
@@ -36,7 +37,7 @@ function findMember(req, res, rem, expressGlobal, server) {
 		expressGlobal.sessions.set(nickname, randomPin);
 		member.send(randomPin);
 		res.cookie('nickname', nickname, {
-			secure: true, // Http(s)
+			secure: false, // Http(s)
 			httpOnly: true, // Client JS code can't access
 			sameSite: 'strict' // Same port
 		})
@@ -47,6 +48,8 @@ function findMember(req, res, rem, expressGlobal, server) {
 }
 
 function validateCode(req, res, expressGlobal, server) {
+	if (!req.cookies.nickname) res.sendStatus(401);
+
 	const nickname = req.cookies.nickname.toLowerCase();
 	const recievedPin = req.body.input;
 	const correctPin = expressGlobal.sessions.get(nickname);
@@ -58,12 +61,12 @@ function validateCode(req, res, expressGlobal, server) {
 		expressGlobal.sessions.delete(nickname);
 		expressGlobal.sessions.set(sessionID, nickname);
 		res.cookie('sessionID', sessionID, {
-			secure: true,
+			secure: false,
 			httpOnly: true,
 			sameSite: 'strict'
 		})
 		.cookie('discordID', member.id, {
-			secure: true,
+			secure: false,
 			httpOnly: true,
 			sameSite: 'strict'
 		})
@@ -79,13 +82,13 @@ module.exports = {
 	async execute(req, res, rem, expressGlobal) {
 		const server = await rem.guilds.fetch('773660297696772096');
 		switch (req.body.reqType) {
-			case 'S': // Session restore request
+			case 'S': // session restore request
 				restoreSession(req, res, expressGlobal, server);
 				break;
-			case 'N': // Nickname request
+			case 'N': // nickname request
 				findMember(req, res, rem, expressGlobal, server);
 				break;
-			case 'C': // Code request
+			case 'C': // code request
 				validateCode(req, res, expressGlobal, server);
 				break;
 			default:

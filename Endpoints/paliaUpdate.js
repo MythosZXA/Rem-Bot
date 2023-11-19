@@ -2,12 +2,12 @@ module.exports = {
 	name: '/paliaUpdate',
 	type: 'post',
 	execute(req, res, rem) {
-		// Parse data from request
+		// parse data from request
 		const userID = req.cookies.discordID;
 		const villagerID = req.body.villagerID;
 		const giftNumber = req.body.giftNumber;
 
-		// Update DB
+		// update db
 		const giftInfo = rem.remDB.get('palia_gifts').find(giftInfo => giftInfo.user_id === userID && giftInfo.villager_id === villagerID);
 		if (giftInfo) {
 			switch (giftNumber) {

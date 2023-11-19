@@ -6,7 +6,7 @@ module.exports = {
 			const server = await rem.guilds.fetch('773660297696772096');
 			const members = server.members.cache;
 			const realMembers = members.filter(member => !member.user.bot);
-			res.send({ members: realMembers });
+			res.send({ remAvatarURL: rem.user.displayAvatarURL(), members: realMembers });
 		} else {
 			res.sendStatus(401);
 		}
