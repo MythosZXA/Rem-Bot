@@ -61,12 +61,12 @@ function validateCode(req, res, expressGlobal, server) {
 		expressGlobal.sessions.delete(nickname);
 		expressGlobal.sessions.set(sessionID, nickname);
 		res.cookie('sessionID', sessionID, {
-			secure: true,
+			secure: false,
 			httpOnly: true,
 			sameSite: 'strict'
 		})
 		.cookie('discordID', member.id, {
-			secure: true,
+			secure: false,
 			httpOnly: true,
 			sameSite: 'strict'
 		})

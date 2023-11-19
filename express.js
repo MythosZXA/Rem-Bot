@@ -7,9 +7,11 @@ const cookie = require('cookie');
 const fs = require('fs');
 
 const app = express();
+const cors = require('cors');
 const httpServer = createServer(app);
 const io = new Server(httpServer, {});
 httpServer.listen(process.env.PORT);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./src'));
